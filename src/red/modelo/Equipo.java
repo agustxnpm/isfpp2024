@@ -2,7 +2,12 @@ package red.modelo;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.ArrayList;
+
+import red.excepciones.DireccionIpRepetidaException;
+
 
 public class Equipo {
 
@@ -104,6 +109,7 @@ public class Equipo {
 		return "Equipo [codigo=" + codigo + ", descripcion=" + descripcion + "]";
 	}
 
+
 	public void agregarPuerto(int cantPuertos, TipoPuerto tipoPuerto) throws IllegalArgumentException {
 
 		if (cantPuertos <= 0)
@@ -111,17 +117,17 @@ public class Equipo {
 
 		Puerto puerto = new Puerto(cantPuertos, tipoPuerto);
 		if (puertos.contains(puerto)) {
-			
-	        // Obtener el indice del puerto existente
+
+			// Obtener el indice del puerto existente
 			int index = puertos.indexOf(puerto);
-			
-	        // Obtener la instancia de Puerto en ese indice
+
+			// Obtener la instancia de Puerto en ese indice
 			Puerto puertoExistente = puertos.get(index);
-			
-	        // Sumar la cantidad de puertos de la nueva instancia a la existente
+
+			// Sumar la cantidad de puertos de la nueva instancia a la existente
 			puertoExistente.setCantidadPuertos(puertoExistente.getCantidadPuertos() + puerto.getCantidadPuertos());
-			
-	        // Actualizar la lista de puertos con el puerto modificado
+
+			// Actualizar la lista de puertos con el puerto modificado
 			puertos.set(index, puertoExistente);
 			return;
 		}
@@ -130,12 +136,27 @@ public class Equipo {
 
 	}
 
-	public void agregarIp(String ip) {
-		// implementar...
+	public void agregarIp(String ip) throws DireccionIpRepetidaException {
+		// Expresion regular para validar IPv4
+		String ipv4Regex = "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
+		Pattern pattern = Pattern.compile(ipv4Regex);
+		Matcher matcher = pattern.matcher(ip);
+
+		// Validar si la IP tiene formato valido
+		if (!matcher.matches()) {
+			throw new IllegalArgumentException("La direccion IP no es valida");
+		}
+		
+		// Si ya existe la IP dentro del equipo
+		if (direccionesIp.contains(ip))
+			throw new DireccionIpRepetidaException("La direccion ip ya existe");
+		
+		direccionesIp.add(ip);
+			
+		
 	}
 
-	// ---------------------- clase interna puerto
-	// ------------------------------------//
+	// ----------------------clase interna puerto------------------------------------//
 	private class Puerto {
 
 		private int cantidadPuertos;
@@ -190,7 +211,6 @@ public class Equipo {
 			return Equipo.this;
 		}
 	}
-	// ---------------------- fin clase interna puerto
-	// ---------------------------------//
+	// ---------------------- fin clase interna puerto ---------------------------------//
 
 }
