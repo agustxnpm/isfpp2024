@@ -36,27 +36,50 @@ public class Equipo {
 		this.estado = simularEstado();
 	}
 
-	public int getVelocidadMaxima() {
-        int velocidadMaxima = Integer.MAX_VALUE;
+    /**
+     * Obtiene la velocidad máxima del equipo basada en los puertos disponibles.
+     * La velocidad máxima está limitada por el puerto más lento.
+     * @return La velocidad máxima del equipo en Mbps.
+     */
+    public int getVelocidadMaxima() {
+        int velocidadMaxima = Integer.MAX_VALUE;  // Inicializamos con un valor muy alto
+        // Iteramos sobre los puertos del equipo para encontrar el puerto más lento
         for (Puerto puerto : puertos) {
             velocidadMaxima = Math.min(velocidadMaxima, puerto.getTipoPuerto().getVelocidad());
         }
-        return velocidadMaxima;
+        return velocidadMaxima;  // Retornamos la velocidad más baja
     }
 
+    /**
+     * Enum que define el estado de un equipo.
+     * Los estados pueden ser:
+     * - ACTIVO: El equipo está funcionando correctamente.
+     * - INACTIVO: El equipo está fuera de servicio o no responde.
+     */
     public enum Estado {
         ACTIVO, INACTIVO
     }
-   // Método para simular el estado del equipo
+
+    /**
+     * Método que simula el estado del equipo al momento de su creación.
+     * El estado es generado aleatoriamente: puede ser ACTIVO o INACTIVO.
+     * @return El estado del equipo (ACTIVO o INACTIVO).
+     */
     private Estado simularEstado() {
-        Random random = new Random();
+        Random random = new Random();  // Generador de valores aleatorios
+        // Retornamos ACTIVO o INACTIVO basado en un valor booleano aleatorio
         return random.nextBoolean() ? Estado.ACTIVO : Estado.INACTIVO;
     }
 
-    // Simular la respuesta a un ping
+    /**
+     * Simula la respuesta del equipo a un ping.
+     * Un equipo responde al ping si está en estado ACTIVO.
+     * @return true si el equipo está ACTIVO, false si está INACTIVO.
+     */
     public boolean realizarPing() {
-        return estado == Estado.ACTIVO;
+        return estado == Estado.ACTIVO;  // El ping es exitoso si el equipo está ACTIVO
     }
+
 	
 	public Estado getEstado() {
         return estado;
