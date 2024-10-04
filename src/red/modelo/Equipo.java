@@ -2,6 +2,7 @@ package red.modelo;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class Equipo {
 	private Ubicacion ubicacion;
 	private TipoEquipo tipoEquipo;
 	private List<Puerto> puertos;
+	private Estado estado; // Estado del equipo (Activo/Inactivo)
 
 	public Equipo(String codigo, String modelo, String marca, String descripcion, Ubicacion ubicacion,
 			TipoEquipo tipoEquipo, int cantPuertos, TipoPuerto tipoPuerto) {
@@ -32,8 +34,34 @@ public class Equipo {
 		direccionesIp = new ArrayList<String>();
 		puertos = new ArrayList<Puerto>();
 		agregarPuerto(cantPuertos, tipoPuerto);
-
+		this.estado = simularEstado();
 	}
+
+	public int getVelocidadMaxima() {
+        int velocidadMaxima = Integer.MAX_VALUE;
+        for (Puerto puerto : puertos) {
+            velocidadMaxima = Math.min(velocidadMaxima, puerto.getTipoPuerto().getVelocidad());
+        }
+        return velocidadMaxima;
+    }
+
+    public enum Estado {
+        ACTIVO, INACTIVO
+    }
+   // Método para simular el estado del equipo
+    private Estado simularEstado() {
+        Random random = new Random();
+        return random.nextBoolean() ? Estado.ACTIVO : Estado.INACTIVO;
+    }
+
+    // Simular la respuesta a un ping
+    public boolean realizarPing() {
+        return estado == Estado.ACTIVO;
+    }
+	
+	public Estado getEstado() {
+        return estado;
+    }
 
 	public String getCodigo() {
 		return codigo;

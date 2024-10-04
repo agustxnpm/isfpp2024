@@ -2,12 +2,17 @@ package red.modelo;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Queue;
+import java.util.Set;
 
 import red.excepciones.ConexionRepetidaException;
 import red.excepciones.EquipoRepetidoException;
 import red.excepciones.UbicacionRepetidaException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 public class Red {
 
@@ -132,6 +137,171 @@ public class Red {
 			agregarConexion(c.getEquipo1(), c.getEquipo2());
 		}
 	}
-	
-	
+
+	   // Método para encontrar la ruta entre dos equipos y calcular la velocidad máxima
+    public List<Equipo> buscarRuta(Equipo equipoInicio, Equipo equipoFin) {
+        Map<Equipo, Equipo> predecesores = new HashMap<>();
+        Queue<Equipo> cola = new LinkedList<>();
+        Set<Equipo> visitados = new HashSet<>();
+        cola.add(equipoInicio);
+        visitados.add(equipoInicio);
+
+        while (!cola.isEmpty()) {
+            Equipo actual = cola.poll();
+
+            if (actual.equals(equipoFin)) {
+                return reconstruirRuta(predecesores, equipoInicio, equipoFin);
+            }
+
+            for (Conexion conexion : conexiones) {
+                Equipo vecino = conexion.getEquipo1().equals(actual) ? conexion.getEquipo2() : conexion.getEquipo1();
+                if (!visitados.contains(vecino)) {
+                    predecesores.put(vecino, actual);
+                    visitados.add(vecino);
+                    cola.add(vecino);
+                }
+            }
+        }
+        return null; // No se encontró una ruta
+    }
+
+    // Método auxiliar para reconstruir la ruta desde los predecesores
+    private List<Equipo> reconstruirRuta(Map<Equipo, Equipo> predecesores, Equipo equipoInicio, Equipo equipoFin) {
+        List<Equipo> ruta = new ArrayList<>();
+        Equipo actual = equipoFin;
+        while (actual != null) {
+            ruta.add(0, actual);
+            actual = predecesores.get(actual);
+        }
+        return ruta;
+    }
+
+    // Método para calcular la velocidad máxima de la ruta
+    public int calcularVelocidadMaxima(List<Equipo> ruta) {
+        int velocidadMaxima = Integer.MAX_VALUE;
+
+        for (int i = 0; i < ruta.size() - 1; i++) {
+            Equipo equipo1 = ruta.get(i);
+            Equipo equipo2 = ruta.get(i + 1);
+
+            Conexion conexion = buscarConexion(equipo1, equipo2);
+            if (conexion != null) {
+                int velocidadCable = conexion.getTipoCable().getVelocidad();
+                int velocidadEquipo1 = equipo1.getVelocidadMaxima(); // Método en Equipo
+                int velocidadEquipo2 = equipo2.getVelocidadMaxima(); // Método en Equipo
+
+                // La velocidad está limitada por la menor velocidad de equipo y cable
+                velocidadMaxima = Math.min(velocidadMaxima, Math.min(velocidadCable, Math.min(velocidadEquipo1, velocidadEquipo2)));
+            }
+        }
+        return velocidadMaxima;
+    }
+
+   // Buscar una conexión entre dos equipos
+    private Conexion buscarConexion(Equipo equipo1, Equipo equipo2) {
+        for (Conexion conexion : conexiones) {
+            if ((conexion.getEquipo1().equals(equipo1) && conexion.getEquipo2().equals(equipo2)) ||
+                (conexion.getEquipo1().equals(equipo2) && conexion.getEquipo2().equals(equipo1))) {
+                return conexion;
+            }
+        }
+        return null;
+    }
+
+	// Método para verificar conectividad hacia el Gateway
+public void verificarConectividad(Equipo equipoOrigen, Equipo internetGateway) {
+    List<Equipo> ruta = buscarRuta(equipoOrigen, internetGateway);
+    
+    if (ruta == null || ruta.isEmpty()) {
+        System.out.println("No se encontró una ruta desde el equipo " + equipoOrigen.getCodigo() + " hasta el Gateway.");
+        return;
+    }
+
+    System.out.println("Verificando conectividad desde el equipo " + equipoOrigen.getCodigo() + " hasta el Gateway...");
+
+    for (int i = 0; i < ruta.size() - 1; i++) {
+        Equipo equipo1 = ruta.get(i);
+        Equipo equipo2 = ruta.get(i + 1);
+        Conexion conexion = buscarConexion(equipo1, equipo2);
+
+        if (conexion != null) {
+            boolean equipo1Activo = equipo1.realizarPing();
+            boolean equipo2Activo = equipo2.realizarPing();
+            boolean conexionFuncionando = conexion.getTipoCable().getVelocidad() > 0; // Cable en buen estado
+
+            if (!equipo1Activo) {
+                System.out.println("El equipo " + equipo1.getCodigo() + " está inactivo. Se pierde conectividad aquí.");
+                return;
+            } else if (!equipo2Activo) {
+                System.out.println("El equipo " + equipo2.getCodigo() + " está inactivo. Se pierde conectividad aquí.");
+                return;
+            } else if (!conexionFuncionando) {
+                System.out.println("Problema con el cable entre " + equipo1.getCodigo() + " y " + equipo2.getCodigo() + ". Se pierde conectividad aquí.");
+                return;
+            } else {
+                System.out.println("Conectividad correcta entre " + equipo1.getCodigo() + " y " + equipo2.getCodigo());
+            }
+        }
+    }
+    
+    System.out.println("El equipo " + equipoOrigen.getCodigo() + " tiene conectividad hasta el Gateway.");
 }
+	
+
+	  // Realizar ping a un equipo por su dirección IP
+	  public boolean realizarPingAEquipo(String direccionIp) {
+        for (Equipo equipo : equipos) {
+            if (equipo.getDireccionesIp().contains(direccionIp)) {
+                boolean respuestaPing = equipo.realizarPing(); // Simular ping
+                if (respuestaPing) {
+                    System.out.println("Ping exitoso al equipo con IP: " + direccionIp);
+                } else {
+                    System.out.println("Ping fallido al equipo con IP: " + direccionIp);
+                }
+                return respuestaPing;
+            }
+        }
+        System.out.println("No se encontró un equipo con la IP: " + direccionIp);
+        return false;
+    }
+
+    // Realizar ping a un rango de IPs
+    public void realizarPingARango(String inicioIp, String finIp) {
+        for (Equipo equipo : equipos) {
+            for (String ip : equipo.getDireccionesIp()) {
+                if (estaDentroDelRango(ip, inicioIp, finIp)) {
+                    realizarPingAEquipo(ip);
+                }
+            }
+        }
+    }
+
+    // Verificar si una IP está dentro de un rango
+    private boolean estaDentroDelRango(String ip, String inicioIp, String finIp) {
+        return compararIp(ip, inicioIp) >= 0 && compararIp(ip, finIp) <= 0;
+    }
+
+    // Comparar dos direcciones IP
+    private int compararIp(String ip1, String ip2) {
+        String[] octetos1 = ip1.split("\\.");
+        String[] octetos2 = ip2.split("\\.");
+        for (int i = 0; i < 4; i++) {
+            int diferencia = Integer.parseInt(octetos1[i]) - Integer.parseInt(octetos2[i]);
+            if (diferencia != 0) {
+                return diferencia;
+            }
+        }
+        return 0;
+    }
+
+    // Mostrar un mapa del estado actual de los equipos conectados
+    public void mostrarMapaDeEstado() {
+        System.out.println("Mapa del estado actual de la red:");
+        for (Equipo equipo : equipos) {
+            System.out.println(equipo.getCodigo() + " - IPs: " + equipo.getDireccionesIp() + " - Estado: " + equipo.getEstado());
+        }
+    }
+
+}
+
+

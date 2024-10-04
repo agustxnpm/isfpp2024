@@ -9,6 +9,9 @@ public class Conexion {
 
 	public Conexion(Equipo equipo1, Equipo equipo2) {
 		super();
+		if (equipo1.equals(equipo2)) {
+            throw new IllegalArgumentException("Los equipos en una conexión deben ser diferentes.");
+        }
 		this.equipo1 = equipo1;
 		this.equipo2 = equipo2;
 	}
@@ -47,8 +50,8 @@ public class Conexion {
 	}
 
 	@Override
-	public String toString() {
-		return "Conexion [equipo1=" + equipo1 + ", equipo2=" + equipo2 + "]";
-	}
+    public String toString() {
+        return "Conexion: " + equipo1.getCodigo() + " <-> " + equipo2.getCodigo() + " (Cable: " + tipoCable.getDescripcion() + ")";
+    }
 
 }
