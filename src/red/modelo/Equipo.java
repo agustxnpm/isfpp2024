@@ -9,7 +9,6 @@ import java.util.ArrayList;
 
 import red.excepciones.DireccionIpRepetidaException;
 
-
 public class Equipo {
 
 	private String codigo;
@@ -26,9 +25,9 @@ public class Equipo {
 			TipoEquipo tipoEquipo, int cantPuertos, TipoPuerto tipoPuerto) {
 		super();
 		this.codigo = codigo;
-		this.modelo = modelo;
-		this.marca = marca;
-		this.descripcion = descripcion;
+		this.modelo = (modelo == null || modelo.isEmpty()) ? "Modelo desconocido" : modelo;
+		this.marca = (marca == null || marca.isEmpty()) ? "Marca desconocida" : marca;
+		this.descripcion = (descripcion == null || descripcion.isEmpty()) ? "Sin descripción" : descripcion;
 		this.ubicacion = ubicacion;
 		this.tipoEquipo = tipoEquipo;
 		direccionesIp = new ArrayList<String>();
@@ -137,7 +136,6 @@ public class Equipo {
 		return "Equipo [codigo=" + codigo + ", descripcion=" + descripcion + "]";
 	}
 
-
 	public void agregarPuerto(int cantPuertos, TipoPuerto tipoPuerto) throws IllegalArgumentException {
 
 		if (cantPuertos <= 0)
@@ -174,17 +172,18 @@ public class Equipo {
 		if (!matcher.matches()) {
 			throw new IllegalArgumentException("La direccion IP no es valida");
 		}
-		
+
 		// Si ya existe la IP dentro del equipo
 		if (direccionesIp.contains(ip))
 			throw new DireccionIpRepetidaException("La direccion ip ya existe");
-		
-		direccionesIp.add(ip);
-			
-		
-	}
 
-	// ----------------------clase interna puerto------------------------------------//
+		direccionesIp.add(ip);
+
+	}
+	
+
+	// ----------------------clase interna
+	// puerto------------------------------------//
 	private class Puerto {
 
 		private int cantidadPuertos;
@@ -239,6 +238,7 @@ public class Equipo {
 			return Equipo.this;
 		}
 	}
-	// ---------------------- fin clase interna puerto ---------------------------------//
+	// ---------------------- fin clase interna puerto
+	// ---------------------------------//
 
 }
