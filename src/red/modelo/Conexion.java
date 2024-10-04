@@ -9,6 +9,9 @@ public class Conexion {
 	private TipoCable tipoCable;
 	public Conexion(Equipo equipo1, Equipo equipo2, TipoCable tipoCable) {
 		super();
+		if (equipo1.equals(equipo2)) {
+            throw new IllegalArgumentException("Los equipos en una conexión deben ser diferentes.");
+        }
 		this.equipo1 = equipo1;
 		this.equipo2 = equipo2;
 		this.tipoCable = tipoCable;
@@ -48,9 +51,9 @@ public class Conexion {
 				&& Objects.equals(tipoCable, other.tipoCable);
 	}
 	@Override
-	public String toString() {
-		return "Conexion [equipo1=" + equipo1 + ", equipo2=" + equipo2 + ", tipoCable=" + tipoCable + "]";
-	}
+    public String toString() {
+        return "Conexion: " + equipo1.getCodigo() + " <-> " + equipo2.getCodigo() + " (Cable: " + tipoCable.getDescripcion() + ")";
+    }
 
 	
 
