@@ -1,4 +1,4 @@
-package red.modelo;
+package red.logica;
 
 import java.util.List;
 import java.util.Map;
@@ -14,6 +14,7 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import red.excepciones.ConexionRepetidaException;
 import red.excepciones.EquipoRepetidoException;
 import red.excepciones.UbicacionRepetidaException;
+import red.modelo.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -99,9 +100,9 @@ public class Red {
 	 *                                 codigo por ejemplo dos servidores "SE01"
 	 */
 	public Equipo agregarEquipo(String codigo, String modelo, String marca, String descripcion, Ubicacion ubicacion,
-			TipoEquipo tipoEquipo, int cantPuertos, TipoPuerto tipoPuerto) throws EquipoRepetidoException {
+			TipoEquipo tipoEquipo, int cantPuertos, TipoPuerto tipoPuerto, boolean estado) throws EquipoRepetidoException {
 		Equipo nuevoEquipo = new Equipo(codigo, modelo, marca, descripcion, ubicacion, tipoEquipo, cantPuertos,
-				tipoPuerto);
+				tipoPuerto, estado);
 
 		// verificar que no se añadan equipos con un mismo codigo (equals de Equipo)
 		if (equipos.contains(nuevoEquipo))
@@ -439,7 +440,7 @@ public class Red {
     public void mostrarMapaDeEstado() {
         System.out.println("Mapa del estado actual de la red:");
         for (Equipo equipo : equipos) {
-            System.out.println(equipo.getCodigo() + " - IPs: " + equipo.getDireccionesIp() + " - Estado: " + equipo.getEstado());
+            System.out.println(equipo.getCodigo() + " - IPs: " + equipo.getDireccionesIp() + " - Estado: " + equipo.isEstado());
         }
     }
 

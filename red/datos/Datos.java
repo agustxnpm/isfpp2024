@@ -63,7 +63,7 @@ public class Datos {
 				cantPuertos = Integer.parseInt(puertoParts[1]);
 
 				// Crear una instancia del objeto Equipo
-				Equipo equipo = new Equipo(codigo, modelo, marca, descripcion, ubicacion, tipoEquipo, cantPuertos, Datos.tipoPuerto.get(tipoPuertoCodigo));
+				Equipo equipo = new Equipo(codigo, modelo, marca, descripcion, ubicacion, tipoEquipo, cantPuertos, Datos.tipoPuerto.get(tipoPuertoCodigo), false);
 
 				for (int i = 2; i < puertoParts.length; i += 2) { // comienza desde el indice 2 ya que ya agregamos el
 																	// primer puerto (cantidad, tipo) al momento de
@@ -86,6 +86,9 @@ public class Datos {
 					}
 				}
 
+				boolean estado = Boolean.parseBoolean(lineScanner.next());
+				equipo.setEstado(estado);
+				
 				equipos.put(codigo, equipo);
 			}
 
