@@ -1,4 +1,4 @@
-package red.modelo;
+package red.logica;
 
 import java.util.List;
 import java.util.Map;
@@ -7,6 +7,12 @@ import java.util.Objects;
 import red.excepciones.ConexionRepetidaException;
 import red.excepciones.EquipoRepetidoException;
 import red.excepciones.UbicacionRepetidaException;
+import red.modelo.Conexion;
+import red.modelo.Equipo;
+import red.modelo.TipoCable;
+import red.modelo.TipoEquipo;
+import red.modelo.TipoPuerto;
+import red.modelo.Ubicacion;
 
 import java.util.ArrayList;
 

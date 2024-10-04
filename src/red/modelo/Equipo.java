@@ -110,7 +110,7 @@ public class Equipo {
 	public void agregarPuerto(int cantPuertos, TipoPuerto tipoPuerto) throws IllegalArgumentException {
 
 		if (cantPuertos <= 0)
-			throw new IllegalArgumentException("Ingrese un numero mayor que 0");
+			throw new IllegalArgumentException("El equipo debe tener al menos un puerto");
 
 		Puerto puerto = new Puerto(cantPuertos, tipoPuerto);
 		if (puertos.contains(puerto)) {
