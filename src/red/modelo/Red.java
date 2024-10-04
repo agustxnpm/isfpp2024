@@ -6,6 +6,11 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 
+import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.SimpleWeightedGraph;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+
 import red.excepciones.ConexionRepetidaException;
 import red.excepciones.EquipoRepetidoException;
 import red.excepciones.UbicacionRepetidaException;
@@ -16,6 +21,9 @@ import java.util.HashSet;
 import java.util.LinkedList;
 
 public class Red {
+
+    private Graph<Equipo, DefaultEdge> grafo;  // Grafo que representa la red
+
 
 	private List<Conexion> conexiones;
 	private List<Equipo> equipos;
@@ -28,6 +36,8 @@ public class Red {
 		conexiones = new ArrayList<Conexion>();
 		equipos = new ArrayList<Equipo>();
 		ubicaciones = new ArrayList<Ubicacion>();
+         // Grafo no dirigido y con peso (usamos SimpleWeightedGraph para poder asignar pesos)
+         grafo = new SimpleWeightedGraph<>(DefaultEdge.class);
 	}
 
 	public String getNombre() {
@@ -98,6 +108,7 @@ public class Red {
 			throw new EquipoRepetidoException("El equipo ya existe en la red");
 
 		equipos.add(nuevoEquipo);
+        grafo.addVertex(nuevoEquipo);
 		return nuevoEquipo;
 	}
 
@@ -114,6 +125,7 @@ public class Red {
 			throw new EquipoRepetidoException("El equipo ya existe en la red");
 
 		equipos.add(equipo);
+        grafo.addVertex(equipo);
 	}
 
 	/**
@@ -125,6 +137,7 @@ public class Red {
 
 		for (Equipo e : equipos.values()) {
 			agregarEquipo(e);
+            
 		}
 	}
 
@@ -199,6 +212,16 @@ public class Red {
 			agregarConexion(c.getEquipo1(), c.getEquipo2(), c.getTipoCable());
 		}
 	}
+    // Agrega una conexión (arista) al grafo, con un peso que representa la velocidad
+    public void agregarConexionAlGrafo(Equipo equipo1, Equipo equipo2, double velocidad) {
+        grafo.addEdge(equipo1, equipo2);  // Creamos la arista entre los equipos
+        grafo.setEdgeWeight(grafo.getEdge(equipo1, equipo2), velocidad);  // Asignamos un peso a la arista (velocidad del cable)
+    }
+
+
+
+
+    
     /**
      * Método para encontrar la ruta entre dos equipos utilizando una búsqueda en anchura (BFS).
      * @param equipoInicio Equipo desde donde comienza la búsqueda.
