@@ -19,13 +19,12 @@ import red.modelo.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Red {
 
     private Graph<Equipo, DefaultEdge> grafo;  // Grafo que representa la red
-
-
 	private List<Conexion> conexiones;
 	private List<Equipo> equipos;
 	private List<Ubicacion> ubicaciones;
@@ -197,32 +196,65 @@ public class Red {
 	 * @throws ConexionRepetidaException se lanza una excepcion si equipo1 ya esta
 	 *                                   conectado con equipo2
 	 */
-	public Conexion agregarConexion(Equipo equipo1, Equipo equipo2, TipoCable tipoCable)
+	public Conexion agregarConexion(Equipo equipo1, Equipo equipo2, TipoCable tipoCable,TipoPuerto tipoPuerto1,
+			TipoPuerto tipoPuerto2)
 			throws ConexionRepetidaException {
 
-		Conexion conex = new Conexion(equipo1, equipo2, tipoCable);
+		Conexion conex = new Conexion(equipo1, equipo2, tipoCable, tipoPuerto1, tipoPuerto2);
 		if (conexiones.contains(conex))
 			throw new ConexionRepetidaException("Ya existe una conexion entre equipo 1 y equipo 2");
 
 		conexiones.add(conex);
+		agregarConexionAlGrafo(equipo1, equipo2, tipoCable);
 		return conex;
 	}
 
 	public void agregarConexion(List<Conexion> conexiones) {
 		for (Conexion c : conexiones) {
-			agregarConexion(c.getEquipo1(), c.getEquipo2(), c.getTipoCable());
+			agregarConexion(c.getEquipo1(), c.getEquipo2(), c.getTipoCable(), c.getTipoPuerto1(), c.getTipoPuerto1());
 		}
 	}
     // Agrega una conexión (arista) al grafo, con un peso que representa la velocidad
-    public void agregarConexionAlGrafo(Equipo equipo1, Equipo equipo2, double velocidad) {
+    private void agregarConexionAlGrafo(Equipo equipo1, Equipo equipo2, TipoCable tipoCable) {
         grafo.addEdge(equipo1, equipo2);  // Creamos la arista entre los equipos
-        grafo.setEdgeWeight(grafo.getEdge(equipo1, equipo2), velocidad);  // Asignamos un peso a la arista (velocidad del cable)
+        grafo.setEdgeWeight(grafo.getEdge(equipo1, equipo2), tipoCable.getVelocidad());  // Asignamos un peso a la arista (velocidad del cable)
+    }
+
+    /**
+     * Obtener la instancia de Equipo correspondiente a un codigo
+     * @param codigo
+     * @return Equipo con el codigo pasado como parametro
+     */
+    public Equipo obtenerEquipo(String codigo) {
+    	for (Equipo e : equipos) {
+    		if (e.getCodigo().equals(codigo)) {
+    			return e;
+    		}
+    	}
+    	
+    	return null;
     }
 
 
-
-
-    
+    /** 
+     * Elimina un equipo de la red y sus respectivas conexiones
+     * @param equipo
+     */
+    public void removerEquipo(Equipo equipo) {
+    	
+    	Iterator<Conexion> it = conexiones.iterator();
+        
+        while (it.hasNext()) {
+            Conexion c = it.next();
+            if (c.getEquipo1().equals(equipo) || c.getEquipo2().equals(equipo)) {
+                it.remove(); // Eliminar la conexion de manera segura
+            }
+        }
+    	
+    	equipos.remove(equipo);
+    	grafo.removeVertex(equipo);
+    	
+    }
     /**
      * Método para encontrar la ruta entre dos equipos utilizando una búsqueda en anchura (BFS).
      * @param equipoInicio Equipo desde donde comienza la búsqueda.
@@ -235,7 +267,7 @@ public class Red {
         Queue<Equipo> cola = new LinkedList<>();  // Cola para el algoritmo BFS
         Set<Equipo> visitados = new HashSet<>();  // Conjunto de equipos ya visitados
         
-        cola.add(equipoInicio);
+        cola.add(equipoInicio); 
         visitados.add(equipoInicio);
 
         // Búsqueda en anchura
@@ -363,10 +395,12 @@ public class Red {
                 } else {
                     System.out.println("Conectividad correcta entre " + equipo1.getCodigo() + " y " + equipo2.getCodigo());
                 }
+                System.out.println("El equipo " + equipoOrigen.getCodigo() + " tiene conectividad hasta el Gateway.");
+            } else {
+            	System.out.println("El equipo no tiene conexion hasta el gateway");
             }
         }
 
-        System.out.println("El equipo " + equipoOrigen.getCodigo() + " tiene conectividad hasta el Gateway.");
     }
 
     /**

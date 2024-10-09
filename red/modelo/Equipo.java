@@ -169,6 +169,22 @@ public class Equipo {
 
 	}
 
+	public String getPuertosInfo() {
+	    StringBuilder puertosInfo = new StringBuilder();
+	    for (Puerto p : puertos) {  
+	        puertosInfo.append(p.getTipoPuerto().getCodigo())   // Código del tipo de puerto
+	                    .append(",")
+	                    .append(p.getCantidadPuertos())               // Cantidad de puertos
+	                    .append(";");
+	    }
+
+	    // Eliminar el ultimo punto y coma para que no haya un separador extra
+	    if (puertosInfo.length() > 0) {
+	        puertosInfo.setLength(puertosInfo.length() - 1);
+	    }
+
+	    return puertosInfo.toString();
+	}
 	public void agregarIp(String ip) throws DireccionIpRepetidaException {
 		// Expresion regular para validar IPv4
 		String ipv4Regex = "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
