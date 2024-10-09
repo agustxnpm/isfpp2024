@@ -1,4 +1,4 @@
-package red.excepciones;
+package excepciones;
 
 public class ConexionRepetidaException extends RuntimeException {
 

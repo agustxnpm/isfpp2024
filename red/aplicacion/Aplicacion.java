@@ -1,18 +1,18 @@
-package red.aplicacion;
+package aplicacion;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import red.datos.CargarParametros;
-import red.datos.Datos;
-import red.modelo.Conexion;
-import red.modelo.Equipo;
-import red.modelo.TipoCable;
-import red.modelo.TipoEquipo;
-import red.modelo.TipoPuerto;
-import red.modelo.Ubicacion;
+import datos.CargarParametros;
+import datos.Datos;
+import modelo.Conexion;
+import modelo.Equipo;
+import modelo.TipoCable;
+import modelo.TipoEquipo;
+import modelo.TipoPuerto;
+import modelo.Ubicacion;
 
 public class Aplicacion {
 

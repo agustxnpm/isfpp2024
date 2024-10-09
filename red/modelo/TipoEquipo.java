@@ -1,4 +1,4 @@
-package red.modelo;
+package modelo;
 
 import java.util.Objects;
 

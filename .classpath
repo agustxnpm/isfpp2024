@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="src" path="red"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="output" path="bin"/>
 	<classpathentry kind="lib" path="c:/Users/silvia/Desktop/Facultad/POO1/PROMO/jgrapht-1.5.2/lib/antlr4-runtime-4.12.0.jar"/>
 	<classpathentry kind="lib" path="c:/Users/silvia/Desktop/Facultad/POO1/PROMO/jgrapht-1.5.2/lib/apfloat-1.10.1.jar"/>
 	<classpathentry kind="lib" path="c:/Users/silvia/Desktop/Facultad/POO1/PROMO/jgrapht-1.5.2/lib/commons-lang3-3.12.0.jar"/>
@@ -25,5 +27,5 @@
 	<classpathentry kind="lib" path="c:/Users/silvia/Desktop/Facultad/POO1/PROMO/jgrapht-1.5.2/lib/sux4j-5.4.1.jar"/>
 	<classpathentry kind="lib" path="c:/Users/silvia/Desktop/Facultad/POO1/PROMO/jgrapht-1.5.2/lib/webgraph-3.6.10.jar"/>
 	<classpathentry kind="lib" path="c:/Users/silvia/Desktop/Facultad/POO1/PROMO/jgrapht-1.5.2/lib/webgraph-big-3.7.0.jar"/>
-	<classpathentry kind="output" path="bin"/>
+
 </classpath>

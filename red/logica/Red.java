@@ -1,4 +1,4 @@
-package red.logica;
+package logica;
 
 import java.util.List;
 import java.util.Map;
@@ -11,10 +11,10 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 
-import red.excepciones.ConexionRepetidaException;
-import red.excepciones.EquipoRepetidoException;
-import red.excepciones.UbicacionRepetidaException;
-import red.modelo.*;
+import excepciones.ConexionRepetidaException;
+import excepciones.EquipoRepetidoException;
+import excepciones.UbicacionRepetidaException;
+import modelo.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
