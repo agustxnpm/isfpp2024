@@ -1,4 +1,6 @@
-package red.logica;
+//clase sujeta a cambios 
+
+package red.negocio;
 
 import java.util.List;
 import java.util.Map;
@@ -6,6 +8,7 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 
+import org.apache.commons.math3.geometry.spherical.twod.Vertex;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
@@ -22,22 +25,31 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class Red {
+public class Calculo {
 
     private Graph<Equipo, DefaultEdge> grafo;  // Grafo que representa la red
 	private List<Conexion> conexiones;
 	private List<Equipo> equipos;
 	private List<Ubicacion> ubicaciones;
 	private String nombre;
-
-	public Red(String nombre) {
+	
+	public Calculo() {
+		
+	}
+	
+	public void cargarDatos(List<Equipo> equipos, List<Ubicacion> ubicaciones, List<Conexion> conexiones) {
+		
+	}
+	
+	
+	public Calculo(String nombre) {
 		super();
 		this.nombre = nombre;
 		conexiones = new ArrayList<Conexion>();
 		equipos = new ArrayList<Equipo>();
 		ubicaciones = new ArrayList<Ubicacion>();
          // Grafo no dirigido y con peso (usamos SimpleWeightedGraph para poder asignar pesos)
-         grafo = new SimpleWeightedGraph<>(DefaultEdge.class);
+        grafo = new SimpleWeightedGraph<>(DefaultEdge.class);
 	}
 
 	public String getNombre() {
@@ -211,7 +223,7 @@ public class Red {
 
 	public void agregarConexion(List<Conexion> conexiones) {
 		for (Conexion c : conexiones) {
-			agregarConexion(c.getEquipo1(), c.getEquipo2(), c.getTipoCable(), c.getTipoPuerto1(), c.getTipoPuerto1());
+			agregarConexion(c.getEquipo1(), c.getEquipo2(), c.getTipoCable(), c.getTipoPuerto1(), c.getTipoPuerto2());
 		}
 	}
     // Agrega una conexión (arista) al grafo, con un peso que representa la velocidad

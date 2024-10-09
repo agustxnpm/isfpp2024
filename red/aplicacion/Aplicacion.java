@@ -1,55 +1,80 @@
 package red.aplicacion;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import red.datos.CargarParametros;
 import red.datos.Datos;
-import red.modelo.Conexion;
+import red.logica.Red;
 import red.modelo.Equipo;
-import red.modelo.TipoCable;
-import red.modelo.TipoEquipo;
-import red.modelo.TipoPuerto;
-import red.modelo.Ubicacion;
+import red.modelo.Conexion;
 
 public class Aplicacion {
 
 	public static void main(String args[]) {
-		// Cargar parametros
-		try {
-			CargarParametros.parametros();
-		} catch (IOException e) {
+
+		Datos datos = new Datos();
+
+		// cargar datos
+		datos.cargarDatos();
+
+		Red calculo = new Red("Red UNPSJB");
+
+		calculo.agregarUbicacion(datos.getUbicaciones());
+		calculo.agregarEquipo(datos.getEquipos());
+		calculo.agregarConexion(datos.getConexiones());
+
+		/* listar los equipos en la red */
+		System.out.println("Equipos en la red");
+		for (Equipo e : calculo.getEquipos()) {
 			System.out.println(e);
-			System.err.print("Error al cargar parametros");
-			System.exit(-1);
 		}
 
-		Map<String, Equipo> equipos = null;
-		Map<String, Ubicacion> ubicaciones = null;
-		List<Conexion> conexiones = null;
-		Map<String, TipoCable> tipoCable = null;
-		Map<String, TipoPuerto> tipoPuerto = null;
-		Map<String, TipoEquipo> tipoEquipo = null;
-		
-		try {
-			ubicaciones = Datos.cargarUbicaciones(CargarParametros.getArchivoUbicacion());
-			tipoCable = Datos.cargarTipoCable(CargarParametros.getArchivoTipoCable());
-			tipoPuerto = Datos.cargarTipoPuerto(CargarParametros.getArchivoTipoPuerto());
-			tipoEquipo = Datos.cargarTipoEquipo(CargarParametros.getArchivoTipoEquipo());
-			equipos = Datos.cargarEquipos(CargarParametros.getArchivoEquipos());
-			conexiones = Datos.cargarConexiones(CargarParametros.getArchivoConexion());
-		} catch (FileNotFoundException e) {
-			System.out.println(e);
-			System.err.print("Error al cargar archivos de datos");
-			System.exit(-1);
+		System.out.println();
+
+		/* listar las conexiones en la red */
+		System.out.println("Conexiones en la red");
+		for (Conexion c : calculo.getConexiones()) {
+			System.out.println(c);
 		}
-		
-		System.out.println ("datos cargados correctamente");
-		
 
+		System.out.println();
 
+		/* listar las ubicaciones de cada equipo */
+		System.out.println("Ubicaciones por equipo");
+		for (Equipo e : calculo.getEquipos()) {
+			System.out.println("Equipo: " + e.getDescripcion() + " | Ubicacion: " + e.getUbicacion().getDescripcion());
+		}
+
+		/* Ejemplos de uso de algunas funcionalidades */
+		System.out.println();
+
+		System.out.println("Ruta entre dos equipos");
+		/* Ruta de conexion entre dos equipos */
+		for (Equipo e : calculo.buscarRuta(calculo.obtenerEquipo("AP09"), calculo.obtenerEquipo("FW02"))) {
+			System.out.println(e);
+		}
+
+		System.out.println();
+
+		/* Calcular velocidad maxima de una ruta */
+		System.out
+				.println("Velocidad maxima entre " + calculo.obtenerEquipo("SWAM").getCodigo() + " y "
+						+ calculo.obtenerEquipo("APL0").getCodigo() + " es "
+						+ calculo.calcularVelocidadMaxima(
+								calculo.buscarRuta(calculo.obtenerEquipo("SWAM"), calculo.obtenerEquipo("APL0")))
+						+ " mb/s");
+		System.out.println();
+
+		/* Ping a un rango de IP */
+
+		calculo.realizarPingARango("192.168.16.2", "192.168.16.13");
+
+		System.out.println();
+
+		/* Mapa de estado de la red */
+
+		calculo.mostrarMapaDeEstado();
+
+		/* Verificar conectividad a internet */
+		
+		calculo.verificarConectividad(calculo.obtenerEquipo("AP09"), calculo.obtenerEquipo("FW02"));
 	}
-	
+
 }
