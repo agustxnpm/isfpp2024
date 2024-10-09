@@ -1,19 +1,8 @@
 package red.negocio;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Queue;
-import java.util.Set;
 
-import org.jgrapht.Graph;
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.SimpleWeightedGraph;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-
-import red.excepciones.ConexionRepetidaException;
 import red.excepciones.EquipoRepetidoException;
-import red.excepciones.UbicacionRepetidaException;
 import red.modelo.*;
 import red.servicio.ConexionService;
 import red.servicio.ConexionServiceImp;
@@ -24,10 +13,7 @@ import red.servicio.UbicacionServiceImp;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
+
 
 public class Red {
 
