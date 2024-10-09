@@ -1,4 +1,4 @@
-package datos;
+package red.datos;
 
 import java.io.FileInputStream;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package modelo;
+package red.modelo;
 
 import java.util.List;
 import java.util.Objects;
@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
 
-import excepciones.DireccionIpRepetidaException;
+import red.excepciones.DireccionIpRepetidaException;
 
 public class Equipo {
 

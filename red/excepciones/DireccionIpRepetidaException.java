@@ -1,4 +1,4 @@
-package excepciones;
+package red.excepciones;
 
 public class DireccionIpRepetidaException extends RuntimeException {
 

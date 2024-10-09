@@ -1,4 +1,4 @@
-package datos;
+package red.datos;
 
 import java.util.List;
 import java.util.Scanner;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 
-import modelo.*;
+import red.modelo.*;
 
 public class Datos {
 
