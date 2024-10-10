@@ -14,6 +14,7 @@ import red.servicio.UbicacionServiceImp;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
+
 public class Red {
 
 	private static Red red = null;	
