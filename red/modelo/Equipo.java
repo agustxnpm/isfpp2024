@@ -45,9 +45,8 @@ public class Equipo {
 	public int getVelocidadMaxima() {
 		int velocidadMaxima = Integer.MAX_VALUE; // Inicializamos con un valor muy alto
 		// Iteramos sobre los puertos del equipo para encontrar el puerto más lento
-		for (Puerto puerto : puertos) {
+		for (Puerto puerto : puertos)
 			velocidadMaxima = Math.min(velocidadMaxima, puerto.getTipoPuerto().getVelocidad());
-		}
 		return velocidadMaxima; // Retornamos la velocidad más baja
 	}
 
@@ -60,6 +59,57 @@ public class Equipo {
 	public boolean realizarPing() {
 		return estado; // El ping es exitoso si el equipo está ACTIVO
 	}
+	
+	//metodos publicos para agregar elementos a las estructuras de datos
+	
+	public void agregarPuerto(int cantPuertos, TipoPuerto tipoPuerto) throws IllegalArgumentException {
+
+		if (cantPuertos <= 0)
+			throw new IllegalArgumentException("El equipo debe tener al menos un puerto");
+
+		Puerto puerto = new Puerto(cantPuertos, tipoPuerto);
+		if (puertos.contains(puerto)) {
+
+			// Obtener el indice del puerto existente
+			int index = puertos.indexOf(puerto);
+
+			// Obtener la instancia de Puerto en ese indice
+			Puerto puertoExistente = puertos.get(index);
+
+			// Sumar la cantidad de puertos de la nueva instancia a la existente
+			puertoExistente.setCantidadPuertos(puertoExistente.getCantidadPuertos() + puerto.getCantidadPuertos());
+
+			// Actualizar la lista de puertos con el puerto modificado
+			puertos.set(index, puertoExistente);
+			return;
+		}
+
+		puertos.add(puerto);
+
+	}
+
+	public void agregarIp(String ip) throws DireccionIpRepetidaException {
+		// Expresion regular para validar IPv4
+		String ipv4Regex = "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
+		Pattern pattern = Pattern.compile(ipv4Regex);
+		Matcher matcher = pattern.matcher(ip);
+
+		// Validar si la IP tiene formato valido
+		if (!matcher.matches()) {
+			throw new IllegalArgumentException("La direccion IP no es valida");
+		}
+
+		// Si ya existe la IP dentro del equipo
+		if (direccionesIp.contains(ip))
+			throw new DireccionIpRepetidaException("La direccion ip ya existe");
+
+		direccionesIp.add(ip);
+
+	}
+	
+	/** getters, setters, hashCode, equals y toString
+	 *  Abajo de todo figura la clase interna Puerto
+	 */
 
 	public boolean isEstado() {
 		return estado;
@@ -143,50 +193,7 @@ public class Equipo {
 		return "Equipo [codigo=" + codigo + ", descripcion=" + descripcion + "]";
 	}
 
-	public void agregarPuerto(int cantPuertos, TipoPuerto tipoPuerto) throws IllegalArgumentException {
-
-		if (cantPuertos <= 0)
-			throw new IllegalArgumentException("El equipo debe tener al menos un puerto");
-
-		Puerto puerto = new Puerto(cantPuertos, tipoPuerto);
-		if (puertos.contains(puerto)) {
-
-			// Obtener el indice del puerto existente
-			int index = puertos.indexOf(puerto);
-
-			// Obtener la instancia de Puerto en ese indice
-			Puerto puertoExistente = puertos.get(index);
-
-			// Sumar la cantidad de puertos de la nueva instancia a la existente
-			puertoExistente.setCantidadPuertos(puertoExistente.getCantidadPuertos() + puerto.getCantidadPuertos());
-
-			// Actualizar la lista de puertos con el puerto modificado
-			puertos.set(index, puertoExistente);
-			return;
-		}
-
-		puertos.add(puerto);
-
-	}
-
-	public void agregarIp(String ip) throws DireccionIpRepetidaException {
-		// Expresion regular para validar IPv4
-		String ipv4Regex = "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
-		Pattern pattern = Pattern.compile(ipv4Regex);
-		Matcher matcher = pattern.matcher(ip);
-
-		// Validar si la IP tiene formato valido
-		if (!matcher.matches()) {
-			throw new IllegalArgumentException("La direccion IP no es valida");
-		}
-
-		// Si ya existe la IP dentro del equipo
-		if (direccionesIp.contains(ip))
-			throw new DireccionIpRepetidaException("La direccion ip ya existe");
-
-		direccionesIp.add(ip);
-
-	}
+	
 
 	// ----------------------clase interna
 	// puerto------------------------------------//
@@ -242,6 +249,11 @@ public class Equipo {
 
 		private Equipo getEnclosingInstance() {
 			return Equipo.this;
+		}
+
+		@Override
+		public String toString() {
+			return "Puerto [cantidadPuertos=" + cantidadPuertos + ", tipoPuerto=" + tipoPuerto + "]";
 		}
 	}
 	// ---------------------- fin clase interna puerto
