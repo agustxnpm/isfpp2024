@@ -1,31 +1,57 @@
 package red.excepciones;
 
+/**
+ * Excepción personalizada para manejar situaciones donde se intenta agregar
+ * una dirección IP que ya está asignada en el sistema.
+ */
 public class DireccionIpRepetidaException extends RuntimeException {
 
-	public DireccionIpRepetidaException() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * Constructor sin argumentos que invoca el constructor de la superclase.
+     */
+    public DireccionIpRepetidaException() {
+        super();
+    }
 
-	public DireccionIpRepetidaException(String message, Throwable cause, boolean enableSuppression,
-			boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * Constructor que permite personalizar el mensaje, la causa y el control
+     * sobre la supresión y la escritura del stack trace.
+     * 
+     * @param message El mensaje de la excepción.
+     * @param cause La causa de la excepción.
+     * @param enableSuppression Habilitar o deshabilitar la supresión.
+     * @param writableStackTrace Permitir o no la escritura del stack trace.
+     */
+    public DireccionIpRepetidaException(String message, Throwable cause, boolean enableSuppression,
+                                        boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 
-	public DireccionIpRepetidaException(String message, Throwable cause) {
-		super(message, cause);
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * Constructor que permite especificar un mensaje y una causa.
+     * 
+     * @param message El mensaje de la excepción.
+     * @param cause La causa de la excepción.
+     */
+    public DireccionIpRepetidaException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public DireccionIpRepetidaException(String message) {
-		super(message);
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * Constructor que permite especificar solo un mensaje.
+     * 
+     * @param message El mensaje de la excepción.
+     */
+    public DireccionIpRepetidaException(String message) {
+        super(message);
+    }
 
-	public DireccionIpRepetidaException(Throwable cause) {
-		super(cause);
-		// TODO Auto-generated constructor stub
-	}
-
+    /**
+     * Constructor que permite especificar solo una causa.
+     * 
+     * @param cause La causa de la excepción.
+     */
+    public DireccionIpRepetidaException(Throwable cause) {
+        super(cause);
+    }
 }
