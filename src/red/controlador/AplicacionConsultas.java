@@ -64,7 +64,7 @@ public class AplicacionConsultas {
 			System.out.println("9. Verificar conectividad");
 			System.out.println("10. Salir");
 
-			int opcion = Integer.parseInt(interfaz.solicitarOpcion());
+			int opcion = calcularOpcion();
 
 			switch (opcion) {
 			case 1:
@@ -114,6 +114,17 @@ public class AplicacionConsultas {
 				interfaz.mostrarError("Opción no válida. Por favor, seleccione una opción del 1 al 10");
 				break;
 			}
+		}
+	}
+	
+	private int calcularOpcion() {
+		int salida;
+		try {
+			salida = Integer.parseInt(interfaz.solicitarOpcion());
+			return salida;
+		} catch(Exception e) {
+			interfaz.mostrarError("Opción no válida. Por favor, seleccione un número del 1 al 10");
+			return calcularOpcion();
 		}
 	}
 }
