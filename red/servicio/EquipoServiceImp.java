@@ -42,4 +42,15 @@ public class EquipoServiceImp implements EquipoService {
     public List<Equipo> buscarTodos() throws FileNotFoundException {
         return equipoDAO.buscarTodos();
     }
+    // Implementación del método buscarPorCodigo
+    @Override
+    public Equipo buscarPorCodigo(String codigo) throws FileNotFoundException {
+        List<Equipo> equipos = equipoDAO.buscarTodos();  // Buscar todos los equipos
+        for (Equipo equipo : equipos) {
+            if (equipo.getCodigo().equals(codigo)) {
+                return equipo;  // Retornar el equipo que coincida con el código
+            }
+        }
+        return null;  // Retornar null si no se encuentra
+    }
 }

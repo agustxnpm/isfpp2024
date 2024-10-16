@@ -38,4 +38,7 @@ public interface EquipoService {
      * @throws FileNotFoundException Si no se puede acceder a la fuente de datos.
      */
     List<Equipo> buscarTodos() throws FileNotFoundException;
+
+    // Método para buscar equipo por código
+    Equipo buscarPorCodigo(String codigo) throws FileNotFoundException;
 }

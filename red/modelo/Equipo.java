@@ -193,19 +193,29 @@ public class Equipo {
      */
     public String getPuertosInfo() {
         StringBuilder puertosInfo = new StringBuilder();
-        for (Puerto p : puertos) {
-            puertosInfo.append(p.getTipoPuerto().getCodigo())
-                        .append(",")
-                        .append(p.getCantidadPuertos())
-                        .append(";");
+        for (Puerto p : puertos) {  
+            if (p.getTipoPuerto() != null) {  // Verificar que el tipo de puerto no sea null
+                puertosInfo.append(p.getTipoPuerto().getCodigo())   // Código del tipo de puerto
+                            .append(",")
+                            .append(p.getCantidadPuertos())               // Cantidad de puertos
+                            .append(";");
+            } else {
+                // Si el TipoPuerto es null, podemos manejarlo aquí
+                puertosInfo.append("N/A")   // O cualquier otra información predeterminada
+                            .append(",")
+                            .append(p.getCantidadPuertos())               
+                            .append(";");
+            }
         }
-
+    
+        // Eliminar el último punto y coma para que no haya un separador extra
         if (puertosInfo.length() > 0) {
-            puertosInfo.setLength(puertosInfo.length() - 1); // Eliminar el último punto y coma.
+            puertosInfo.setLength(puertosInfo.length() - 1);
         }
-
+    
         return puertosInfo.toString();
     }
+    
 
     @Override
     public int hashCode() {
