@@ -2,7 +2,6 @@ package red.modelo;
 
 import java.util.Objects;
 import red.excepciones.EquipoRepetidoException;
-import red.excepciones.TipoPuertoRepetidoException;
 
 public class Conexion {
 
@@ -16,8 +15,6 @@ public class Conexion {
 		super();
 		if (equipo1.equals(equipo2))
             throw new EquipoRepetidoException("Los equipos en una conexión deben ser diferentes.");
-		if (tipoPuerto1.equals(tipoPuerto2))
-			throw new TipoPuertoRepetidoException("Los tipos de puerto en la conexión deben ser diferentes.");
 		this.equipo1 = equipo1;
 		this.equipo2 = equipo2;
 		this.tipoPuerto1 = tipoPuerto1;
