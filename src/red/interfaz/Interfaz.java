@@ -3,7 +3,6 @@ package red.interfaz;
 import java.util.List;
 import java.util.Scanner;
 
-import net.datastructures.Vertex;
 import red.controlador.Coordinador;
 import red.modelo.Conexion;
 import red.modelo.Equipo;

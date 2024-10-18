@@ -52,17 +52,7 @@ public class AplicacionConsultas {
 		boolean continuar = true;
 
 		while (continuar) {
-			System.out.println("Seleccione una opción:");
-			System.out.println("1. Listar Equipos");
-			System.out.println("2. Listar Conexiones");
-			System.out.println("3. Listar Ubicaciones");
-			System.out.println("4. Agregar Nuevo Equipo");
-			System.out.println("5. Buscar Equipo por Código");
-			System.out.println("6. Ruta entre dos equipos");
-			System.out.println("7. Realizar ping a un rango de IP");
-			System.out.println("8. Mostrar mapa de estado de la red");
-			System.out.println("9. Verificar conectividad");
-			System.out.println("10. Salir");
+			System.out.println(Constantes.OPCIONES);
 
 			int opcion = calcularOpcion();
 
