@@ -2,36 +2,44 @@ package red.servicio;
 
 import java.io.FileNotFoundException;
 import java.util.List;
-
-import red.modelo.TipoPuerto;
 import red.dao.TipoPuertoDAO;
 import red.dao.secuencial.TipoPuertoSecuencialDAO;
+import red.modelo.TipoPuerto;
 
-public class TipoPuertoServiceImp implements TipoPuertoService{
+/**
+ * Implementación del servicio de gestión de tipos de puerto.
+ * Utiliza un DAO (Data Access Object) para interactuar con la capa de persistencia de datos.
+ */
+public class TipoPuertoServiceImp implements TipoPuertoService {
 
-	private TipoPuertoDAO tipoPuertoDAO;
-	
-	public TipoPuertoServiceImp() {
-		tipoPuertoDAO = new TipoPuertoSecuencialDAO();
-	}
-	@Override
-	public void insertar(TipoPuerto tipoPuerto) {
-		tipoPuertoDAO.insertar(tipoPuerto);
-	}
+    private TipoPuertoDAO tipoPuertoDAO; // DAO para la gestión de tipos de puerto.
 
-	@Override
-	public void actualizar(TipoPuerto tipoPuerto) {
-		tipoPuertoDAO.actualizar(tipoPuerto);
-	}
+    /**
+     * Constructor que inicializa el DAO para interactuar con los datos de tipos de puerto.
+     * 
+     * @throws FileNotFoundException Si no se encuentra el archivo de configuración o datos.
+     */
+    public TipoPuertoServiceImp() throws FileNotFoundException {
+        tipoPuertoDAO = new TipoPuertoSecuencialDAO();
+    }
 
-	@Override
-	public void borrar(TipoPuerto tipoPuerto) {
-		tipoPuertoDAO.borrar(tipoPuerto);
-	}
+    @Override
+    public void insertar(TipoPuerto tipoPuerto) {
+        tipoPuertoDAO.insertar(tipoPuerto);
+    }
 
-	@Override
-	public List<TipoPuerto> buscarTodos() throws FileNotFoundException {
-		return tipoPuertoDAO.buscarTodos();
-	}
+    @Override
+    public void actualizar(TipoPuerto tipoPuerto) {
+        tipoPuertoDAO.actualizar(tipoPuerto);
+    }
 
+    @Override
+    public void borrar(TipoPuerto tipoPuerto) {
+        tipoPuertoDAO.borrar(tipoPuerto);
+    }
+
+    @Override
+    public List<TipoPuerto> buscarTodos() throws FileNotFoundException {
+        return tipoPuertoDAO.buscarTodos();
+    }
 }
