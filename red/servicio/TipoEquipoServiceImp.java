@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 import red.dao.TipoEquipoDAO;
-import red.dao.secuencial.TipoEquipoSecuencialDAO;
+import red.factory.Factory;
 import red.modelo.TipoEquipo;
 
 public class TipoEquipoServiceImp implements TipoEquipoService {
@@ -12,7 +12,7 @@ public class TipoEquipoServiceImp implements TipoEquipoService {
 	private TipoEquipoDAO tipoEquipoDAO;
 	
 	public TipoEquipoServiceImp() {
-		tipoEquipoDAO = new TipoEquipoSecuencialDAO();
+		tipoEquipoDAO = (TipoEquipoDAO) Factory.getInstancia("TIPOEQUIPO");
 		
 	}
 	@Override

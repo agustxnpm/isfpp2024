@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 import red.dao.ConexionDAO;
-import red.dao.secuencial.ConexionSecuencialDAO;
+import red.factory.Factory;
 import red.modelo.Conexion;
 
 public class ConexionServiceImp implements ConexionService {
@@ -12,7 +12,7 @@ public class ConexionServiceImp implements ConexionService {
 	private ConexionDAO conexionDAO;
 	
 	public ConexionServiceImp() throws FileNotFoundException {
-		conexionDAO = new ConexionSecuencialDAO();
+		conexionDAO = (ConexionDAO) Factory.getInstancia("CONEXION");
 	}
 	@Override
 	public void insertar(Conexion conexion) {

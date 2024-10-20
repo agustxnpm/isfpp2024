@@ -5,14 +5,14 @@ import java.util.List;
 
 import red.modelo.TipoPuerto;
 import red.dao.TipoPuertoDAO;
-import red.dao.secuencial.TipoPuertoSecuencialDAO;
+import red.factory.Factory;
 
 public class TipoPuertoServiceImp implements TipoPuertoService{
 
 	private TipoPuertoDAO tipoPuertoDAO;
 	
 	public TipoPuertoServiceImp() {
-		tipoPuertoDAO = new TipoPuertoSecuencialDAO();
+		tipoPuertoDAO = (TipoPuertoDAO) Factory.getInstancia("TIPOPUERTO");
 	}
 	@Override
 	public void insertar(TipoPuerto tipoPuerto) {

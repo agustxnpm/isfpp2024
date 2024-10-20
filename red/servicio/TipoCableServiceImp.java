@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 import red.dao.TipoCableDAO;
-import red.dao.secuencial.TipoCableSecuencialDAO;
+import red.factory.Factory;
 import red.modelo.TipoCable;
 
 public class TipoCableServiceImp implements TipoCableService {
@@ -12,7 +12,7 @@ public class TipoCableServiceImp implements TipoCableService {
 	private TipoCableDAO tipoCableDAO;
 	
 	public TipoCableServiceImp() {
-		tipoCableDAO = new TipoCableSecuencialDAO();
+		tipoCableDAO = (TipoCableDAO) Factory.getInstancia("TIPOCABLE");
 		
 	}
 	@Override

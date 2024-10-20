@@ -5,14 +5,14 @@ import java.util.List;
 
 import red.dao.UbicacionDAO;
 import red.modelo.Ubicacion;
-import red.dao.secuencial.UbicacionesSecuencialDAO;
+import red.factory.Factory;
 
 public class UbicacionServiceImp implements UbicacionService{
 
 	private UbicacionDAO ubicacionDAO;
 	
 	public UbicacionServiceImp() {
-		ubicacionDAO = new UbicacionesSecuencialDAO();
+		ubicacionDAO = (UbicacionDAO) Factory.getInstancia("UBICACIONES");
 		
 	}
 	@Override
