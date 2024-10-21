@@ -9,7 +9,6 @@ import java.util.List;
 
 import red.dao.TipoPuertoDAO;
 import red.factory.BDConexion;
-import red.modelo.TipoEquipo;
 import red.modelo.TipoPuerto;
 
 public class TipoPuertoPostgresqlDAO implements TipoPuertoDAO {

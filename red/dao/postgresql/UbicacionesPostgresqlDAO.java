@@ -9,7 +9,6 @@ import java.util.List;
 
 import red.dao.UbicacionDAO;
 import red.factory.BDConexion;
-import red.modelo.TipoEquipo;
 import red.modelo.Ubicacion;
 
 public class UbicacionesPostgresqlDAO implements UbicacionDAO {

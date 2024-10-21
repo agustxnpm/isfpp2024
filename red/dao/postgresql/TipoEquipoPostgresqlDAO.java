@@ -9,7 +9,6 @@ import java.util.List;
 
 import red.dao.TipoEquipoDAO;
 import red.factory.BDConexion;
-import red.modelo.TipoCable;
 import red.modelo.TipoEquipo;
 
 public class TipoEquipoPostgresqlDAO implements TipoEquipoDAO {
