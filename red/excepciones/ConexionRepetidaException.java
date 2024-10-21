@@ -11,6 +11,7 @@ public class ConexionRepetidaException extends RuntimeException {
      */
     public ConexionRepetidaException() {
         super();
+        //abdcd
     }
 
     /**
