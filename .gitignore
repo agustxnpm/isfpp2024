@@ -4,6 +4,6 @@
 .settings/
 
 # VS Code
-.vscode/
 .classpath
-
+.proyect
+.vscode/
