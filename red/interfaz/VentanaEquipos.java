@@ -82,6 +82,7 @@ public class VentanaEquipos extends JFrame {
 			mostrarEquiposEnTabla(); // Refrescar la tabla después de eliminar
 		}
 	}
+	
 
 	private void agregarEquipo() {
 		JPanel panel = new JPanel(new GridLayout(0, 2));
