@@ -3,7 +3,7 @@ package red.servicio;
 import java.io.FileNotFoundException;
 import java.util.List;
 import red.dao.TipoCableDAO;
-import red.dao.secuencial.TipoCableSecuencialDAO;
+import red.factory.Factory;
 import red.modelo.TipoCable;
 
 /**
@@ -12,7 +12,16 @@ import red.modelo.TipoCable;
  */
 public class TipoCableServiceImp implements TipoCableService {
 
-    private TipoCableDAO tipoCableDAO; // DAO para la gestión de tipos de cable.
+	private TipoCableDAO tipoCableDAO;
+	
+	public TipoCableServiceImp() {
+		tipoCableDAO = (TipoCableDAO) Factory.getInstancia("TIPOCABLE");
+		
+	}
+	@Override
+	public void insertar(TipoCable tipoCable) {
+		tipoCableDAO.insertar(tipoCable);
+	}
 
     /**
      * Constructor que inicializa el DAO para interactuar con los datos de tipos de cable.

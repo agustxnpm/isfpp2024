@@ -30,18 +30,27 @@ public class Red {
     private List<Ubicacion> ubicaciones; // Lista de ubicaciones de la red.
     private UbicacionService ubicacionService; // Servicio para gestionar las ubicaciones.
 
-    /**
-     * Método para obtener la instancia única de la red.
-     * 
-     * @return La instancia única de Red.
-     * @throws FileNotFoundException Si no se pueden cargar los datos desde el almacenamiento.
-     */
-    public static Red getRed() throws FileNotFoundException {
-        if (red == null) {
-            red = new Red();
-        }
-        return red;
-    }
+	
+	public static Red getRed() throws FileNotFoundException {
+		if (red == null) {
+			red = new Red();
+		}
+		return red;
+	}
+	
+	private Red() throws FileNotFoundException {
+		super();
+		equipos = new ArrayList<Equipo>();
+		equipoService = new EquipoServiceImp();
+		equipos.addAll(equipoService.buscarTodos());
+		conexiones = new ArrayList<Conexion>();
+		conexionService = new ConexionServiceImp();
+		conexiones.addAll(conexionService.buscarTodos());
+		ubicaciones = new ArrayList<Ubicacion>();
+		ubicacionService = new UbicacionServiceImp();
+		ubicaciones.addAll(ubicacionService.buscarTodos());
+		
+	}
 
     /**
      * Constructor privado para inicializar la red.

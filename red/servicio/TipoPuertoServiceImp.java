@@ -3,8 +3,7 @@ package red.servicio;
 import java.io.FileNotFoundException;
 import java.util.List;
 import red.dao.TipoPuertoDAO;
-import red.dao.secuencial.TipoPuertoSecuencialDAO;
-import red.modelo.TipoPuerto;
+import red.factory.Factory;
 
 /**
  * Implementación del servicio de gestión de tipos de puerto.
@@ -12,7 +11,15 @@ import red.modelo.TipoPuerto;
  */
 public class TipoPuertoServiceImp implements TipoPuertoService {
 
-    private TipoPuertoDAO tipoPuertoDAO; // DAO para la gestión de tipos de puerto.
+	private TipoPuertoDAO tipoPuertoDAO;
+	
+	public TipoPuertoServiceImp() {
+		tipoPuertoDAO = (TipoPuertoDAO) Factory.getInstancia("TIPOPUERTO");
+	}
+	@Override
+	public void insertar(TipoPuerto tipoPuerto) {
+		tipoPuertoDAO.insertar(tipoPuerto);
+	}
 
     /**
      * Constructor que inicializa el DAO para interactuar con los datos de tipos de puerto.

@@ -3,7 +3,7 @@ package red.servicio;
 import java.io.FileNotFoundException;
 import java.util.List;
 import red.dao.ConexionDAO;
-import red.dao.secuencial.ConexionSecuencialDAO;
+import red.factory.Factory;
 import red.modelo.Conexion;
 
 /**
@@ -12,7 +12,15 @@ import red.modelo.Conexion;
  */
 public class ConexionServiceImp implements ConexionService {
 
-    private ConexionDAO conexionDAO; // DAO para la gestión de conexiones.
+	private ConexionDAO conexionDAO;
+	
+	public ConexionServiceImp() throws FileNotFoundException {
+		conexionDAO = (ConexionDAO) Factory.getInstancia("CONEXION");
+	}
+	@Override
+	public void insertar(Conexion conexion) {
+		conexionDAO.insertar(conexion);
+	}
 
     /**
      * Constructor que inicializa el DAO para interactuar con los datos de conexiones.
