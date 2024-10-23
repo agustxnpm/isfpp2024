@@ -3,7 +3,7 @@ package red.servicio;
 import java.io.FileNotFoundException;
 import java.util.List;
 import red.dao.EquipoDAO;
-import red.dao.secuencial.EquipoSecuencialDAO;
+import red.factory.Factory;
 import red.modelo.Equipo;
 
 /**
@@ -12,7 +12,16 @@ import red.modelo.Equipo;
  */
 public class EquipoServiceImp implements EquipoService {
 
-    private EquipoDAO equipoDAO; // DAO para la gestión de equipos.
+	private EquipoDAO equipoDAO;
+	
+	public EquipoServiceImp() throws FileNotFoundException {
+		equipoDAO = (EquipoDAO) Factory.getInstancia("EQUIPO");
+		
+	}
+	@Override
+	public void insertar(Equipo equipo) {
+		equipoDAO.insertar(equipo);
+	}
 
     /**
      * Constructor que inicializa el DAO para interactuar con los datos de equipos.

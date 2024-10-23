@@ -3,8 +3,8 @@ package red.servicio;
 import java.io.FileNotFoundException;
 import java.util.List;
 import red.dao.UbicacionDAO;
-import red.dao.secuencial.UbicacionesSecuencialDAO;
 import red.modelo.Ubicacion;
+import red.factory.Factory;
 
 /**
  * Implementación del servicio de gestión de ubicaciones.
@@ -12,7 +12,16 @@ import red.modelo.Ubicacion;
  */
 public class UbicacionServiceImp implements UbicacionService {
 
-    private UbicacionDAO ubicacionDAO; // DAO para la gestión de ubicaciones.
+	private UbicacionDAO ubicacionDAO;
+	
+	public UbicacionServiceImp() {
+		ubicacionDAO = (UbicacionDAO) Factory.getInstancia("UBICACIONES");
+		
+	}
+	@Override
+	public void insertar(Ubicacion ubicacion) {
+		ubicacionDAO.insertar(ubicacion);
+	}
 
     /**
      * Constructor que inicializa el DAO para interactuar con los datos de ubicaciones.
