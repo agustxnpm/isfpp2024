@@ -28,14 +28,6 @@ public class EquipoServiceImp implements EquipoService {
      * 
      * @throws FileNotFoundException Si no se encuentra el archivo de configuración o datos.
      */
-    public EquipoServiceImp() throws FileNotFoundException {
-        equipoDAO = new EquipoSecuencialDAO();
-    }
-
-    @Override
-    public void insertar(Equipo equipo) {
-        equipoDAO.insertar(equipo);
-    }
 
     @Override
     public void actualizar(Equipo equipo) {

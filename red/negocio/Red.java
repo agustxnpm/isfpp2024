@@ -58,20 +58,6 @@ public class Red {
      * 
      * @throws FileNotFoundException Si no se encuentran los archivos de datos.
      */
-    private Red() throws FileNotFoundException {
-        super();
-        equipos = new ArrayList<>();
-        equipoService = new EquipoServiceImp();
-        equipos.addAll(equipoService.buscarTodos());
-        
-        conexiones = new ArrayList<>();
-        conexionService = new ConexionServiceImp();
-        conexiones.addAll(conexionService.buscarTodos());
-        
-        ubicaciones = new ArrayList<>();
-        ubicacionService = new UbicacionServiceImp();
-        ubicaciones.addAll(ubicacionService.buscarTodos());
-    }
 
     // Métodos de acceso (getters y setters).
     public String getNombre() {

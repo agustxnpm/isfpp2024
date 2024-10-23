@@ -28,14 +28,7 @@ public class UbicacionServiceImp implements UbicacionService {
      * 
      * @throws FileNotFoundException Si no se encuentra el archivo de configuración o datos.
      */
-    public UbicacionServiceImp() throws FileNotFoundException {
-        ubicacionDAO = new UbicacionesSecuencialDAO();
-    }
 
-    @Override
-    public void insertar(Ubicacion ubicacion) {
-        ubicacionDAO.insertar(ubicacion);
-    }
 
     @Override
     public void actualizar(Ubicacion ubicacion) {

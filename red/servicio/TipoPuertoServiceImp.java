@@ -2,6 +2,7 @@ package red.servicio;
 
 import java.io.FileNotFoundException;
 import java.util.List;
+import red.modelo.TipoPuerto;
 import red.dao.TipoPuertoDAO;
 import red.factory.Factory;
 
@@ -26,14 +27,7 @@ public class TipoPuertoServiceImp implements TipoPuertoService {
      * 
      * @throws FileNotFoundException Si no se encuentra el archivo de configuración o datos.
      */
-    public TipoPuertoServiceImp() throws FileNotFoundException {
-        tipoPuertoDAO = new TipoPuertoSecuencialDAO();
-    }
 
-    @Override
-    public void insertar(TipoPuerto tipoPuerto) {
-        tipoPuertoDAO.insertar(tipoPuerto);
-    }
 
     @Override
     public void actualizar(TipoPuerto tipoPuerto) {

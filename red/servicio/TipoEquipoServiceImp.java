@@ -28,14 +28,6 @@ public class TipoEquipoServiceImp implements TipoEquipoService {
      * 
      * @throws FileNotFoundException Si no se encuentra el archivo de configuración o datos.
      */
-    public TipoEquipoServiceImp() throws FileNotFoundException {
-        tipoEquipoDAO = new TipoEquipoSecuencialDAO();
-    }
-
-    @Override
-    public void insertar(TipoEquipo tipoEquipo) {
-        tipoEquipoDAO.insertar(tipoEquipo);
-    }
 
     @Override
     public void actualizar(TipoEquipo tipoEquipo) {

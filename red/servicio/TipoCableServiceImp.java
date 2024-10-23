@@ -28,14 +28,7 @@ public class TipoCableServiceImp implements TipoCableService {
      * 
      * @throws FileNotFoundException Si no se encuentra el archivo de configuración o datos.
      */
-    public TipoCableServiceImp() throws FileNotFoundException {
-        tipoCableDAO = new TipoCableSecuencialDAO();
-    }
-
-    @Override
-    public void insertar(TipoCable tipoCable) {
-        tipoCableDAO.insertar(tipoCable);
-    }
+  
 
     @Override
     public void actualizar(TipoCable tipoCable) {

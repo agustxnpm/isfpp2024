@@ -27,14 +27,6 @@ public class ConexionServiceImp implements ConexionService {
      * 
      * @throws FileNotFoundException Si no se encuentra el archivo de configuración o datos.
      */
-    public ConexionServiceImp() throws FileNotFoundException {
-        conexionDAO = new ConexionSecuencialDAO();
-    }
-
-    @Override
-    public void insertar(Conexion conexion) {
-        conexionDAO.insertar(conexion);
-    }
 
     @Override
     public void actualizar(Conexion conexion) {
