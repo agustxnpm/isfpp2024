@@ -13,12 +13,25 @@ import red.modelo.TipoPuerto;
 import red.modelo.Ubicacion;
 import red.servicio.EquipoService;
 import red.servicio.EquipoServiceImp;
+import red.servicio.TipoEquipoService;
+import red.servicio.TipoEquipoServiceImp;
+import red.servicio.TipoPuertoService;
+import red.servicio.TipoPuertoServiceImp;
+import red.servicio.UbicacionService;
+import red.servicio.UbicacionServiceImp;
 
-public class VentanaEquipos extends JFrame {
+public class VentanaEquipos extends JFrame implements ActionListener {
 
 	private EquipoService equipoService;
+	private TipoEquipoService teS; // New: Add the TipoEquipo service
+	private TipoPuertoService tpS; // New: Add the TipoPuerto service
+	private UbicacionService uS; // New: Add the Ubicacion service
+
 	private JTable equiposTable;
 	private DefaultTableModel equipoTableModel;
+	private List<TipoEquipo> listTipoEquipo; // New: To store all TipoEquipo
+	private List<TipoPuerto> listTipoPuerto; // New: To store all TipoPuerto
+	private List<Ubicacion> listUbicaciones; // New: To store all Ubicaciones
 
 	public VentanaEquipos() {
 		setTitle("Gestión de Equipos");
@@ -28,6 +41,13 @@ public class VentanaEquipos extends JFrame {
 
 		try {
 			equipoService = new EquipoServiceImp();
+			teS = new TipoEquipoServiceImp(); // Initialize the TipoEquipo service
+			tpS = new TipoPuertoServiceImp(); // Initialize the TipoPuerto service
+			uS = new UbicacionServiceImp(); // Initialize the Ubicacion service
+
+			listTipoEquipo = teS.buscarTodos();
+			listTipoPuerto = tpS.buscarTodos();
+			listUbicaciones = uS.buscarTodos();
 		} catch (FileNotFoundException e) {
 			JOptionPane.showMessageDialog(this, "Error al cargar los datos de los equipos.", "Error",
 					JOptionPane.ERROR_MESSAGE);
@@ -69,40 +89,80 @@ public class VentanaEquipos extends JFrame {
 						equipo.getDescripcion(), "Eliminar" });
 			}
 
-			// Asignar el renderer y editor a la columna de "Acciones"
 			equiposTable.getColumn("Acciones").setCellRenderer(new ButtonRenderer());
-			equiposTable.getColumn("Acciones").setCellEditor(new ButtonEditor(new JCheckBox()));
+			equiposTable.getColumn("Acciones").setCellEditor(new ButtonEditor(new JCheckBox(), equiposTable));
 
 		} catch (FileNotFoundException e) {
 			JOptionPane.showMessageDialog(this, "Error al cargar los equipos.", "Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
-	private void eliminarEquipo(Equipo equipo) {
-		int confirmacion = JOptionPane.showConfirmDialog(this, "¿Estás seguro de que quieres eliminar este equipo?",
-				"Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
-		if (confirmacion == JOptionPane.YES_OPTION) {
-			equipoService.borrar(equipo); // Lógica para borrar el equipo
-			mostrarEquiposEnTabla(); // Refrescar la tabla después de eliminar
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		int row = equiposTable.getSelectedRow();
+		String codigoEquipo = (String) equipoTableModel.getValueAt(row, 0); // Assuming you want the code from the first
+																			// column
+
+		try {
+			// Fetch the correct `Equipo` object
+			Equipo equipoAEliminar = equipoService.buscarPorCodigo(codigoEquipo);
+			System.out.println("Botón eliminar clickeado para el equipo: " + codigoEquipo);
+
+			// Call the method to delete the `Equipo`
+			eliminarEquipo(equipoAEliminar);
+		} catch (FileNotFoundException ex) {
+			ex.printStackTrace();
+			JOptionPane.showMessageDialog(this, "Error al buscar el equipo: " + ex.getMessage(), "Error",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
+
+	public void eliminarEquipo(Equipo equipo) {
+		int confirmacion = JOptionPane.showConfirmDialog(this, "¿Estás seguro de que quieres eliminar este equipo?",
+				"Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
+
+		if (confirmacion == JOptionPane.YES_OPTION) {
+			try {
+				System.out.println("Intentando eliminar equipo con código: " + equipo.getCodigo()); // Added for
+																									// debugging
+
+				equipoService.borrar(equipo); // Call the service to delete the equipo
+
+				System.out.println("Equipo con código " + equipo.getCodigo() + " eliminado correctamente."); // Added
+																												// for
+																												// debugging
+
+				JOptionPane.showMessageDialog(this, "Equipo eliminado correctamente.", "Éxito",
+						JOptionPane.INFORMATION_MESSAGE);
+
+				mostrarEquiposEnTabla(); // Refresh the table after deletion
+			} catch (Exception e) {
+				e.printStackTrace(); // Log the error to the console
+				JOptionPane.showMessageDialog(this, "Error al eliminar el equipo: " + e.getMessage(), "Error",
+						JOptionPane.ERROR_MESSAGE);
+			}
+		}
+	}
+
 	private void agregarEquipo() {
 		JPanel panel = new JPanel(new GridLayout(0, 2));
-	
 		JTextField codigoField = new JTextField();
 		JTextField modeloField = new JTextField();
 		JTextField marcaField = new JTextField();
 		JTextField descripcionField = new JTextField();
-		
-		// ComboBox for TipoEquipo
-		JComboBox<String> tipoEquipoComboBox = new JComboBox<>(new String[]{"AP", "COM", "RT", "SW"});
-		// ComboBox for TipoPuerto
-		JComboBox<String> tipoPuertoComboBox = new JComboBox<>(new String[]{"C5", "C5E", "C6", "100M", "1G"});
-		// ComboBox for Ubicacion
-		JComboBox<String> ubicacionComboBox = new JComboBox<>(new String[]{"A01", "A03", "A06", "BT", "FOT", "GRE", "L00", "L02", "L05", "OFI", "RAM"});
-	
 		JTextField cantPuertosField = new JTextField();
-	
+
+		// Convert list items to arrays for ComboBox
+		String[] tipoEquipoArray = listTipoEquipo.stream().map(TipoEquipo::getCodigo).toArray(String[]::new);
+		String[] tipoPuertoArray = listTipoPuerto.stream().map(TipoPuerto::getCodigo).toArray(String[]::new);
+		String[] ubicacionArray = listUbicaciones.stream().map(Ubicacion::getCodigo).toArray(String[]::new);
+
+		// ComboBoxes for TipoEquipo, TipoPuerto, and Ubicacion
+		JComboBox<String> tipoEquipoComboBox = new JComboBox<>(tipoEquipoArray);
+		JComboBox<String> tipoPuertoComboBox = new JComboBox<>(tipoPuertoArray);
+		JComboBox<String> ubicacionComboBox = new JComboBox<>(ubicacionArray);
+
+		// Add components to the panel
 		panel.add(new JLabel("Código:"));
 		panel.add(codigoField);
 		panel.add(new JLabel("Modelo:"));
@@ -119,45 +179,35 @@ public class VentanaEquipos extends JFrame {
 		panel.add(tipoPuertoComboBox);
 		panel.add(new JLabel("Ubicacion:"));
 		panel.add(ubicacionComboBox);
-	
-		int result = JOptionPane.showConfirmDialog(this, panel, "Agregar Equipo", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+		int result = JOptionPane.showConfirmDialog(this, panel, "Agregar Equipo", JOptionPane.OK_CANCEL_OPTION,
+				JOptionPane.PLAIN_MESSAGE);
 		if (result == JOptionPane.OK_OPTION) {
 			try {
 				int cantPuertos = Integer.parseInt(cantPuertosField.getText());
 				String tipoEquipo = (String) tipoEquipoComboBox.getSelectedItem();
 				String tipoPuerto = (String) tipoPuertoComboBox.getSelectedItem();
 				String ubicacion = (String) ubicacionComboBox.getSelectedItem();
-	
-				// Set velocity based on selected TipoPuerto
-				int velocidad = 0;
-				switch (tipoPuerto) {
-					case "C5":
-					case "100M":
-						velocidad = 100;
-						break;
-					case "C5E":
-					case "C6":
-					case "1G":
-						velocidad = 1000;
-						break;
-					default:
-						velocidad = 0;
-						break;
-				}
-	
-				TipoPuerto puerto = new TipoPuerto(tipoPuerto, "Descripción del puerto", velocidad);
-	
-				// Create Equipo object with selected values
+
+				// Fetch the correct TipoPuerto and Ubicacion based on selection
+				TipoPuerto selectedPuerto = listTipoPuerto.stream().filter(tp -> tp.getCodigo().equals(tipoPuerto))
+						.findFirst().orElse(null);
+				Ubicacion selectedUbicacion = listUbicaciones.stream().filter(u -> u.getCodigo().equals(ubicacion))
+						.findFirst().orElse(null);
+
+				// Create new Equipo with selected values
 				Equipo equipo = new Equipo(codigoField.getText(), modeloField.getText(), marcaField.getText(),
-						descripcionField.getText(), new Ubicacion(ubicacion, ""), new TipoEquipo(tipoEquipo, ""), 
-						cantPuertos, puerto, true);
-	
+						descripcionField.getText(), selectedUbicacion, new TipoEquipo(tipoEquipo, ""), cantPuertos,
+						selectedPuerto, true);
+
 				equipoService.insertar(equipo);
 				mostrarEquiposEnTabla(); // Refresh the table after insertion
 			} catch (Exception e) {
 				e.printStackTrace();
-				JOptionPane.showMessageDialog(this, "Error al agregar el equipo: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Error al agregar el equipo: " + e.getMessage(), "Error",
+						JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}
-}	
+
+}

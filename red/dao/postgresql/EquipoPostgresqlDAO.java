@@ -156,53 +156,52 @@ public class EquipoPostgresqlDAO implements EquipoDAO {
 		}
 
 	}
-
 	@Override
 	public void borrar(Equipo equipo) {
-		// TODO Auto-generated method stub
 		Connection con = null;
 		PreparedStatement pstm = null;
-		ResultSet rs = null;
 		try {
 			con = BDConexion.getConnection();
-			con.setAutoCommit(false); // Desactivar el autocommit
-
-			String sql = "";
-			sql += "DELETE FROM poo2024.equipos_palma WHERE codigo = ? ";
+			con.setAutoCommit(false); // Disable auto-commit
+	
+			System.out.println("Eliminando equipo con código: " + equipo.getCodigo()); // Add log here
+	
+			// SQL to delete the equipment from the database
+			String sql = "DELETE FROM poo2024.equipos_palma WHERE codigo = ?";
 			pstm = con.prepareStatement(sql);
 			pstm.setString(1, equipo.getCodigo());
-			pstm.executeUpdate();
-
+	
+			int rowsAffected = pstm.executeUpdate();  // Execute the deletion query
+			System.out.println("Filas afectadas: " + rowsAffected); // Check how many rows are affected
+	
+			// Optionally delete related IP addresses if needed
 			String sqlDeleteIp = "DELETE FROM poo2024.direcciones_ip_palma WHERE equipo_codigo = ?";
 			try (PreparedStatement pstmDeleteIp = con.prepareStatement(sqlDeleteIp)) {
 				pstmDeleteIp.setString(1, equipo.getCodigo());
 				pstmDeleteIp.executeUpdate();
 			}
-
-			con.commit();
-
+	
+			con.commit();  // Commit the transaction
 		} catch (SQLException ex) {
 			if (con != null) {
 				try {
-					con.rollback(); // Revertir en caso de error
+					con.rollback();  // Rollback the transaction in case of error
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
 			}
 			ex.printStackTrace();
-			throw new RuntimeException(ex);
+			throw new RuntimeException("Error al eliminar el equipo.", ex);
 		} finally {
 			try {
-				if (rs != null)
-					rs.close();
-				if (pstm != null)
-					pstm.close();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				throw new RuntimeException(ex);
+				if (pstm != null) pstm.close();
+				if (con != null) con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 		}
 	}
+	
 
 	@Override
 	public List<Equipo> buscarTodos() throws FileNotFoundException {
