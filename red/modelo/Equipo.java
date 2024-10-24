@@ -172,7 +172,7 @@ public class Equipo {
 	public String getPuertosInfo() {
 	    StringBuilder puertosInfo = new StringBuilder();
 	    for (Puerto p : puertos) {  
-	        puertosInfo.append(p.getTipoPuerto().getCodigo())   // Código del tipo de puerto
+	        puertosInfo.append(p.getTipoPuerto().getCodigo())   // Codigo del tipo de puerto
 	                    .append(",")
 	                    .append(p.getCantidadPuertos())               // Cantidad de puertos
 	                    .append(";");
