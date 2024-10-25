@@ -6,7 +6,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 import red.modelo.Conexion;
 import red.modelo.TipoCable;
@@ -17,10 +16,7 @@ import red.servicio.EquipoService;
 import red.servicio.EquipoServiceImp;
 import red.servicio.TipoCableService;
 import red.servicio.TipoCableServiceImp;
-import red.servicio.ConexionService;
-import red.servicio.ConexionServiceImp;
 import red.modelo.Equipo;
-import red.modelo.TipoPuerto;
 
 public class VentanaConexiones extends JFrame implements ActionListener {
 
@@ -31,16 +27,15 @@ public class VentanaConexiones extends JFrame implements ActionListener {
     private TipoCableService tipoCableService;
     private List<Equipo> listaEquiposDisponibles; // Lista de equipos disponibles
     private List<TipoCable> listaCablesDisponibles; // Lista de tipos de cables disponibles
-    private String[] equipoArray; // Array para el ComboBox de equipos
-    private String[] tipoCableArray; // Array para el ComboBox de tipos de cables
 
     public VentanaConexiones() {
         setTitle("Gestión de Conexiones");
-        setSize(600, 400);
+        setSize(800, 400);  // Ajustamos el tamaño para mostrar todas las columnas
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        try {// Inicializar los servicios antes de utilizarlos
+        try {
+            // Inicializar los servicios antes de utilizarlos
             equipoService = new EquipoServiceImp();
             tipoCableService = new TipoCableServiceImp();
             conexionService = new ConexionServiceImp();
@@ -49,21 +44,18 @@ public class VentanaConexiones extends JFrame implements ActionListener {
             listaEquiposDisponibles = equipoService.buscarTodos();
             listaCablesDisponibles = tipoCableService.buscarTodos();
 
-            // Inicializar arrays para ComboBox
-            equipoArray = listaEquiposDisponibles.stream().map(Equipo::getCodigo).toArray(String[]::new);
-            tipoCableArray = listaCablesDisponibles.stream().map(TipoCable::getCodigo).toArray(String[]::new);
-
         } catch (FileNotFoundException e) {
             JOptionPane.showMessageDialog(this, "Error al cargar los datos de las conexiones.", "Error",
                     JOptionPane.ERROR_MESSAGE);
         }
 
-        String[] conexionColumnNames = { "Equipo 1", "Equipo 2", "Tipo de Cable", "Acciones" };
+        // Definimos las columnas a mostrar en la tabla de conexiones
+        String[] conexionColumnNames = { "Equipo 1", "Equipo 2", "Tipo de Cable", "Tipo de Puerto 1", "Tipo de Puerto 2", "Acciones" };
         conexionTableModel = new DefaultTableModel(conexionColumnNames, 0);
         conexionesTable = new JTable(conexionTableModel) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == 3; // Solo la columna de "Acciones" es editable
+                return column == 5; // Solo la columna de "Acciones" es editable
             }
         };
 
@@ -90,23 +82,28 @@ public class VentanaConexiones extends JFrame implements ActionListener {
             List<Conexion> conexiones = conexionService.buscarTodos();
             conexionTableModel.setRowCount(0); // Limpiar la tabla
             for (Conexion conexion : conexiones) {
-                conexionTableModel.addRow(new Object[] { conexion.getEquipo1().getCodigo(),
-                        conexion.getEquipo2().getCodigo(), conexion.getTipoCable().getDescripcion(), "Eliminar" });
+                conexionTableModel.addRow(new Object[] {
+                        conexion.getEquipo1().getCodigo(),
+                        conexion.getEquipo2().getCodigo(),
+                        conexion.getTipoCable().getDescripcion(),
+                        conexion.getTipoPuerto1().getCodigo(),
+                        conexion.getTipoPuerto2().getCodigo(),
+                        "Eliminar"
+                });
             }
-    
+
             conexionesTable.getColumn("Acciones").setCellRenderer(new ButtonRenderer());
             conexionesTable.getColumn("Acciones").setCellEditor(new ButtonEditor(new JCheckBox(), conexionesTable, "conexion", null, conexionService));
-    
+
         } catch (FileNotFoundException e) {
             JOptionPane.showMessageDialog(this, "Error al cargar las conexiones.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
 
     private void eliminarConexion(Conexion conexion) {
-        int confirmacion = JOptionPane.showConfirmDialog(this, 
-            "¿Estás seguro de que quieres eliminar esta conexión?",
-            "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
+        int confirmacion = JOptionPane.showConfirmDialog(this,
+                "¿Estás seguro de que quieres eliminar esta conexión?",
+                "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
 
         if (confirmacion == JOptionPane.YES_OPTION) {
             try {
@@ -134,16 +131,6 @@ public class VentanaConexiones extends JFrame implements ActionListener {
                 .filter(tipoCable -> tipoCable.getCodigo().equals(codigo))
                 .findFirst()
                 .orElse(null); // Devolver null si no se encuentra el tipo de cable
-    }
-
-    // Método para obtener un tipo de puerto según su código
-    private TipoPuerto obtenerTipoPuertoPorCodigo(String codigo) {
-        return listaEquiposDisponibles.stream()
-                .flatMap(equipo -> equipo.getPuertos().stream())
-                .map(puerto -> puerto.getTipoPuerto())
-                .filter(tipoPuerto -> tipoPuerto.getCodigo().equals(codigo))
-                .findFirst()
-                .orElse(null); // Devolver null si no se encuentra el tipo de puerto
     }
 
     private void agregarConexion() {
@@ -205,8 +192,7 @@ public class VentanaConexiones extends JFrame implements ActionListener {
         }
     }
 
-    // Método para actualizar el JComboBox de TipoPuerto según el equipo
-    // seleccionado
+    // Método para actualizar el JComboBox de TipoPuerto según el equipo seleccionado
     private void actualizarTipoPuerto(JComboBox<String> equipoComboBox, JComboBox<String> tipoPuertoComboBox) {
         String equipoCodigo = (String) equipoComboBox.getSelectedItem();
         Equipo equipo = obtenerEquipoPorCodigo(equipoCodigo);
@@ -215,25 +201,30 @@ public class VentanaConexiones extends JFrame implements ActionListener {
         equipo.getPuertos().forEach(puerto -> tipoPuertoComboBox.addItem(puerto.getTipoPuerto().getCodigo()));
     }
 
-   /* */ @Override
+    @Override
     public void actionPerformed(ActionEvent e) {
         int row = conexionesTable.getSelectedRow();
-        String equipo1Codigo = (String) conexionTableModel.getValueAt(row, 0); // Assuming the first column has the team
-                                                                               // code
-        String equipo2Codigo = (String) conexionTableModel.getValueAt(row, 1); // Assuming the second column has the
-                                                                               // second team code
+        String equipo1Codigo = (String) conexionTableModel.getValueAt(row, 0);
+        String equipo2Codigo = (String) conexionTableModel.getValueAt(row, 1);
 
         try {
-            // Assuming there’s a method to fetch Conexion based on equipo1 and equipo2
             Conexion conexionAEliminar = conexionService.buscarPorCodigo(equipo1Codigo, equipo2Codigo);
-            System.out.println(
-                    "Botón eliminar clickeado para la conexión entre equipo: " + equipo1Codigo + " y " + equipo2Codigo);
+            System.out.println("Botón eliminar clickeado para la conexión entre equipo: " + equipo1Codigo + " y " + equipo2Codigo);
 
-            eliminarConexion(conexionAEliminar); // Call the method to delete the connection
+            eliminarConexion(conexionAEliminar);
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error al buscar la conexión: " + ex.getMessage(), "Error",
-                    JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al buscar la conexión: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    // Método para obtener un tipo de puerto según su código
+    private TipoPuerto obtenerTipoPuertoPorCodigo(String codigo) {
+        return listaEquiposDisponibles.stream()
+                .flatMap(equipo -> equipo.getPuertos().stream())
+                .map(puerto -> puerto.getTipoPuerto())
+                .filter(tipoPuerto -> tipoPuerto.getCodigo().equals(codigo))
+                .findFirst()
+                .orElse(null);
     }
 }

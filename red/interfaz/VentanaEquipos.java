@@ -35,7 +35,7 @@ public class VentanaEquipos extends JFrame implements ActionListener {
 
     public VentanaEquipos() {
         setTitle("Gestión de Equipos");
-        setSize(600, 400);
+        setSize(800, 400); // Ajustar el tamaño para ver todas las columnas
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -53,12 +53,12 @@ public class VentanaEquipos extends JFrame implements ActionListener {
                     JOptionPane.ERROR_MESSAGE);
         }
 
-        String[] equipoColumnNames = { "Código", "Modelo", "Marca", "Descripción", "Acciones" };
+        String[] equipoColumnNames = { "Código", "Descripción", "Marca", "Modelo", "Tipo Equipo", "Ubicación", "Estado", "Info Puertos", "Acciones" };
         equipoTableModel = new DefaultTableModel(equipoColumnNames, 0);
         equiposTable = new JTable(equipoTableModel) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == 4; // Solo la columna de "Acciones" es editable
+                return column == 8; // Solo la columna de "Acciones" es editable
             }
         };
 
@@ -80,71 +80,63 @@ public class VentanaEquipos extends JFrame implements ActionListener {
         mostrarEquiposEnTabla(); // Mostrar equipos al iniciar
     }
 
-	private void mostrarEquiposEnTabla() {
-		try {
-			List<Equipo> equipos = equipoService.buscarTodos();
-			equipoTableModel.setRowCount(0); // Limpiar la tabla
-			for (Equipo equipo : equipos) {
-				equipoTableModel.addRow(new Object[] { equipo.getCodigo(), equipo.getModelo(), equipo.getMarca(),
-						equipo.getDescripcion(), "Eliminar" });
-			}
-	
-			equiposTable.getColumn("Acciones").setCellRenderer(new ButtonRenderer());
-			equiposTable.getColumn("Acciones").setCellEditor(new ButtonEditor(new JCheckBox(), equiposTable, "equipo", equipoService, null));
-	
-		} catch (FileNotFoundException e) {
-			JOptionPane.showMessageDialog(this, "Error al cargar los equipos.", "Error", JOptionPane.ERROR_MESSAGE);
-		}
-	}
-	
-	
+    private void mostrarEquiposEnTabla() {
+        try {
+            List<Equipo> equipos = equipoService.buscarTodos();
+            equipoTableModel.setRowCount(0); // Limpiar la tabla
 
+            // Añadir filas a la tabla con todos los datos del equipo
+            for (Equipo equipo : equipos) {
+                String estadoTexto = equipo.isEstado() ? "Activo" : "Inactivo";  // Convertir booleano a texto legible
+                equipoTableModel.addRow(new Object[]{
+                    equipo.getCodigo(),
+                    equipo.getDescripcion(),
+                    equipo.getMarca(),
+                    equipo.getModelo(),
+                    equipo.getTipoEquipo().getDescripcion(),  // Asumiendo que TipoEquipo tiene un método getDescripcion()
+                    equipo.getUbicacion().getDescripcion(),   // Asumiendo que Ubicacion tiene un método getDescripcion()
+                    estadoTexto,
+                    equipo.getPuertosInfo(),  // Información sobre puertos (puede ser modificada para mayor detalle)
+                    "Eliminar"
+                });
+            }
 
-	private void eliminarEquipo(Equipo equipo) {
-		int confirmacion = JOptionPane.showConfirmDialog(this, 
-			"¿Estás seguro de que quieres eliminar este equipo?",
-			"Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
-	
-		if (confirmacion == JOptionPane.YES_OPTION) {
-			try {
-				// Verificar si el equipo realmente existe antes de eliminarlo
-				Equipo equipoExistente = equipoService.buscarPorCodigo(equipo.getCodigo());
-				if (equipoExistente != null) {
-					System.out.println("Eliminando equipo con código: " + equipo.getCodigo());
-					equipoService.borrar(equipo); // Llamada para eliminar el equipo en la base de datos
-					JOptionPane.showMessageDialog(this, 
-						"Equipo eliminado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-					mostrarEquiposEnTabla(); // Refrescar la tabla para actualizar la lista de equipos
-				} else {
-					JOptionPane.showMessageDialog(this, 
-						"El equipo no existe en la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				JOptionPane.showMessageDialog(this, 
-					"Error al eliminar el equipo: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-			}
-		}
-	}
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		int row = equiposTable.getSelectedRow();
-		String codigoEquipo = (String) equipoTableModel.getValueAt(row, 0); // Asumiendo que la columna 0 tiene el código
-		
-		try {
-			// Aquí está la impresión que genera el log
-			System.out.println("Botón 'Eliminaaaaaaar' clickeado para: " + codigoEquipo + " y " + equipoTableModel.getValueAt(row, 1));
-	
-			// Aquí buscarías el equipo por el código para eliminarlo
-			Equipo equipoAEliminar = equipoService.buscarPorCodigo(codigoEquipo);
-			
-			eliminarEquipo(equipoAEliminar);
-		} catch (FileNotFoundException ex) {
-			ex.printStackTrace();
-			JOptionPane.showMessageDialog(this, "Error al buscar el equipo: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-		}
-	}
-		
+            // Configurar los botones de "Eliminar"
+            equiposTable.getColumn("Acciones").setCellRenderer(new ButtonRenderer());
+            equiposTable.getColumn("Acciones").setCellEditor(new ButtonEditor(new JCheckBox(), equiposTable, "equipo", equipoService, null));
+
+        } catch (FileNotFoundException e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar los equipos.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void eliminarEquipo(Equipo equipo) {
+        int confirmacion = JOptionPane.showConfirmDialog(this, 
+            "¿Estás seguro de que quieres eliminar este equipo?",
+            "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
+
+        if (confirmacion == JOptionPane.YES_OPTION) {
+            try {
+                // Verificar si el equipo realmente existe antes de eliminarlo
+                Equipo equipoExistente = equipoService.buscarPorCodigo(equipo.getCodigo());
+                if (equipoExistente != null) {
+                    System.out.println("Eliminando equipo con código: " + equipo.getCodigo());
+                    equipoService.borrar(equipo); // Llamada para eliminar el equipo en la base de datos
+                    JOptionPane.showMessageDialog(this, 
+                        "Equipo eliminado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                    mostrarEquiposEnTabla(); // Refrescar la tabla para actualizar la lista de equipos
+                } else {
+                    JOptionPane.showMessageDialog(this, 
+                        "El equipo no existe en la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, 
+                    "Error al eliminar el equipo: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
     private void agregarEquipo() {
         JPanel panel = new JPanel(new GridLayout(0, 2));
         JTextField codigoField = new JTextField();
@@ -208,6 +200,21 @@ public class VentanaEquipos extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Error al agregar el equipo: " + e.getMessage(), "Error",
                         JOptionPane.ERROR_MESSAGE);
             }
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        int row = equiposTable.getSelectedRow();
+        String codigoEquipo = (String) equipoTableModel.getValueAt(row, 0); // Asumiendo que la columna 0 tiene el código
+
+        try {
+            System.out.println("Botón 'Eliminar' clickeado para: " + codigoEquipo);
+            Equipo equipoAEliminar = equipoService.buscarPorCodigo(codigoEquipo);
+            eliminarEquipo(equipoAEliminar);
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al buscar el equipo: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
