@@ -2,17 +2,20 @@ package red.servicio;
 
 import java.io.FileNotFoundException;
 import java.util.List;
-
 import red.dao.UbicacionDAO;
 import red.modelo.Ubicacion;
-import red.dao.secuencial.UbicacionesSecuencialDAO;
+import red.factory.Factory;
 
-public class UbicacionServiceImp implements UbicacionService{
+/**
+ * Implementación del servicio de gestión de ubicaciones.
+ * Utiliza un DAO (Data Access Object) para interactuar con la capa de persistencia de datos.
+ */
+public class UbicacionServiceImp implements UbicacionService {
 
 	private UbicacionDAO ubicacionDAO;
 	
 	public UbicacionServiceImp() {
-		ubicacionDAO = new UbicacionesSecuencialDAO();
+		ubicacionDAO = (UbicacionDAO) Factory.getInstancia("UBICACIONES");
 		
 	}
 	@Override
@@ -20,19 +23,25 @@ public class UbicacionServiceImp implements UbicacionService{
 		ubicacionDAO.insertar(ubicacion);
 	}
 
-	@Override
-	public void actualizar(Ubicacion ubicacion) {
-		ubicacionDAO.actualizar(ubicacion);
-	}
+    /**
+     * Constructor que inicializa el DAO para interactuar con los datos de ubicaciones.
+     * 
+     * @throws FileNotFoundException Si no se encuentra el archivo de configuración o datos.
+     */
 
-	@Override
-	public void borrar(Ubicacion ubicacion) {
-		ubicacionDAO.borrar(ubicacion);
-	}
 
-	@Override
-	public List<Ubicacion> buscarTodos() throws FileNotFoundException {
-		return ubicacionDAO.buscarTodos();
-	}
+    @Override
+    public void actualizar(Ubicacion ubicacion) {
+        ubicacionDAO.actualizar(ubicacion);
+    }
 
+    @Override
+    public void borrar(Ubicacion ubicacion) {
+        ubicacionDAO.borrar(ubicacion);
+    }
+
+    @Override
+    public List<Ubicacion> buscarTodos() throws FileNotFoundException {
+        return ubicacionDAO.buscarTodos();
+    }
 }
