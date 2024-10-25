@@ -1,0 +1,6 @@
+AP;Access Point;
+COM;Computadora;
+RT;Router;
+SW;Switch;
+
+
