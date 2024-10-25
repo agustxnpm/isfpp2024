@@ -1,4 +1,5 @@
 package red.interfaz;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,8 +20,10 @@ public class VentanaPrincipal extends JFrame {
 
         JMenuItem menuEquipos = new JMenuItem("Gestionar Equipos");
         JMenuItem menuConexiones = new JMenuItem("Gestionar Conexiones");
+        JMenuItem menuConsultas = new JMenuItem("Consultas de Red"); // Nueva opción para VentanaConsultas
         menu.add(menuEquipos);
         menu.add(menuConexiones);
+        menu.add(menuConsultas); // Agregar el nuevo ítem al menú
 
         setJMenuBar(menuBar);
 
@@ -39,6 +42,15 @@ public class VentanaPrincipal extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 VentanaConexiones ventanaConexiones = new VentanaConexiones();
                 ventanaConexiones.setVisible(true);  // Mostrar la ventana de conexiones
+            }
+        });
+
+        // Acción para abrir la ventana de consultas
+        menuConsultas.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                VentanaConsultas ventanaConsultas = new VentanaConsultas();
+                ventanaConsultas.setVisible(true);  // Mostrar la ventana de consultas
             }
         });
     }
