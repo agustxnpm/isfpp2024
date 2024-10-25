@@ -38,4 +38,10 @@ public interface ConexionService {
      * @throws FileNotFoundException Si no se puede acceder a la fuente de datos.
      */
     List<Conexion> buscarTodos() throws FileNotFoundException;
+
+    Conexion buscarPorCodigo(String equipo1Codigo, String equipo2Codigo) throws FileNotFoundException;
+
+
 }
+
+

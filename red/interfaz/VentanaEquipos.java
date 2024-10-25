@@ -20,196 +20,200 @@ import red.servicio.TipoPuertoServiceImp;
 import red.servicio.UbicacionService;
 import red.servicio.UbicacionServiceImp;
 
-public class VentanaEquipos extends JFrame {
+public class VentanaEquipos extends JFrame implements ActionListener {
 
-	private EquipoService equipoService;
-	private JTable equiposTable;
-	private DefaultTableModel equipoTableModel;
+    private EquipoService equipoService;
+    private TipoEquipoService teS; // Servicio para TipoEquipo
+    private TipoPuertoService tpS; // Servicio para TipoPuerto
+    private UbicacionService uS; // Servicio para Ubicación
 
-	public VentanaEquipos() {
-		setTitle("Gestión de Equipos");
-		setSize(600, 400);
-		setLocationRelativeTo(null);
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    private JTable equiposTable;
+    private DefaultTableModel equipoTableModel;
+    private List<TipoEquipo> listTipoEquipo; // Lista de TipoEquipo
+    private List<TipoPuerto> listTipoPuerto; // Lista de TipoPuerto
+    private List<Ubicacion> listUbicaciones; // Lista de Ubicaciones
 
-		try {
-			equipoService = new EquipoServiceImp();
-		} catch (FileNotFoundException e) {
-			JOptionPane.showMessageDialog(this, "Error al cargar los datos de los equipos.", "Error",
-					JOptionPane.ERROR_MESSAGE);
-		}
+    public VentanaEquipos() {
+        setTitle("Gestión de Equipos");
+        setSize(800, 400); // Ajustar el tamaño para ver todas las columnas
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-		String[] equipoColumnNames = { "Código", "Modelo", "Marca", "Descripción", "Acciones" };
-		equipoTableModel = new DefaultTableModel(equipoColumnNames, 0);
-		equiposTable = new JTable(equipoTableModel) {
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				return column == 4; // Solo la columna de "Acciones" es editable
-			}
-		};
+        try {
+            equipoService = new EquipoServiceImp();
+            teS = new TipoEquipoServiceImp(); // Inicializar servicio de TipoEquipo
+            tpS = new TipoPuertoServiceImp(); // Inicializar servicio de TipoPuerto
+            uS = new UbicacionServiceImp(); // Inicializar servicio de Ubicación
 
-		JScrollPane scrollEquipos = new JScrollPane(equiposTable);
-		add(scrollEquipos, BorderLayout.CENTER);
+            listTipoEquipo = teS.buscarTodos();
+            listTipoPuerto = tpS.buscarTodos();
+            listUbicaciones = uS.buscarTodos();
+        } catch (FileNotFoundException e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar los datos de los equipos.", "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
 
-		JButton agregarEquipoButton = new JButton("Agregar Equipo");
-		agregarEquipoButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				agregarEquipo();
-			}
-		});
+        String[] equipoColumnNames = { "Código", "Descripción", "Marca", "Modelo", "Tipo Equipo", "Ubicación", "Estado", "Info Puertos", "Acciones" };
+        equipoTableModel = new DefaultTableModel(equipoColumnNames, 0);
+        equiposTable = new JTable(equipoTableModel) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 8; // Solo la columna de "Acciones" es editable
+            }
+        };
 
-		JPanel panelInferior = new JPanel();
-		panelInferior.add(agregarEquipoButton);
-		add(panelInferior, BorderLayout.SOUTH);
+        JScrollPane scrollEquipos = new JScrollPane(equiposTable);
+        add(scrollEquipos, BorderLayout.CENTER);
 
-		mostrarEquiposEnTabla(); // Mostrar equipos al iniciar
-	}
+        JButton agregarEquipoButton = new JButton("Agregar Equipo");
+        agregarEquipoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                agregarEquipo();
+            }
+        });
 
-	private void mostrarEquiposEnTabla() {
-		try {
-			List<Equipo> equipos = equipoService.buscarTodos();
-			equipoTableModel.setRowCount(0); // Limpiar la tabla
-			for (Equipo equipo : equipos) {
-				equipoTableModel.addRow(new Object[] { equipo.getCodigo(), equipo.getModelo(), equipo.getMarca(),
-						equipo.getDescripcion(), "Eliminar" });
-			}
+        JPanel panelInferior = new JPanel();
+        panelInferior.add(agregarEquipoButton);
+        add(panelInferior, BorderLayout.SOUTH);
 
-			// Asignar el renderer y editor a la columna de "Acciones"
-			equiposTable.getColumn("Acciones").setCellRenderer(new ButtonRenderer());
-			equiposTable.getColumn("Acciones").setCellEditor(new ButtonEditor(new JCheckBox()));
+        mostrarEquiposEnTabla(); // Mostrar equipos al iniciar
+    }
 
-		} catch (FileNotFoundException e) {
-			JOptionPane.showMessageDialog(this, "Error al cargar los equipos.", "Error", JOptionPane.ERROR_MESSAGE);
-		}
-	}
+    private void mostrarEquiposEnTabla() {
+        try {
+            List<Equipo> equipos = equipoService.buscarTodos();
+            equipoTableModel.setRowCount(0); // Limpiar la tabla
+            // Añadir filas a la tabla con todos los datos del equipo
+            for (Equipo equipo : equipos) {
+                String estadoTexto = equipo.isEstado() ? "Activo" : "Inactivo";  // Convertir booleano a texto legible
+                equipoTableModel.addRow(new Object[]{
+                    equipo.getCodigo(),
+                    equipo.getDescripcion(),
+                    equipo.getMarca(),
+                    equipo.getModelo(),
+                    equipo.getTipoEquipo().getDescripcion(),  // Asumiendo que TipoEquipo tiene un método getDescripcion()
+                    equipo.getUbicacion().getDescripcion(),   // Asumiendo que Ubicacion tiene un método getDescripcion()
+                    estadoTexto,
+                    equipo.getPuertosInfo(),  // Información sobre puertos (puede ser modificada para mayor detalle)
+                    "Eliminar"
+                });
+            }
 
-	private void eliminarEquipo(Equipo equipo) {
-		int confirmacion = JOptionPane.showConfirmDialog(this, "¿Estás seguro de que quieres eliminar este equipo?",
-				"Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
-		if (confirmacion == JOptionPane.YES_OPTION) {
-			equipoService.borrar(equipo); // Lógica para borrar el equipo
-			mostrarEquiposEnTabla(); // Refrescar la tabla después de eliminar
-		}
-	}
+            // Configurar los botones de "Eliminar"
+            equiposTable.getColumn("Acciones").setCellRenderer(new ButtonRenderer());
+            equiposTable.getColumn("Acciones").setCellEditor(new ButtonEditor(new JCheckBox(), equiposTable, "equipo", equipoService, null));
 
-	private void agregarEquipo() {
-		JPanel panel = new JPanel(new GridLayout(0, 2));
+        } catch (FileNotFoundException e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar los equipos.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
-		JTextField codigoField = new JTextField();
-		JTextField modeloField = new JTextField();
-		JTextField marcaField = new JTextField();
-		JTextField descripcionField = new JTextField();
+    private void eliminarEquipo(Equipo equipo) {
+        int confirmacion = JOptionPane.showConfirmDialog(this, 
+            "¿Estás seguro de que quieres eliminar este equipo?",
+            "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
 
-		TipoEquipoService teS = new TipoEquipoServiceImp();
-		TipoPuertoService tpS = new TipoPuertoServiceImp();
-		UbicacionService uS = new UbicacionServiceImp();
+        if (confirmacion == JOptionPane.YES_OPTION) {
+            try {
+                // Verificar si el equipo realmente existe antes de eliminarlo
+                Equipo equipoExistente = equipoService.buscarPorCodigo(equipo.getCodigo());
+                if (equipoExistente != null) {
+                    System.out.println("Eliminando equipo con código: " + equipo.getCodigo());
+                    equipoService.borrar(equipo); // Llamada para eliminar el equipo en la base de datos
+                    JOptionPane.showMessageDialog(this, 
+                        "Equipo eliminado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                    mostrarEquiposEnTabla(); // Refrescar la tabla para actualizar la lista de equipos
+                } else {
+                    JOptionPane.showMessageDialog(this, 
+                        "El equipo no existe en la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, 
+                    "Error al eliminar el equipo: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
 
-		try {
-			List<TipoEquipo> listTipoEquipo = teS.buscarTodos();
-			List<TipoPuerto> listTipoPuerto = tpS.buscarTodos();
-			List<Ubicacion> listUbicaciones = uS.buscarTodos();
+    private void agregarEquipo() {
+        JPanel panel = new JPanel(new GridLayout(0, 2));
+        JTextField codigoField = new JTextField();
+        JTextField modeloField = new JTextField();
+        JTextField marcaField = new JTextField();
+        JTextField descripcionField = new JTextField();
+        JTextField cantPuertosField = new JTextField();
 
-			// Arrays dinámicos para los JComboBox
-			String[] tipoEquipoArray = listTipoEquipo.stream().map(TipoEquipo::getCodigo)
-					.toArray(String[]::new);
+        // Convertir listas a arrays para los ComboBox
+        String[] tipoEquipoArray = listTipoEquipo.stream().map(TipoEquipo::getCodigo).toArray(String[]::new);
+        String[] tipoPuertoArray = listTipoPuerto.stream().map(TipoPuerto::getCodigo).toArray(String[]::new);
+        String[] ubicacionArray = listUbicaciones.stream().map(Ubicacion::getCodigo).toArray(String[]::new);
 
-			String[] tipoPuertoArray = listTipoPuerto.stream().map(TipoPuerto::getCodigo)
-					.toArray(String[]::new);
+        // ComboBoxes para TipoEquipo, TipoPuerto, y Ubicacion
+        JComboBox<String> tipoEquipoComboBox = new JComboBox<>(tipoEquipoArray);
+        JComboBox<String> tipoPuertoComboBox = new JComboBox<>(tipoPuertoArray);
+        JComboBox<String> ubicacionComboBox = new JComboBox<>(ubicacionArray);
 
-			String[] ubicacionArray = listUbicaciones.stream().map(Ubicacion::getCodigo)
-					.toArray(String[]::new);
-			/* los codigos anteriores son equivalentes a la siguiente expresion: 
-			String[] ubicacionArray = new String[listUbicaciones.size()];
-			for (int i = 0; i < listUbicaciones.size(); i++) {
-			    ubicacionArray[i] = listUbicaciones.get(i).getCodigo();
-			}
-			*/
-			 
+        // Agregar componentes al panel
+        panel.add(new JLabel("Código:"));
+        panel.add(codigoField);
+        panel.add(new JLabel("Modelo:"));
+        panel.add(modeloField);
+        panel.add(new JLabel("Marca:"));
+        panel.add(marcaField);
+        panel.add(new JLabel("Descripción:"));
+        panel.add(descripcionField);
+        panel.add(new JLabel("Cantidad de Puertos:"));
+        panel.add(cantPuertosField);
+        panel.add(new JLabel("Tipo de Equipo:"));
+        panel.add(tipoEquipoComboBox);
+        panel.add(new JLabel("Tipo de Puerto:"));
+        panel.add(tipoPuertoComboBox);
+        panel.add(new JLabel("Ubicacion:"));
+        panel.add(ubicacionComboBox);
 
-			// ComboBox for TipoEquipo
-			JComboBox<String> tipoEquipoComboBox = new JComboBox<>(tipoEquipoArray);
+        int result = JOptionPane.showConfirmDialog(this, panel, "Agregar Equipo", JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE);
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                int cantPuertos = Integer.parseInt(cantPuertosField.getText());
+                String tipoEquipo = (String) tipoEquipoComboBox.getSelectedItem();
+                String tipoPuerto = (String) tipoPuertoComboBox.getSelectedItem();
+                String ubicacion = (String) ubicacionComboBox.getSelectedItem();
 
-			// ComboBox for TipoPuerto
-			JComboBox<String> tipoPuertoComboBox = new JComboBox<>(tipoPuertoArray);
+                // Obtener los objetos seleccionados
+                TipoPuerto selectedPuerto = listTipoPuerto.stream().filter(tp -> tp.getCodigo().equals(tipoPuerto))
+                        .findFirst().orElse(null);
+                Ubicacion selectedUbicacion = listUbicaciones.stream().filter(u -> u.getCodigo().equals(ubicacion))
+                        .findFirst().orElse(null);
 
-			// ComboBox for Ubicacion
-			JComboBox<String> ubicacionComboBox = new JComboBox<>(ubicacionArray);
-			JTextField cantPuertosField = new JTextField();
+                // Crear nuevo equipo con los valores seleccionados
+                Equipo equipo = new Equipo(codigoField.getText(), modeloField.getText(), marcaField.getText(),
+                        descripcionField.getText(), selectedUbicacion, new TipoEquipo(tipoEquipo, ""), cantPuertos,
+                        selectedPuerto, true);
 
-			panel.add(new JLabel("Código:"));
-			panel.add(codigoField);
-			panel.add(new JLabel("Modelo:"));
-			panel.add(modeloField);
-			panel.add(new JLabel("Marca:"));
-			panel.add(marcaField);
-			panel.add(new JLabel("Descripción:"));
-			panel.add(descripcionField);
-			panel.add(new JLabel("Cantidad de Puertos:"));
-			panel.add(cantPuertosField);
-			panel.add(new JLabel("Tipo de Equipo:"));
-			panel.add(tipoEquipoComboBox);
-			panel.add(new JLabel("Tipo de Puerto:"));
-			panel.add(tipoPuertoComboBox);
-			panel.add(new JLabel("Ubicacion:"));
-			panel.add(ubicacionComboBox);
+                equipoService.insertar(equipo);
+                mostrarEquiposEnTabla(); // Refrescar la tabla después de la inserción
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error al agregar el equipo: " + e.getMessage(), "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
 
-			int result = JOptionPane.showConfirmDialog(this, panel, "Agregar Equipo", JOptionPane.OK_CANCEL_OPTION,
-					JOptionPane.PLAIN_MESSAGE);
-			if (result == JOptionPane.OK_OPTION) {
-				try {
-					int cantPuertos = Integer.parseInt(cantPuertosField.getText());
-					String tipoEquipo = (String) tipoEquipoComboBox.getSelectedItem();
-					String tipoPuerto = (String) tipoPuertoComboBox.getSelectedItem();
-					String ubicacion = (String) ubicacionComboBox.getSelectedItem();
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        int row = equiposTable.getSelectedRow();
+        String codigoEquipo = (String) equipoTableModel.getValueAt(row, 0); // Asumiendo que la columna 0 tiene el código
 
-					// Set velocity based on selected TipoPuerto
-					int velocidad = 0;
-					switch (tipoPuerto) {
-					case "C5":
-					case "100M":
-						velocidad = 100;
-						break;
-					case "C5E":
-					case "C6":
-					case "1G":
-						velocidad = 1000;
-						break;
-					default:
-						velocidad = 0;
-						break;
-					}
-
-					TipoPuerto puerto = new TipoPuerto(tipoPuerto, "Descripción del puerto", velocidad);
-
-					// Create Equipo object with selected values
-					Equipo equipo = new Equipo(codigoField.getText(), modeloField.getText(), marcaField.getText(),
-							descripcionField.getText(), new Ubicacion(ubicacion, ""), new TipoEquipo(tipoEquipo, ""),
-							cantPuertos, puerto, true);
-
-					equipoService.insertar(equipo);
-					mostrarEquiposEnTabla(); // Refresh the table after insertion
-				} catch (Exception e) {
-					e.printStackTrace();
-					JOptionPane.showMessageDialog(this, "Error al agregar el equipo: " + e.getMessage(), "Error",
-							JOptionPane.ERROR_MESSAGE);
-				}
-			}
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(this, "Error al cargar los datos.", "Error", JOptionPane.ERROR_MESSAGE);
-
-		}
-
-		/*
-		 * // ComboBox for TipoEquipo JComboBox<String> tipoEquipoComboBox = new
-		 * JComboBox<>(new String[]{"AP", "COM", "RT", "SW"}); // ComboBox for
-		 * TipoPuerto JComboBox<String> tipoPuertoComboBox = new JComboBox<>(new
-		 * String[]{"C5", "C5E", "C6", "100M", "1G"}); // ComboBox for Ubicacion
-		 * JComboBox<String> ubicacionComboBox = new JComboBox<>(new String[]{"A01",
-		 * "A03", "A06", "BT", "FOT", "GRE", "L00", "L02", "L05", "OFI", "RAM"});
-		 */
-
-	}
+        try {
+            System.out.println("Botón 'Eliminar' clickeado para: " + codigoEquipo);
+            Equipo equipoAEliminar = equipoService.buscarPorCodigo(codigoEquipo);
+            eliminarEquipo(equipoAEliminar);
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al buscar el equipo: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 }
