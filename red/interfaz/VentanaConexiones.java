@@ -19,7 +19,6 @@ import red.servicio.TipoCableService;
 import red.servicio.TipoCableServiceImp;
 import red.servicio.ConexionService;
 import red.servicio.ConexionServiceImp;
-import red.interfaz.ButtonEditor;
 import red.modelo.Equipo;
 import red.modelo.TipoPuerto;
 
@@ -94,32 +93,31 @@ public class VentanaConexiones extends JFrame implements ActionListener {
                 conexionTableModel.addRow(new Object[] { conexion.getEquipo1().getCodigo(),
                         conexion.getEquipo2().getCodigo(), conexion.getTipoCable().getDescripcion(), "Eliminar" });
             }
-
+    
             conexionesTable.getColumn("Acciones").setCellRenderer(new ButtonRenderer());
-            conexionesTable.getColumn("Acciones").setCellEditor(new ButtonEditor(new JCheckBox(), conexionesTable));
-
+            conexionesTable.getColumn("Acciones").setCellEditor(new ButtonEditor(new JCheckBox(), conexionesTable, "conexion", null, conexionService));
+    
         } catch (FileNotFoundException e) {
             JOptionPane.showMessageDialog(this, "Error al cargar las conexiones.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+    
 
     private void eliminarConexion(Conexion conexion) {
-        int confirmacion = JOptionPane.showConfirmDialog(this, "¿Estás seguro de que quieres eliminar esta conexión?",
-                "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
+        int confirmacion = JOptionPane.showConfirmDialog(this, 
+            "¿Estás seguro de que quieres eliminar esta conexión?",
+            "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
+
         if (confirmacion == JOptionPane.YES_OPTION) {
             try {
-                conexionService.borrar(conexion); // Lógica para borrar la conexión
-                JOptionPane.showMessageDialog(this, "Conexión eliminada correctamente.", "Éxito",
-                        JOptionPane.INFORMATION_MESSAGE);
-                mostrarConexionesEnTabla(); // Refrescar la tabla después de eliminar
-
+                conexionService.borrar(conexion);
+                JOptionPane.showMessageDialog(this, "Conexión eliminada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                mostrarConexionesEnTabla(); // Refrescar la tabla para actualizar la lista de conexiones
             } catch (Exception e) {
-                e.printStackTrace(); // Mostrar el error en consola
-                JOptionPane.showMessageDialog(this, "Error al eliminar la conexión: " + e.getMessage(), "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error al eliminar la conexión: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
-        mostrarConexionesEnTabla(); // Refrescar la tabla en la interfaz
     }
 
     // Método para obtener un equipo según su código
@@ -217,7 +215,7 @@ public class VentanaConexiones extends JFrame implements ActionListener {
         equipo.getPuertos().forEach(puerto -> tipoPuertoComboBox.addItem(puerto.getTipoPuerto().getCodigo()));
     }
 
-    @Override
+   /* */ @Override
     public void actionPerformed(ActionEvent e) {
         int row = conexionesTable.getSelectedRow();
         String equipo1Codigo = (String) conexionTableModel.getValueAt(row, 0); // Assuming the first column has the team
