@@ -1,6 +1,7 @@
 package red.modelo;
 
 import java.util.Objects;
+import red.excepciones.EquipoRepetidoException;
 
 /**
  * Clase que representa una conexión entre dos equipos en una red.
@@ -28,9 +29,8 @@ public class Conexion {
                     TipoPuerto tipoPuerto2) {
         super();
         // Verificar que los equipos sean diferentes.
-        if (equipo1.equals(equipo2)) {
-            throw new IllegalArgumentException("Los equipos en una conexión deben ser diferentes.");
-        }
+        if (equipo1.equals(equipo2))
+            throw new EquipoRepetidoException("Los equipos en una conexión deben ser diferentes.");
         this.equipo1 = equipo1;
         this.equipo2 = equipo2;
         this.tipoCable = tipoCable;
@@ -59,7 +59,9 @@ public class Conexion {
         return equipo1;
     }
 
-    public void setEquipo1(Equipo equipo1) {
+    public void setEquipo1(Equipo equipo1) throws EquipoRepetidoException{
+    	if (equipo1.equals(equipo2))
+    		throw new EquipoRepetidoException("El equipo en cuestión es igual al equipo 2, con código " + equipo2.getCodigo());
         this.equipo1 = equipo1;
     }
 
@@ -67,7 +69,9 @@ public class Conexion {
         return equipo2;
     }
 
-    public void setEquipo2(Equipo equipo2) {
+    public void setEquipo2(Equipo equipo2) throws EquipoRepetidoException{
+    	if (equipo2.equals(equipo1))
+    		throw new EquipoRepetidoException("El equipo en cuestión es igual al equipo 1, con código " + equipo1.getCodigo());
         this.equipo2 = equipo2;
     }
 

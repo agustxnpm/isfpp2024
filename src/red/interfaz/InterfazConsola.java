@@ -15,7 +15,7 @@ import red.modelo.Ubicacion;
  * Clase que representa la interfaz de usuario para interactuar con el sistema.
  * Permite mostrar información y solicitar datos para gestionar la red.
  */
-public class Interfaz {
+public class InterfazConsola {
 
     private Coordinador coordinador; // Coordinador para manejar la lógica de negocio.
     private Scanner scanner = new Scanner(System.in); // Scanner para leer entradas del usuario.
@@ -105,20 +105,18 @@ public class Interfaz {
         System.out.print("TipoPuerto descripcion: ");
         String tpDesc = scanner.nextLine();
 
-        System.out.print("TipoPuerto velocidad: ");
-        String tpVel = scanner.nextLine();
+        int tpVel = obtenerParametroNoNegativo("TipoPuerto velocidad: ");
 
-        System.out.print("Cantidad de puertos: ");
-        String cantPuerto = scanner.nextLine();
+        int cantPuerto = obtenerParametroNoNegativo("Cantidad de puertos: ");
 
         // Crear instancias de Ubicacion, TipoEquipo y TipoPuerto
         Ubicacion ubicacion = new Ubicacion(ubiCod, ubiDesc);
         TipoEquipo tipoEquipo = new TipoEquipo(teCod, teDesc);
-        TipoPuerto tipoPuerto = new TipoPuerto(tpCod, tpDesc, Integer.parseInt(tpVel));
+        TipoPuerto tipoPuerto = new TipoPuerto(tpCod, tpDesc, tpVel);
         boolean estado = true; // Asignar un estado inicial al equipo.
 
         // Crear y retornar la instancia de Equipo.
-        return new Equipo(codigo, modelo, marca, descripcion, ubicacion, tipoEquipo, Integer.parseInt(cantPuerto),
+        return new Equipo(codigo, modelo, marca, descripcion, ubicacion, tipoEquipo, cantPuerto,
                 tipoPuerto, estado);
     }
 
@@ -166,5 +164,24 @@ public class Interfaz {
     public String solicitarOpcion() {
         System.out.print("Ingrese su opción: ");
         return scanner.nextLine();
+    }
+    
+    /**
+     * Solicita un número al usuario
+     * Captura cualquier excepción producida (por ejemplo, InputMismatchException) llamando de nuevo al mismo
+     */
+    private int obtenerParametroNoNegativo(String msj) {
+    	try {
+    		System.out.print(msj);
+            int r = Integer.parseInt(scanner.nextLine());
+            if (r < 0) {
+            	System.out.println("El valor no puede ser negativo. Intente de nuevo");
+            	return obtenerParametroNoNegativo(msj);
+            }
+            else return r;
+    	} catch (Exception e) {
+    		System.out.println("Opción no válida. El valor debe ser un número entero no negativo.");
+    		return obtenerParametroNoNegativo(msj);
+    	}
     }
 }

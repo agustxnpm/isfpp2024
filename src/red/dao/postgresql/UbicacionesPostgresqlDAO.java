@@ -21,9 +21,8 @@ public class UbicacionesPostgresqlDAO implements UbicacionDAO {
 		ResultSet rs = null;
 		try {
 			con = BDConexion.getConnection();
-			String sql = "";
-			sql += "INSERT INTO poo2024.ubicaciones_palma (codigo, descripcion) ";
-			sql += "VALUES(?, ?) ";
+			String sql = "INSERT INTO poo2024.ubicaciones_palma (codigo, descripcion) "
+					+ "VALUES(?, ?) ";
 			pstm = con.prepareStatement(sql);
 			pstm.setString(1, ubicacion.getCodigo());
 			pstm.setString(2, ubicacion.getDescripcion());
@@ -52,9 +51,9 @@ public class UbicacionesPostgresqlDAO implements UbicacionDAO {
 		ResultSet rs = null;
 		try {
 			con = BDConexion.getConnection();
-			String sql = "UPDATE poo2024.ubicaciones_palma ";
-			sql += "SET descripcion = ?";
-			sql += "WHERE codigo = ?";
+			String sql = "UPDATE poo2024.ubicaciones_palma "
+					+ "SET descripcion = ?"
+					+ "WHERE codigo = ?";
 			
 			pstm = con.prepareStatement(sql);
 			pstm.setString(1, ubicacion.getDescripcion());

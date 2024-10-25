@@ -40,24 +40,21 @@ public class Calculo {
     public void cargarDatos(List<Equipo> eq, List<Conexion> conex) {
         // Mapa para almacenar equipos por su código.
         TreeMap<String, Equipo> equipos = new TreeMap<String, Equipo>();
-        for (Equipo e : eq) {
+        for (Equipo e : eq)
             equipos.put(e.getCodigo(), e);
-        }
 
         // Crear un grafo no dirigido para la red.
         red = new AdjacencyMapGraph<>(false);
 
         // Mapa de vértices de equipos en el grafo.
         vertices = new TreeMap<String, Vertex<Equipo>>();
-        for (Entry<String, Equipo> e : equipos.entrySet()) {
+        for (Entry<String, Equipo> e : equipos.entrySet())
             // Insertar cada equipo como un vértice en el grafo.
             vertices.put(e.getKey(), red.insertVertex(e.getValue()));
-        }
 
         // Insertar conexiones como aristas entre los vértices del grafo.
-        for (Conexion c : conex) {
+        for (Conexion c : conex)
             red.insertEdge(vertices.get(c.getEquipo1().getCodigo()), vertices.get(c.getEquipo2().getCodigo()), c);
-        }
     }
 
     public void setCoordinador(Coordinador coordinador) {
@@ -71,11 +68,9 @@ public class Calculo {
      * @return Equipo con el código proporcionado o null si no se encuentra.
      */
     public Equipo obtenerEquipo(String codigo) {
-        for (Vertex<Equipo> e : vertices.values()) {
-            if (e.getElement().getCodigo().equals(codigo)) {
+        for (Vertex<Equipo> e : vertices.values())
+            if (e.getElement().getCodigo().equals(codigo))
                 return e.getElement();
-            }
-        }
         return null;
     }
 
@@ -100,9 +95,8 @@ public class Calculo {
             Equipo actual = cola.poll();
 
             // Si alcanzamos el equipo destino, reconstruimos la ruta.
-            if (actual.equals(equipoFin)) {
+            if (actual.equals(equipoFin))
                 return reconstruirRuta(predecesores, equipoInicio, equipoFin);
-            }
 
             // Recorrer todas las conexiones del equipo actual.
             for (Edge<Conexion> conexion : red.edges()) {
@@ -178,14 +172,12 @@ public class Calculo {
      * @return La conexión entre equipo1 y equipo2, o null si no existe.
      */
     private Conexion buscarConexion(Equipo equipo1, Equipo equipo2) {
-        for (Edge<Conexion> conexion : red.edges()) {
+        for (Edge<Conexion> conexion : red.edges())
             if ((conexion.getElement().getEquipo1().equals(equipo1)
                     && conexion.getElement().getEquipo2().equals(equipo2))
                     || (conexion.getElement().getEquipo1().equals(equipo2)
-                            && conexion.getElement().getEquipo2().equals(equipo1))) {
+                            && conexion.getElement().getEquipo2().equals(equipo1)))
                 return conexion.getElement();
-            }
-        }
         return null; // No se encontró conexión entre los dos equipos.
     }
 
@@ -227,9 +219,8 @@ public class Calculo {
                 } else if (!conexionFuncionando) {
                     System.out.println("Problema con el cable entre " + equipo1.getCodigo() + " y " + equipo2.getCodigo() + ". Se pierde conectividad aquí.");
                     return;
-                } else {
+                } else
                     System.out.println("Conectividad correcta entre " + equipo1.getCodigo() + " y " + equipo2.getCodigo());
-                }
             }
         }
 
@@ -243,17 +234,15 @@ public class Calculo {
      * @return true si el ping fue exitoso, false en caso contrario.
      */
     public boolean realizarPingAEquipo(String direccionIp) {
-        for (Vertex<Equipo> equipo : vertices.values()) {
+        for (Vertex<Equipo> equipo : vertices.values())
             if (equipo.getElement().getDireccionesIp().contains(direccionIp)) {
                 boolean respuestaPing = equipo.getElement().realizarPing();
-                if (respuestaPing) {
+                if (respuestaPing)
                     System.out.println("Ping exitoso al equipo con IP: " + direccionIp);
-                } else {
-                    System.out.println("Ping fallido al equipo con IP: " + direccionIp);
-                }
+                else
+                	System.out.println("Ping fallido al equipo con IP: " + direccionIp);
                 return respuestaPing;
             }
-        }
         System.out.println("No se encontró un equipo con la IP: " + direccionIp);
         return false;
     }
@@ -265,13 +254,10 @@ public class Calculo {
      * @param finIp    IP final del rango.
      */
     public void realizarPingARango(String inicioIp, String finIp) {
-        for (Vertex<Equipo> equipo : vertices.values()) {
-            for (String ip : equipo.getElement().getDireccionesIp()) {
-                if (estaDentroDelRango(ip, inicioIp, finIp)) {
+        for (Vertex<Equipo> equipo : vertices.values())
+            for (String ip : equipo.getElement().getDireccionesIp())
+                if (estaDentroDelRango(ip, inicioIp, finIp))
                     realizarPingAEquipo(ip);
-                }
-            }
-        }
     }
 
     /**
@@ -298,9 +284,8 @@ public class Calculo {
         String[] octetos2 = ip2.split("\\.");
         for (int i = 0; i < 4; i++) {
             int diferencia = Integer.parseInt(octetos1[i]) - Integer.parseInt(octetos2[i]);
-            if (diferencia != 0) {
+            if (diferencia != 0)
                 return diferencia;
-            }
         }
         return 0;
     }

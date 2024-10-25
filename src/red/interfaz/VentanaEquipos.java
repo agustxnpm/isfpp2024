@@ -46,12 +46,7 @@ public class VentanaEquipos extends JFrame {
 		add(scrollEquipos, BorderLayout.CENTER);
 
 		JButton agregarEquipoButton = new JButton("Agregar Equipo");
-		agregarEquipoButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				agregarEquipo();
-			}
-		});
+		agregarEquipoButton.addActionListener(e -> agregarEquipo());
 
 		JPanel panelInferior = new JPanel();
 		panelInferior.add(agregarEquipoButton);
@@ -147,13 +142,13 @@ public class VentanaEquipos extends JFrame {
 	
 				TipoPuerto puerto = new TipoPuerto(tipoPuerto, "Descripción del puerto", velocidad);
 	
-				// Create Equipo object with selected values
+				// Crear objeto Equipo con valores seleccionados
 				Equipo equipo = new Equipo(codigoField.getText(), modeloField.getText(), marcaField.getText(),
-						descripcionField.getText(), new Ubicacion(ubicacion, ""), new TipoEquipo(tipoEquipo, ""), 
+						descripcionField.getText(), new Ubicacion(ubicacion, ""), new TipoEquipo(tipoEquipo, ""),
 						cantPuertos, puerto, true);
 	
 				equipoService.insertar(equipo);
-				mostrarEquiposEnTabla(); // Refresh the table after insertion
+				mostrarEquiposEnTabla(); // Refrescar la tabla después de la inserción
 			} catch (Exception e) {
 				e.printStackTrace();
 				JOptionPane.showMessageDialog(this, "Error al agregar el equipo: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

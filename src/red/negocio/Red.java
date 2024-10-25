@@ -32,9 +32,8 @@ public class Red {
 
 	
 	public static Red getRed() throws FileNotFoundException {
-		if (red == null) {
+		if (red == null)
 			red = new Red();
-		}
 		return red;
 	}
 	

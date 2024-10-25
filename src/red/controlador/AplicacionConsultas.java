@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 import red.excepciones.EquipoRepetidoException;
-import red.interfaz.Interfaz;
+import red.interfaz.InterfazConsola;
 import red.modelo.Conexion;
 import red.modelo.Equipo;
 import red.modelo.Ubicacion;
@@ -18,7 +18,7 @@ public class AplicacionConsultas {
 	private Calculo calculo;
 
 	// vista
-	private Interfaz interfaz;
+	private InterfazConsola interfaz;
 
 	// controlador
 	private Coordinador coordinador;
@@ -35,7 +35,7 @@ public class AplicacionConsultas {
 
 		calculo = new Calculo();
 		coordinador = new Coordinador();
-		interfaz = new Interfaz();
+		interfaz = new InterfazConsola();
 
 		/* Se establecen las relaciones entre clases */
 		calculo.setCoordinador(coordinador);
@@ -112,7 +112,7 @@ public class AplicacionConsultas {
 		try {
 			salida = Integer.parseInt(interfaz.solicitarOpcion());
 			return salida;
-		} catch(Exception e) {
+		} catch(NumberFormatException e) {
 			interfaz.mostrarError("Opción no válida. Por favor, seleccione un número del 1 al 10");
 			return calcularOpcion();
 		}
