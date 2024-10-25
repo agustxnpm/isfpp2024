@@ -205,43 +205,43 @@ public void borrar(Conexion conexion) {
 
 		return puertos;
 	}
-	@Override
-	public Conexion buscarPorCodigo(String equipo1Codigo, String equipo2Codigo) {
-		Connection con = null;
-		PreparedStatement pstm = null;
-		ResultSet rs = null;
-		try {
-			con = BDConexion.getConnection();
-			String sql = "SELECT * FROM poo2024.conexion_palma WHERE equipo1 = ? AND equipo2 = ?";
-			pstm = con.prepareStatement(sql);
-			pstm.setString(1, equipo1Codigo);
-			pstm.setString(2, equipo2Codigo);
-			rs = pstm.executeQuery();
-			if (rs.next()) {
-				// Aquí debes construir la conexión
-				// Por ejemplo:
-				Conexion conexion = new Conexion(
-					equipos.get(rs.getString("equipo1")),
-					equipos.get(rs.getString("equipo2")),
-					tipoCable.get(rs.getString("tipo_cable")),
-					tipoPuerto.get(rs.getString("tipo_puerto1")),
-					tipoPuerto.get(rs.getString("tipo_puerto2"))
-				);
-				return conexion;
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw new RuntimeException(ex);
-		} finally {
-			try {
-				if (rs != null) rs.close();
-				if (pstm != null) pstm.close();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-		return null;
-	}
-	
+@Override
+public Conexion buscarPorCodigo(String equipo1Codigo, String equipo2Codigo) {
+    Connection con = null;
+    PreparedStatement pstm = null;
+    ResultSet rs = null;
+    try {
+        con = BDConexion.getConnection();
+        String sql = "SELECT * FROM poo2024.conexion_palma WHERE equipo1 = ? AND equipo2 = ?";
+        pstm = con.prepareStatement(sql);
+        pstm.setString(1, equipo1Codigo);
+        pstm.setString(2, equipo2Codigo);
+        rs = pstm.executeQuery();
+        if (rs.next()) {
+            // Aquí debes construir la conexión
+            // Por ejemplo:
+            Conexion conexion = new Conexion(
+                equipos.get(rs.getString("equipo1")),
+                equipos.get(rs.getString("equipo2")),
+                tipoCable.get(rs.getString("tipo_cable")),
+                tipoPuerto.get(rs.getString("tipo_puerto1")),
+                tipoPuerto.get(rs.getString("tipo_puerto2"))
+            );
+            return conexion;
+        }
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        throw new RuntimeException(ex);
+    } finally {
+        try {
+            if (rs != null) rs.close();
+            if (pstm != null) pstm.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    return null;
+}
+
 	
 }
