@@ -22,7 +22,7 @@ public class Equipo {
     private List<String> direccionesIp; // Lista de direcciones IP asignadas al equipo.
     private Ubicacion ubicacion; // Ubicación física del equipo.
     private TipoEquipo tipoEquipo; // Tipo de equipo (por ejemplo, router, switch).
-    public List<Puerto> puertos; // Lista de puertos disponibles en el equipo.
+    private List<Puerto> puertos; // Lista de puertos disponibles en el equipo.
     private boolean estado; // Estado del equipo (Activo/Inactivo).
 
     /**
@@ -216,9 +216,7 @@ public class Equipo {
     
         return puertosInfo.toString();
     }
-    public List<Puerto> getPuertos() {
-        return puertos;
-    }
+ 
     
 
     @Override

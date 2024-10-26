@@ -35,7 +35,7 @@ public class VentanaEquipos extends JFrame implements ActionListener {
 
     public VentanaEquipos() {
         setTitle("Gestión de Equipos");
-        setSize(800, 400); // Ajustar el tamaño para ver todas las columnas
+        setSize(900, 400); // Ajustar el tamaño para ver todas las columnas
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -53,12 +53,12 @@ public class VentanaEquipos extends JFrame implements ActionListener {
                     JOptionPane.ERROR_MESSAGE);
         }
 
-        String[] equipoColumnNames = { "Código", "Descripción", "Marca", "Modelo", "Tipo Equipo", "Ubicación", "Estado", "Info Puertos", "Acciones" };
+        String[] equipoColumnNames = { "Código", "Descripción", "Marca", "Modelo", "Tipo Equipo", "Ubicación", "Estado", "Info Puertos", "Acciones", "Modificar" };
         equipoTableModel = new DefaultTableModel(equipoColumnNames, 0);
         equiposTable = new JTable(equipoTableModel) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == 8; // Solo la columna de "Acciones" es editable
+                return column == 8 || column == 9; // Solo la columna de "Acciones" es editable
             }
         };
 
@@ -96,14 +96,17 @@ public class VentanaEquipos extends JFrame implements ActionListener {
                     equipo.getUbicacion().getDescripcion(),   // Asumiendo que Ubicacion tiene un método getDescripcion()
                     estadoTexto,
                     equipo.getPuertosInfo(),  // Información sobre puertos (puede ser modificada para mayor detalle)
-                    "Eliminar"
+                    "Eliminar",
+                    "Modificar"
                 });
             }
 
             // Configurar los botones de "Eliminar"
-            equiposTable.getColumn("Acciones").setCellRenderer(new ButtonRenderer());
+            equiposTable.getColumn("Acciones").setCellRenderer(new ButtonRenderer("eliminar"));
             equiposTable.getColumn("Acciones").setCellEditor(new ButtonEditor(new JCheckBox(), equiposTable, "equipo", equipoService, null));
 
+            equiposTable.getColumn("Modificar").setCellRenderer(new ButtonRenderer("modificar"));
+            equiposTable.getColumn("Modificar").setCellEditor(new ButtonEditor(new JCheckBox(), equiposTable, "modificar", equipoService, null));
         } catch (FileNotFoundException e) {
             JOptionPane.showMessageDialog(this, "Error al cargar los equipos.", "Error", JOptionPane.ERROR_MESSAGE);
         }

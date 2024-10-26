@@ -111,7 +111,6 @@ public class VentanaConsultas extends JFrame {
         }
     }
 
-    // Method to detect connectivity problems
     private void detectarProblemasConectividad() {
         try {
             Equipo equipo = equipoService.buscarPorCodigo("EQUIPO1"); // Example code
