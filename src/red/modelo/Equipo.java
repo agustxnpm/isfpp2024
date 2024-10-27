@@ -143,7 +143,7 @@ public class Equipo {
      * @throws IllegalArgumentException si la IP no tiene el formato válido
      * @throws DireccionIpRepetidaException Si la IP ya está asignada al equipo.
      */
-    public void agregarIp(String ip) throws DireccionIpRepetidaException {
+    public void agregarIp(String ip) throws DireccionIpRepetidaException, IllegalArgumentException {
         // Expresión regular para validar IPv4.
         String ipv4Regex = "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
         Pattern pattern = Pattern.compile(ipv4Regex);
@@ -166,20 +166,23 @@ public class Equipo {
      * 
      * @param cantPuertos Cantidad de puertos.
      * @param tipoPuerto Tipo de puerto.
+     * @throws IllegalArgumentException si cantPuertos es menor a 1 (dado que el equipo debe tener al menos un puerto)
      */
     public void agregarPuerto(int cantPuertos, TipoPuerto tipoPuerto) throws IllegalArgumentException {
+    	// si cantPuertos no es positivo, lanza la excepción
         if (cantPuertos <= 0)
             throw new IllegalArgumentException("El equipo debe tener al menos un puerto");
 
-        Puerto puerto = new Puerto(cantPuertos, tipoPuerto);
+        Puerto puerto = new Puerto(cantPuertos, tipoPuerto); //crea el puerto
         if (puertos.contains(puerto)) {
+        	//si el tipo de puerto ya se encuentra añadido a la lista de puertos, le suma a su cantidad de puertos la ingresada en el método
             int index = puertos.indexOf(puerto);
             Puerto puertoExistente = puertos.get(index);
             puertoExistente.setCantidadPuertos(puertoExistente.getCantidadPuertos() + puerto.getCantidadPuertos());
             puertos.set(index, puertoExistente);
             return;
         }
-
+        //si el tipo de puerto no se encontraba en el equipo, lo añade
         puertos.add(puerto);
     }
 
@@ -196,8 +199,7 @@ public class Equipo {
                             .append(",")
                             .append(p.getCantidadPuertos())               // Cantidad de puertos
                             .append(";");
-            else
-                // Si el TipoPuerto es null, podemos manejarlo aquí
+            else // Si el TipoPuerto es null, podemos manejarlo aquí
                 puertosInfo.append("N/A")   // O cualquier otra información predeterminada
                             .append(",")
                             .append(p.getCantidadPuertos())               
