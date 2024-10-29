@@ -238,7 +238,24 @@ public class EquipoPostgresqlDAO implements EquipoDAO {
 				}
 				ret.add(eq);
 			}
+			String sqlIp = "SELECT equipo_codigo, direccion_ip FROM poo2024.direcciones_ip_palma";
+			pstm = con.prepareStatement(sqlIp);
+			rs = pstm.executeQuery();
+			
+			while (rs.next()) {
+				String equipoCodigo = rs.getString("equipo_codigo");
+				String direccionIp = rs.getString("direccion_ip");
+				for (Equipo e : ret) {
+					if (e.getCodigo().equals(equipoCodigo)) {
+						if (direccionIp != null && !direccionIp.isEmpty()) {
+                            e.agregarIp(direccionIp);
+                        }
+					}
+				}
+				
+			}
 
+			
 			return ret;
 		} catch (Exception ex) {
 			ex.printStackTrace();
