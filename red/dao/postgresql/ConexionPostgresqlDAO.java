@@ -210,7 +210,7 @@ public class ConexionPostgresqlDAO implements ConexionDAO {
 		return puertos;
 	}
 
-	@Override
+	/*
 	public Conexion buscarPorCodigo(String equipo1Codigo, String equipo2Codigo) {
 		Connection con = null;
 		PreparedStatement pstm = null;
@@ -243,5 +243,5 @@ public class ConexionPostgresqlDAO implements ConexionDAO {
 		}
 		return null;
 	}
-
+	*/
 }

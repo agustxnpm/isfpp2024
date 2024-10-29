@@ -3,6 +3,7 @@ package red.servicio;
 import red.dao.ConexionDAO;
 import red.dao.EquipoDAO;
 import red.dao.postgresql.ConexionPostgresqlDAO;
+import red.factory.Factory;
 import red.modelo.Conexion;
 
 import java.io.FileNotFoundException;
@@ -13,7 +14,7 @@ public class ConexionServiceImp implements ConexionService {
     private ConexionDAO conexionDAO;
 
     public ConexionServiceImp() throws FileNotFoundException { 
-        this.conexionDAO = new ConexionPostgresqlDAO();
+        this.conexionDAO = (ConexionDAO) Factory.getInstancia("CONEXION");
     }
 
     @Override
@@ -36,8 +37,9 @@ public class ConexionServiceImp implements ConexionService {
         return conexionDAO.buscarTodos();
     }
 
-    @Override
+    /*
     public Conexion buscarPorCodigo(String equipo1Codigo, String equipo2Codigo) throws FileNotFoundException {
         return conexionDAO.buscarPorCodigo(equipo1Codigo, equipo2Codigo);
     }
+    */
 }

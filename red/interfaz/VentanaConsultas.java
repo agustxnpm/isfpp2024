@@ -10,6 +10,7 @@ import java.util.List;
 import red.modelo.Equipo;
 import red.modelo.Conexion;
 import red.negocio.Calculo;
+import red.negocio.Red;
 import red.servicio.EquipoService;
 import red.servicio.ConexionService;
 import red.servicio.EquipoServiceImp;
@@ -17,86 +18,76 @@ import red.servicio.TipoCableServiceImp;
 import red.servicio.ConexionServiceImp;
 
 public class VentanaConsultas extends JFrame {
-
-    private EquipoService equipoService;
-    private ConexionService conexionService;
+ 
     private Calculo calculo;
+    private Red red;
+    
+    private JButton calcularVelocidadButton;
+    private JButton pingEquipoButton;
+    private JButton detectarProblemasButton;
+    private JButton calcularButton; // boton para confirmar el calculo de la velocidad
 
-    public VentanaConsultas() {
+
+    public VentanaConsultas(Calculo calculo, Red red) {
         setTitle("Consultas de la Red");
         setSize(600, 400);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        try {
-            // Inicializar los servicios antes de utilizarlos
-            equipoService = new EquipoServiceImp();
-            conexionService = new ConexionServiceImp();
-            calculo = new Calculo(); // Initialize Calculo
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        
+        this.calculo = calculo;
+		this.red = red;
 
 
-
-        } catch (FileNotFoundException e) {
-            JOptionPane.showMessageDialog(this, "Error al cargar los datos de las conexiones.", "Error",
-                    JOptionPane.ERROR_MESSAGE);
-        }
+		Handler handler = new Handler();
 
      
-        JButton calcularVelocidadButton = new JButton("Calcular Velocidad Máxima");
-        calcularVelocidadButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                calcularVelocidadMaxima();
-            }
-        });
+        calcularVelocidadButton = new JButton("Calcular Velocidad Máxima");
+        calcularVelocidadButton.setBounds(23, 120, 171, 69);
+        calcularVelocidadButton.addActionListener(handler);
+  
 
-        JButton pingEquipoButton = new JButton("Realizar Ping a Equipo");
-        pingEquipoButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                realizarPingAEquipo();
-            }
-        });
+        pingEquipoButton = new JButton("Realizar Ping a Equipo");
+        pingEquipoButton.setBounds(206, 120, 171, 69);
+        pingEquipoButton.addActionListener(handler);
+ 
 
-        JButton detectarProblemasButton = new JButton("Detectar Problemas de Conectividad");
-        detectarProblemasButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                detectarProblemasConectividad();
-            }
-        });
+        detectarProblemasButton = new JButton("Detectar Problemas");
+        detectarProblemasButton.setBounds(387, 120, 171, 69);
+        detectarProblemasButton.addActionListener(handler);
+ 
 
-        JPanel panel = new JPanel(new GridLayout(0, 1));
+        JPanel panel = new JPanel();
+        panel.setLayout(null);
         panel.add(calcularVelocidadButton);
         panel.add(pingEquipoButton);
         panel.add(detectarProblemasButton);
 
-        add(panel, BorderLayout.CENTER);
+        getContentPane().add(panel, BorderLayout.CENTER);
     }
 
-    // Method to calculate maximum speed based on selected equipment
-    private void calcularVelocidadMaxima() {
-        try {
-            // Fetch the list of equipment and connections
-            List<Equipo> equipos = equipoService.buscarTodos();
-            List<Conexion> conexiones = conexionService.buscarTodos();
-            calculo.cargarDatos(equipos, conexiones); // Load data into the graph
+    private void ventanaVelocidad() {
+    	
+    	calcularButton = new JButton("Calcular");
+        
+        JPanel panelCentral = new JPanel();
+        panelCentral.add(new JLabel("Seleccione los equipos para calcular velocidad"));
 
-            // Perform calculation between two selected teams
-            Equipo equipoInicio = equipoService.buscarPorCodigo("EQUIPO1"); // Example code
-            Equipo equipoFin = equipoService.buscarPorCodigo("EQUIPO2"); // Example code
+        /**** componentes para elegir los equipos y calcular su velocidad ****/
+        
+        
+        JDialog dialog = new JDialog(this, "Calcular Velocidad", true);
+        
+        JPanel panelInferior = new JPanel();
+       
+        panelInferior.add(calcularButton);
+        
+        dialog.add(panelCentral, BorderLayout.CENTER);
+        dialog.add(panelInferior, BorderLayout.SOUTH);
+        dialog.setSize(500, 300);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
 
-            List<Equipo> ruta = calculo.buscarRuta(equipoInicio, equipoFin);
-
-            if (ruta != null) {
-                int velocidadMaxima = calculo.calcularVelocidadMaxima(ruta);
-                JOptionPane.showMessageDialog(this, "Velocidad máxima de transmisión: " + velocidadMaxima + " Mbps");
-            } else {
-                JOptionPane.showMessageDialog(this, "No se encontró una ruta entre los equipos seleccionados.");
-            }
-        } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error al cargar los datos.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+    	
     }
 
     // Method to perform ping on a selected team
@@ -113,8 +104,8 @@ public class VentanaConsultas extends JFrame {
 
     private void detectarProblemasConectividad() {
         try {
-            Equipo equipo = equipoService.buscarPorCodigo("EQUIPO1"); // Example code
-            Equipo gateway = equipoService.buscarPorCodigo("GATEWAY"); // Example code
+            Equipo equipo = red.buscarEquipoPorCodigo("codigo"); // Example code
+            Equipo gateway = red.buscarEquipoPorCodigo("codigo"); // Example code
 
             calculo.verificarConectividad(equipo, gateway); // Perform connectivity check
         } catch (FileNotFoundException ex) {
@@ -122,4 +113,24 @@ public class VentanaConsultas extends JFrame {
             JOptionPane.showMessageDialog(this, "Error al buscar el equipo o Gateway.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+    
+
+	private class Handler implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			if (e.getSource().equals(calcularVelocidadButton))
+				ventanaVelocidad();
+			
+			if (e.getSource().equals(pingEquipoButton))
+                realizarPingAEquipo();
+			
+			if (e.getSource().equals(detectarProblemasButton))
+                detectarProblemasConectividad();
+		}
+		
+	}
 }
+
+	

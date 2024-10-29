@@ -95,8 +95,7 @@ public class Conexion {
             return false;
         Conexion other = (Conexion) obj;
         // Las conexiones son iguales si tienen los mismos equipos y tipo de cable.
-        return Objects.equals(equipo1, other.equipo1) && Objects.equals(equipo2, other.equipo2)
-                && Objects.equals(tipoCable, other.tipoCable);
+        return Objects.equals(equipo1, other.equipo1) && Objects.equals(equipo2, other.equipo2);
     }
 
     @Override

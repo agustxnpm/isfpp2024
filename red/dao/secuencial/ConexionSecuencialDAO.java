@@ -195,7 +195,7 @@ public class ConexionSecuencialDAO implements ConexionDAO {
         }
         return list;
     }
-    @Override
+    /*
     public Conexion buscarPorCodigo(String equipo1Codigo, String equipo2Codigo) {
         // Buscar la conexión dentro de la lista de conexiones.
         for (Conexion conexion : list) {
@@ -208,5 +208,5 @@ public class ConexionSecuencialDAO implements ConexionDAO {
         // Si no encuentra ninguna conexión, devolver null.
         return null;
     }
-    
+    */
 }

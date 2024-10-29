@@ -1,68 +1,119 @@
 package red.interfaz;
 
 import javax.swing.*;
+
+import red.modelo.Conexion;
+import red.modelo.Equipo;
+import red.negocio.Calculo;
+import red.negocio.Red;
+import red.servicio.ConexionService;
+import red.servicio.ConexionServiceImp;
+import red.servicio.EquipoService;
+import red.servicio.EquipoServiceImp;
+import red.servicio.TipoCableService;
+import red.servicio.TipoCableServiceImp;
+import red.servicio.TipoEquipoService;
+import red.servicio.TipoEquipoServiceImp;
+import red.servicio.TipoPuertoService;
+import red.servicio.TipoPuertoServiceImp;
+import red.servicio.UbicacionService;
+import red.servicio.UbicacionServiceImp;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.util.List;
 
 public class VentanaPrincipal extends JFrame {
 
-    public VentanaPrincipal() {
-        setTitle("Gestión de Red - Menú Principal");
-        setSize(400, 300);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+	private Calculo calculo;
+	private Red red;
 
-        // Crear menú
-        JMenuBar menuBar = new JMenuBar();
+	private JMenuBar menuBar;
+	private JMenuItem menuEquipos;
+	private JMenuItem menuConexiones;
+	private JMenuItem menuConsultas;
+	private JMenu menuOpciones;
 
-        JMenu menu = new JMenu("Opciones");
-        menuBar.add(menu);
+	public VentanaPrincipal() {
+		setTitle("Gestión de Red - Menú Principal");
+		setSize(400, 300);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLocationRelativeTo(null);
 
-        JMenuItem menuEquipos = new JMenuItem("Gestionar Equipos");
-        JMenuItem menuConexiones = new JMenuItem("Gestionar Conexiones");
-        JMenuItem menuConsultas = new JMenuItem("Consultas de Red"); // Nueva opción para VentanaConsultas
-        menu.add(menuEquipos);
-        menu.add(menuConexiones);
-        menu.add(menuConsultas); // Agregar el nuevo ítem al menú
+		/*** cargar servicios y calculo ***/
+		try {
+			calculo = new Calculo();
+			red = Red.getRed();
+			List<Equipo> equipos = red.getEquipos();
+			List<Conexion> conexiones = red.getConexiones();
+			calculo.cargarDatos(equipos, conexiones);
+		} catch (FileNotFoundException e) {
+			System.out.println("Error al cargar los datos.");
+			e.printStackTrace();
+		}
 
-        setJMenuBar(menuBar);
+		inicializarComponentes();
 
-        // Acción para abrir la ventana de equipos
-        menuEquipos.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                VentanaEquipos ventanaEquipos = new VentanaEquipos();
-                ventanaEquipos.setVisible(true);  // Mostrar la ventana de equipos
-            }
-        });
+	}
 
-        // Acción para abrir la ventana de conexiones
-        menuConexiones.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                VentanaConexiones ventanaConexiones = new VentanaConexiones();
-                ventanaConexiones.setVisible(true);  // Mostrar la ventana de conexiones
-            }
-        });
+	private void inicializarComponentes() {
+		// Crear menú
+		menuBar = new JMenuBar();
 
-        // Acción para abrir la ventana de consultas
-        menuConsultas.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                VentanaConsultas ventanaConsultas = new VentanaConsultas();
-                ventanaConsultas.setVisible(true);  // Mostrar la ventana de consultas
-            }
-        });
-    }
+		JMenu menuOpciones = new JMenu("Opciones");
+		menuBar.add(menuOpciones);
 
-    // Método para lanzar la ventana principal
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                VentanaPrincipal ventana = new VentanaPrincipal();
-                ventana.setVisible(true);
-            }
-        });
-    }
+		menuEquipos = new JMenuItem("Gestionar Equipos");
+		menuConexiones = new JMenuItem("Gestionar Conexiones");
+		menuConsultas = new JMenuItem("Consultas de Red"); // Nueva opción para VentanaConsultas
+		
+		menuOpciones.add(menuEquipos);
+		menuOpciones.add(menuConexiones);
+		menuOpciones.add(menuConsultas); // Agregar el nuevo ítem al menú
+
+		setJMenuBar(menuBar);
+
+		Handler handler = new Handler();
+		
+		menuEquipos.addActionListener(handler);
+		menuConexiones.addActionListener(handler);	
+		menuConsultas.addActionListener(handler);
+	
+	}
+
+	private class Handler implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			if (e.getSource().equals(menuEquipos)) {
+				VentanaEquipos ventanaEquipos = new VentanaEquipos(red);
+				ventanaEquipos.setVisible(true); // Mostrar la ventana de equipos
+			}
+			
+			if (e.getSource().equals(menuConexiones)) {
+				VentanaConexiones ventanaConexiones = new VentanaConexiones(red);
+				ventanaConexiones.setVisible(true); // Mostrar la ventana de conexiones
+			}
+			
+			if (e.getSource().equals(menuConsultas)) {
+				VentanaConsultas ventanaConsultas = new VentanaConsultas(calculo, red);
+				ventanaConsultas.setVisible(true); // Mostrar la ventana de consultas
+			}
+				
+		}
+
+	}
+
+	// Método para lanzar la ventana principal
+	public static void main(String[] args) {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				VentanaPrincipal ventana = new VentanaPrincipal();
+				ventana.setVisible(true);
+			}
+		});
+	}
 }

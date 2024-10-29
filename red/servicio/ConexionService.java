@@ -39,9 +39,6 @@ public interface ConexionService {
      */
     List<Conexion> buscarTodos() throws FileNotFoundException;
 
-    Conexion buscarPorCodigo(String equipo1Codigo, String equipo2Codigo) throws FileNotFoundException;
-
-
 }
 
 

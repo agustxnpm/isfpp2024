@@ -17,29 +17,29 @@ import red.servicio.UbicacionService;
 import red.modelo.Equipo;
 import red.modelo.TipoPuerto;
 import red.modelo.Ubicacion;
+import red.negocio.Red;
 import red.modelo.Conexion;
 
 class ButtonEditor extends DefaultCellEditor {
+	
+	private Red red;
+	
 	protected JButton button;
+	
 	private String label;
 	private boolean isPushed;
 	private JTable table;
 	private String actionType; // Nueva variable para determinar el tipo de acción ("equipo" o "conexion")
-	private EquipoService equipoService;
-	private ConexionService conexionService;
-	private UbicacionService uS;
-	private TipoPuertoService tS;
+	
+	
 
 	// Constructor para el manejo de eliminaciones, especificando el tipo de acción
-	public ButtonEditor(JCheckBox checkBox, JTable table, String actionType, EquipoService equipoService,
-			ConexionService conexionService) {
+	public ButtonEditor(JCheckBox checkBox, JTable table, String actionType, Red red) {
 		super(checkBox);
 		this.table = table;
 		this.actionType = actionType; // Define si es para equipos o conexiones
-		this.equipoService = equipoService;
-		this.conexionService = conexionService;
-		uS = new UbicacionServiceImp();
-	    tS = new TipoPuertoServiceImp();
+		this.red = red;
+
 
 		button = new JButton();
 		button.setOpaque(true);
@@ -98,9 +98,8 @@ class ButtonEditor extends DefaultCellEditor {
 				"Confirmar eliminación", JOptionPane.YES_NO_OPTION);
 		if (confirmacion == JOptionPane.YES_OPTION) {
 			try {
-				Equipo equipoAEliminar = equipoService.buscarPorCodigo(equipoCodigo);
-				equipoService.borrar(equipoAEliminar);
-
+				Equipo equipoAEliminar = red.buscarEquipoPorCodigo(equipoCodigo);
+				red.borrarEquipo(equipoAEliminar);
 				// Detener la edición antes de eliminar la fila
 				stopCellEditing();
 
@@ -126,8 +125,8 @@ class ButtonEditor extends DefaultCellEditor {
 
 
 	    try {
-	        listUbicaciones = uS.buscarTodos();
-	        listTipoPuerto = tS.buscarTodos();
+	        listUbicaciones = red.getUbicaciones();
+	        listTipoPuerto = red.getTipoPuertoService().buscarTodos();
 	        String[] ubicacionArray = listUbicaciones.stream().map(Ubicacion::getDescripcion).toArray(String[]::new);
 	        String[] tipoPuertoArray = listTipoPuerto.stream().map(TipoPuerto::getCodigo).toArray(String[]::new);
 
@@ -170,7 +169,7 @@ class ButtonEditor extends DefaultCellEditor {
 	        
 
 	        // Buscar el equipo y mostrar el diálogo de modificación
-	        equipoAModificar = equipoService.buscarPorCodigo(equipoCodigo);
+	        equipoAModificar = red.buscarEquipoPorCodigo(equipoCodigo);
 	        codigoField.setText(equipoAModificar.getCodigo());
 	        tipoEquipoField.setText(equipoAModificar.getTipoEquipo().getDescripcion());
 	        estadoField.setText(Boolean.toString(equipoAModificar.isEstado()));
@@ -202,7 +201,7 @@ class ButtonEditor extends DefaultCellEditor {
 	            }
 
 	            // Actualizar el equipo en el servicio
-	            equipoService.actualizar(equipoAModificar);
+	            red.modificarEquipo(equipoAModificar);
 
 	            // Mensaje de confirmación y refrescar tabla
 	            JOptionPane.showMessageDialog(null, "Equipo modificado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
@@ -228,8 +227,8 @@ class ButtonEditor extends DefaultCellEditor {
 				"Confirmar eliminación", JOptionPane.YES_NO_OPTION);
 		if (confirmacion == JOptionPane.YES_OPTION) {
 			try {
-				Conexion conexionAEliminar = conexionService.buscarPorCodigo(equipo1Codigo, equipo2Codigo);
-				conexionService.borrar(conexionAEliminar);
+				Conexion conexionAEliminar = red.buscarConexionPorCodigo(equipo1Codigo, equipo2Codigo);
+				red.borrarConexion(conexionAEliminar);
 
 				// Detener la edición antes de eliminar la fila
 				stopCellEditing();
