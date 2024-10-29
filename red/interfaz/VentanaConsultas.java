@@ -7,217 +7,211 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 import red.modelo.Equipo;
-import red.modelo.TipoEquipo;
 import red.negocio.Calculo;
 import red.negocio.Red;
 
 public class VentanaConsultas extends JFrame {
 
-	private Calculo calculo;
-	private Red red;
-	private Handler handler; // manejador de eventos
+    private Calculo calculo;
+    private Red red;
+    private Handler handler; // Event handler
 
-	private JButton calcularVelocidadButton;
-	private JButton pingEquipoButton;
-	private JButton detectarProblemasButton;
-	private JButton calcularButton; // boton para confirmar el calculo de la velocidad
-	private JButton verificarButton;
-	private JComboBox<String> equipo1ComboBox;
-	private JComboBox<String> equipo2ComboBox;
+    private JButton calcularVelocidadButton;
+    private JButton pingEquipoButton;
+    private JButton detectarProblemasButton;
+    private JButton calcularButton; // Button to confirm speed calculation
+    private JButton verificarButton;
+    private JComboBox<String> equipo1ComboBox;
+    private JComboBox<String> equipo2ComboBox;
 
-	public VentanaConsultas(Calculo calculo, Red red) {
-		setTitle("Consultas de la Red");
-		setSize(600, 400);
-		setLocationRelativeTo(null);
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    public VentanaConsultas(Calculo calculo, Red red) {
+        setTitle("Consultas de la Red");
+        setSize(600, 400);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-		this.calculo = calculo;
-		this.red = red;
+        this.calculo = calculo;
+        this.red = red;
 
-		inicializarComponentes();
+        inicializarComponentes();
+    }
 
-	}
+    private void inicializarComponentes() {
+        handler = new Handler();
 
-	private void inicializarComponentes() {
+        calcularVelocidadButton = new JButton("Calcular Velocidad Máxima");
+        calcularVelocidadButton.setBounds(23, 120, 171, 69);
+        calcularVelocidadButton.addActionListener(handler);
 
-		handler = new Handler();
+        pingEquipoButton = new JButton("Realizar Ping a Equipo");
+        pingEquipoButton.setBounds(206, 120, 171, 69);
+        pingEquipoButton.addActionListener(handler);
 
-		calcularVelocidadButton = new JButton("Calcular Velocidad Máxima");
-		calcularVelocidadButton.setBounds(23, 120, 171, 69);
-		calcularVelocidadButton.addActionListener(handler);
+        detectarProblemasButton = new JButton("Detectar Problemas");
+        detectarProblemasButton.setBounds(387, 120, 171, 69);
+        detectarProblemasButton.addActionListener(handler);
 
-		pingEquipoButton = new JButton("Realizar Ping a Equipo");
-		pingEquipoButton.setBounds(206, 120, 171, 69);
-		pingEquipoButton.addActionListener(handler);
+        JPanel panel = new JPanel();
+        panel.setLayout(null);
+        panel.add(calcularVelocidadButton);
+        panel.add(pingEquipoButton);
+        panel.add(detectarProblemasButton);
 
-		detectarProblemasButton = new JButton("Detectar Problemas");
-		detectarProblemasButton.setBounds(387, 120, 171, 69);
-		detectarProblemasButton.addActionListener(handler);
+        getContentPane().add(panel, BorderLayout.CENTER);
+    }
 
-		JPanel panel = new JPanel();
-		panel.setLayout(null);
-		panel.add(calcularVelocidadButton);
-		panel.add(pingEquipoButton);
-		panel.add(detectarProblemasButton);
+    private void ventanaVelocidad() {
+        calcularButton = new JButton("Calcular");
 
-		getContentPane().add(panel, BorderLayout.CENTER);
-	}
+        JPanel panelCentral = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
 
-	private void ventanaVelocidad() {
+        String[] equipoArray = red.getEquipos().stream().map(Equipo::getCodigo).toArray(String[]::new);
+        equipo1ComboBox = new JComboBox<>(equipoArray);
+        equipo2ComboBox = new JComboBox<>(equipoArray);
 
-		calcularButton = new JButton("Calcular");
+        JLabel equipo1Label = new JLabel("Equipo 1");
+        JLabel equipo2Label = new JLabel("Equipo 2");
 
-		JPanel panelCentral = new JPanel(new GridBagLayout());
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.insets = new Insets(10, 10, 10, 10); // Espaciado entre componentes
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.anchor = GridBagConstraints.CENTER;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panelCentral.add(equipo1Label, gbc);
+        gbc.gridx = 1;
+        panelCentral.add(equipo1ComboBox, gbc);
 
-		/**** componentes para elegir los equipos y calcular su velocidad ****/
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panelCentral.add(equipo2Label, gbc);
+        gbc.gridx = 1;
+        panelCentral.add(equipo2ComboBox, gbc);
 
-		String[] equipoArray = red.getEquipos().stream().map(Equipo::getCodigo).toArray(String[]::new);
-		equipo1ComboBox = new JComboBox<>(equipoArray);
-		equipo2ComboBox = new JComboBox<>(equipoArray);
+        JDialog dialog = new JDialog(this, "Calcular Velocidad", true);
 
-		JLabel equipo1Label = new JLabel("Equipo 1");
-		JLabel equipo2Label = new JLabel("Equipo 2");
+        JPanel panelInferior = new JPanel();
+        panelInferior.add(calcularButton);
 
-		// Añadir los componentes al panel central
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		panelCentral.add(equipo1Label, gbc);
-		gbc.gridx = 1;
-		panelCentral.add(equipo1ComboBox, gbc);
+        calcularButton.addActionListener(handler);
 
-		gbc.gridx = 0;
-		gbc.gridy = 1;
-		panelCentral.add(equipo2Label, gbc);
-		gbc.gridx = 1;
-		panelCentral.add(equipo2ComboBox, gbc);
+        dialog.add(panelCentral);
+        dialog.add(panelInferior, BorderLayout.SOUTH);
+        dialog.setSize(500, 300);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
 
-		JDialog dialog = new JDialog(this, "Calcular Velocidad", true);
+    private void calcularVelocidad() {
+        String equipo1Codigo = (String) equipo1ComboBox.getSelectedItem();
+        String equipo2Codigo = (String) equipo2ComboBox.getSelectedItem();
 
-		JPanel panelInferior = new JPanel();
+        Equipo equipo1 = red.buscarEquipoPorCodigo(equipo1Codigo);
+        Equipo equipo2 = red.buscarEquipoPorCodigo(equipo2Codigo);
 
-		panelInferior.add(calcularButton);
+        List<Equipo> ruta = calculo.buscarRuta(equipo1, equipo2);
 
-		calcularButton.addActionListener(handler);
+        if (ruta == null) {
+            JOptionPane.showMessageDialog(this, "No se encontró ruta entre " + equipo1.getCodigo() + " y " + equipo2.getCodigo(), "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "La velocidad máxima entre " + equipo1.getCodigo() + " y "
+                    + equipo2.getCodigo() + " es de " + calculo.calcularVelocidadMaxima(ruta) + " Mbps");
+        }
+    }
 
-		dialog.add(panelCentral);
-		dialog.add(panelInferior, BorderLayout.SOUTH);
-		dialog.setSize(500, 300);
-		dialog.setLocationRelativeTo(this);
-		dialog.setVisible(true);
+    private void realizarPingAEquipo() {
+        JComboBox<String> equipoIpComboBox = new JComboBox<>();
+        for (Equipo equipo : red.getEquipos()) {
+            for (String ip : equipo.getDireccionesIp()) {
+                equipoIpComboBox.addItem(equipo.getCodigo() + " (" + ip + ")");
+            }
+        }
 
-	}
+        int result = JOptionPane.showConfirmDialog(this, equipoIpComboBox, "Seleccione equipo y dirección IP",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-	private void calcularVelocidad() {
+        if (result == JOptionPane.OK_OPTION && equipoIpComboBox.getSelectedItem() != null) {
+            String selected = (String) equipoIpComboBox.getSelectedItem();
+            String direccionIp = selected.substring(selected.indexOf("(") + 1, selected.indexOf(")"));
 
-		String equipo1Codigo = (String) equipo1ComboBox.getSelectedItem();
-		String equipo2Codigo = (String) equipo2ComboBox.getSelectedItem();
+            boolean respuestaPing = calculo.realizarPingAEquipo(direccionIp);
 
-		Equipo equipo1 = red.buscarEquipoPorCodigo(equipo1Codigo);
-		Equipo equipo2 = red.buscarEquipoPorCodigo(equipo2Codigo);
+            if (respuestaPing) {
+                JOptionPane.showMessageDialog(this, "Ping exitoso al equipo con IP: " + direccionIp);
+            } else {
+                JOptionPane.showMessageDialog(this, "Ping fallido o equipo no encontrado.");
+            }
+        }
+    }
 
-		List<Equipo> ruta = calculo.buscarRuta(equipo1, equipo2);
-		
-		if (ruta == null) {
-			JOptionPane.showMessageDialog(this, "No se encontro ruta entre " + equipo1.getCodigo() + " y " + equipo2.getCodigo(), "Error", JOptionPane.ERROR_MESSAGE);
-		} else {
-			JOptionPane.showMessageDialog(this, "La velocidad maxima entre " + equipo1.getCodigo() + " y "
-					+ equipo2.getCodigo() + " es de " + calculo.calcularVelocidadMaxima(ruta) + " Mbps");
-		}
-		
-	}
+    private void detectarProblemasConectividad() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
 
-	// Method to perform ping on a selected team
-	private void realizarPingAEquipo() {
-		String direccionIp = JOptionPane.showInputDialog(this, "Ingrese la dirección IP del equipo:");
+        String[] equipoArray = red.getEquipos().stream().map(Equipo::getCodigo).toArray(String[]::new);
+        equipo1ComboBox = new JComboBox<>(equipoArray);
+        equipo2ComboBox = new JComboBox<>(equipoArray);
 
-		// Verificar si el usuario presiono "OK" y proporcionó una IP
-	    if (direccionIp != null && !direccionIp.trim().isEmpty()) {
-	        boolean respuestaPing = calculo.realizarPingAEquipo(direccionIp);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(new JLabel("Equipo 1:"), gbc);
+        gbc.gridx = 1;
+        panel.add(equipo1ComboBox, gbc);
 
-	        if (respuestaPing) {
-	            JOptionPane.showMessageDialog(this, "Ping exitoso al equipo con IP: " + direccionIp);
-	        } else {
-	            JOptionPane.showMessageDialog(this, "Ping fallido o equipo no encontrado.");
-	        }
-	    }
-	}
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(new JLabel("Equipo gateway:"), gbc);
+        gbc.gridx = 1;
+        panel.add(equipo2ComboBox, gbc);
 
-	private void detectarProblemasConectividad() {
-		
-		JPanel panel = new JPanel(new GridBagLayout());
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.insets = new Insets(10, 10, 10, 10); // Espaciado entre componentes
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.anchor = GridBagConstraints.CENTER;
-		
-		String[] equipoArray = red.getEquipos().stream().map(Equipo::getCodigo).toArray(String[]::new);
-		equipo1ComboBox = new JComboBox<>(equipoArray);
-		equipo2ComboBox = new JComboBox<>(equipoArray);
-		
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		panel.add(new JLabel("Equipo 1:"), gbc);
-		gbc.gridx = 1;
-		panel.add(equipo1ComboBox, gbc);
+        JDialog dialog = new JDialog(this, "Verificar conectividad", true);
 
-		gbc.gridx = 0;
-		gbc.gridy = 1;
-		panel.add(new JLabel("Equipo gateway:"), gbc);
-		gbc.gridx = 1;
-		panel.add(equipo2ComboBox, gbc);
-	
-		JDialog dialog = new JDialog(this, "Verificar conectividad", true);
+        JPanel panelInferior = new JPanel();
 
-		JPanel panelInferior = new JPanel();
- 
-		verificarButton = new JButton("Verificar conectividad");
-		panelInferior.add(verificarButton);
+        verificarButton = new JButton("Verificar conectividad");
+        panelInferior.add(verificarButton);
 
-		verificarButton.addActionListener(handler);
+        verificarButton.addActionListener(handler);
 
-		dialog.add(panel);
-		dialog.add(panelInferior, BorderLayout.SOUTH);
-		dialog.setSize(500, 300);
-		dialog.setLocationRelativeTo(this);
-		dialog.setVisible(true);
-		
-	}
+        dialog.add(panel);
+        dialog.add(panelInferior, BorderLayout.SOUTH);
+        dialog.setSize(500, 300);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
 
-	private void verificarConectividad() {
-		String equipo1Codigo = (String) equipo1ComboBox.getSelectedItem();
-		String equipo2Codigo = (String) equipo2ComboBox.getSelectedItem();
-		Equipo equipo = red.buscarEquipoPorCodigo(equipo1Codigo); 
-		Equipo gateway = red.buscarEquipoPorCodigo(equipo2Codigo);
-		JOptionPane.showMessageDialog(this, calculo.verificarConectividad(equipo, gateway));
-	}
-	
-	private class Handler implements ActionListener {
+    private void verificarConectividad() {
+        String equipo1Codigo = (String) equipo1ComboBox.getSelectedItem();
+        String equipo2Codigo = (String) equipo2ComboBox.getSelectedItem();
+        Equipo equipo = red.buscarEquipoPorCodigo(equipo1Codigo);
+        Equipo gateway = red.buscarEquipoPorCodigo(equipo2Codigo);
+        
+        String resultado = calculo.verificarConectividad(equipo, gateway);
+        JOptionPane.showMessageDialog(this, resultado);
+    }
 
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
-			if (e.getSource().equals(calcularVelocidadButton))
-				ventanaVelocidad();
+    private class Handler implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (e.getSource().equals(calcularVelocidadButton))
+                ventanaVelocidad();
 
-			if (e.getSource().equals(pingEquipoButton))
-				realizarPingAEquipo();
+            if (e.getSource().equals(pingEquipoButton))
+                realizarPingAEquipo();
 
-			if (e.getSource().equals(detectarProblemasButton))
-				detectarProblemasConectividad();
+            if (e.getSource().equals(detectarProblemasButton))
+                detectarProblemasConectividad();
 
-			if (e.getSource().equals(calcularButton))
-				calcularVelocidad();
-			
-			if (e.getSource().equals(verificarButton))
-				verificarConectividad();
+            if (e.getSource().equals(calcularButton))
+                calcularVelocidad();
 
-		}
-
-	} // end class handler
+            if (e.getSource().equals(verificarButton))
+                verificarConectividad();
+        }
+    }
 }
