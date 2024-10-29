@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
+
 
 import red.modelo.Equipo;
 import red.negocio.Calculo;
@@ -111,22 +111,6 @@ public class VentanaConsultas extends JFrame {
         dialog.setVisible(true);
     }
 
-    private void calcularVelocidad() {
-        String equipo1Codigo = (String) equipo1ComboBox.getSelectedItem();
-        String equipo2Codigo = (String) equipo2ComboBox.getSelectedItem();
-
-        Equipo equipo1 = red.buscarEquipoPorCodigo(equipo1Codigo);
-        Equipo equipo2 = red.buscarEquipoPorCodigo(equipo2Codigo);
-
-        List<Equipo> ruta = calculo.buscarRuta(equipo1, equipo2);
-
-        if (ruta == null) {
-            JOptionPane.showMessageDialog(this, "No se encontró ruta entre " + equipo1.getCodigo() + " y " + equipo2.getCodigo(), "Error", JOptionPane.ERROR_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(this, "La velocidad máxima entre " + equipo1.getCodigo() + " y "
-                    + equipo2.getCodigo() + " es de " + calculo.calcularVelocidadMaxima(ruta) + " Mbps");
-        }
-    }
 
     private void realizarPingAEquipo() {
         JComboBox<String> equipoIpComboBox = new JComboBox<>();
@@ -193,15 +177,6 @@ public class VentanaConsultas extends JFrame {
         dialog.setVisible(true);
     }
 
-    private void verificarConectividad() {
-        String equipo1Codigo = (String) equipo1ComboBox.getSelectedItem();
-        String equipo2Codigo = (String) equipo2ComboBox.getSelectedItem();
-        Equipo equipo = red.buscarEquipoPorCodigo(equipo1Codigo);
-        Equipo gateway = red.buscarEquipoPorCodigo(equipo2Codigo);
-        
-        String resultado = calculo.verificarConectividad(equipo, gateway);
-        JOptionPane.showMessageDialog(this, resultado);
-    }
 	private void verMapaDeEstado() {
 		// Create a new dialog to show the network map
 		JDialog dialog = new JDialog(this, "Mapa de Estado de la Red", true);
