@@ -255,7 +255,7 @@ public class Calculo {
 	 * Verifica la conectividad desde un equipo hasta el Gateway, informando si
 	 * algún equipo o conexión falla.
 	 * 
-	 * @param equipoOrigen    Equipo de origen.
+	 * @param equipoOrigen    Equipo de origen
 	 * @param internetGateway Equipo que representa el Gateway.
 	 */
 	public String verificarConectividad(Equipo equipoOrigen, Equipo internetGateway) {
@@ -307,18 +307,11 @@ public class Calculo {
 	public boolean realizarPingAEquipo(String direccionIp) {
 		 direccionIp = direccionIp.trim();
 		    for (Vertex<Equipo> equipo : vertices.values()) {
-		        System.out.println("Checking equipo: " + equipo.getElement().getCodigo());
-		        for (String ip : equipo.getElement().getDireccionesIp()) {
-		            System.out.println(ip);
-		        }
 		        if (equipo.getElement().getDireccionesIp().contains(direccionIp)) {
-		            System.out.println("IP found in equipo " + equipo.getElement().getCodigo());
 		            boolean respuestaPing = equipo.getElement().realizarPing();
-		            System.out.println("Ping response: " + respuestaPing);
 		            return respuestaPing;
 		        }
 		    }
-		    System.out.println("IP not found");
 		    return false;
 	}
 
