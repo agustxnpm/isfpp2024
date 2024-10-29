@@ -11,24 +11,13 @@ import red.modelo.Equipo;
 import red.modelo.TipoEquipo;
 import red.modelo.TipoPuerto;
 import red.modelo.Ubicacion;
+import red.negocio.Calculo;
 import red.negocio.Red;
-import red.servicio.EquipoService;
-import red.servicio.EquipoServiceImp;
-import red.servicio.TipoEquipoService;
-import red.servicio.TipoEquipoServiceImp;
-import red.servicio.TipoPuertoService;
-import red.servicio.TipoPuertoServiceImp;
-import red.servicio.UbicacionService;
-import red.servicio.UbicacionServiceImp;
 
 public class VentanaEquipos extends JFrame {
-	
-	private Red red;
 
-	private EquipoService equipoService;
-	private TipoEquipoService tipoEquipoService; // Servicio para TipoEquipo
-	private TipoPuertoService tipoPuertoService; // Servicio para TipoPuerto
-	private UbicacionService ubicacionService; // Servicio para Ubicación
+	private Red red;
+	private Calculo calculo;
 
 	private JTable equiposTable;
 	private DefaultTableModel equipoTableModel;
@@ -36,35 +25,36 @@ public class VentanaEquipos extends JFrame {
 	private List<TipoPuerto> listTipoPuerto; // Lista de TipoPuerto
 	private List<Ubicacion> listUbicaciones; // Lista de Ubicaciones
 
-	public VentanaEquipos(Red red) {
+	public VentanaEquipos(Calculo calculo, Red red) {
 		setTitle("Gestión de Equipos");
 		setSize(900, 400); // Ajustar el tamaño para ver todas las columnas
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		this.red = red;
-		this.equipoService = red.getEquipoService();
-		this.tipoEquipoService = red.getTipoEquipoService();
-		this.tipoPuertoService = red.getTipoPuertoService();
-		this.ubicacionService = red.getUbicacionService();
-		
+		this.calculo = calculo;
 
 		try {
-			listTipoEquipo = tipoEquipoService.buscarTodos();
-			listTipoPuerto = tipoPuertoService.buscarTodos();
-			listUbicaciones = ubicacionService.buscarTodos();
+			listTipoEquipo = red.getTipoEquipoService().buscarTodos();
+			listTipoPuerto = red.getTipoPuertoService().buscarTodos();
+			listUbicaciones = red.getUbicaciones();
 		} catch (FileNotFoundException e) {
 			JOptionPane.showMessageDialog(this, "Error al cargar los datos de los equipos.", "Error",
 					JOptionPane.ERROR_MESSAGE);
 		}
 
+		inicializarComponentes();
+	}
+
+	private void inicializarComponentes() {
+		
 		String[] equipoColumnNames = { "Código", "Descripción", "Marca", "Modelo", "Tipo Equipo", "Ubicación", "Estado",
 				"Info Puertos", "Acciones", "Modificar" };
 		equipoTableModel = new DefaultTableModel(equipoColumnNames, 0);
 		equiposTable = new JTable(equipoTableModel) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				return column == 8 || column == 9; // Solo la columna de "Acciones" es editable
+				return column == 8 || column == 9; 
 			}
 		};
 
@@ -87,29 +77,29 @@ public class VentanaEquipos extends JFrame {
 	}
 
 	private void mostrarEquiposEnTabla() {
-			List<Equipo> equipos = red.getEquipos();
-			equipoTableModel.setRowCount(0); // Limpiar la tabla
-			// Añadir filas a la tabla con todos los datos del equipo
-			for (Equipo equipo : equipos) {
-				String estadoTexto = equipo.isEstado() ? "Activo" : "Inactivo"; // Convertir booleano a texto legible
-				equipoTableModel.addRow(new Object[] { equipo.getCodigo(), equipo.getDescripcion(), equipo.getMarca(),
-						equipo.getModelo(), equipo.getTipoEquipo().getDescripcion(),
-																						
-						equipo.getUbicacion().getDescripcion(), 
-																
-						estadoTexto, equipo.getPuertosInfo(), 
-																
-						"Eliminar", "Modificar" });
-			}
+		List<Equipo> equipos = red.getEquipos();
+		equipoTableModel.setRowCount(0); // Limpiar la tabla
+		// Añadir filas a la tabla con todos los datos del equipo
+		for (Equipo equipo : equipos) {
+			String estadoTexto = equipo.isEstado() ? "Activo" : "Inactivo"; // Convertir booleano a texto legible
+			equipoTableModel.addRow(new Object[] { equipo.getCodigo(), equipo.getDescripcion(), equipo.getMarca(),
+					equipo.getModelo(), equipo.getTipoEquipo().getDescripcion(),
 
-			// Configurar los botones de "Eliminar"
-			equiposTable.getColumn("Acciones").setCellRenderer(new ButtonRenderer("eliminar"));
-			equiposTable.getColumn("Acciones")
-					.setCellEditor(new ButtonEditor(new JCheckBox(), equiposTable, "equipo", red));
+					equipo.getUbicacion().getDescripcion(),
 
-			equiposTable.getColumn("Modificar").setCellRenderer(new ButtonRenderer("modificar"));
-			equiposTable.getColumn("Modificar")
-					.setCellEditor(new ButtonEditor(new JCheckBox(), equiposTable, "modificar", red));
+					estadoTexto, equipo.getPuertosInfo(),
+
+					"Eliminar", "Modificar" });
+		}
+
+		// Configurar los botones de "Eliminar"
+		equiposTable.getColumn("Acciones").setCellRenderer(new ButtonRenderer("eliminar"));
+		equiposTable.getColumn("Acciones")
+				.setCellEditor(new ButtonEditor(new JCheckBox(), equiposTable, "equipo", red, calculo));
+
+		equiposTable.getColumn("Modificar").setCellRenderer(new ButtonRenderer("modificar"));
+		equiposTable.getColumn("Modificar")
+				.setCellEditor(new ButtonEditor(new JCheckBox(), equiposTable, "modificar", red, calculo));
 
 	}
 
@@ -167,7 +157,7 @@ public class VentanaEquipos extends JFrame {
 				Equipo equipo = new Equipo(codigoField.getText(), modeloField.getText(), marcaField.getText(),
 						descripcionField.getText(), selectedUbicacion, new TipoEquipo(tipoEquipo, ""), cantPuertos,
 						selectedPuerto, true);
-
+				calculo.agregarEquipoAlGrafo(equipo);
 				red.agregarEquipo(equipo);
 				mostrarEquiposEnTabla(); // Refrescar la tabla después de la inserción
 			} catch (Exception e) {
@@ -177,6 +167,5 @@ public class VentanaEquipos extends JFrame {
 			}
 		}
 	}
-
 
 }

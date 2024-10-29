@@ -2,44 +2,41 @@ package red.interfaz;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import java.io.FileNotFoundException;
 import java.util.List;
+
 import red.modelo.Conexion;
 import red.modelo.TipoCable;
 import red.modelo.TipoPuerto;
+import red.negocio.Calculo;
 import red.negocio.Red;
-import red.servicio.ConexionService;
-import red.servicio.ConexionServiceImp;
-import red.servicio.EquipoService;
-import red.servicio.EquipoServiceImp;
-import red.servicio.TipoCableService;
-import red.servicio.TipoCableServiceImp;
-import red.servicio.TipoPuertoService;
-import red.servicio.TipoPuertoServiceImp;
-import red.servicio.UbicacionService;
 import red.modelo.Equipo;
 
 public class VentanaConexiones extends JFrame {
 
 	private Red red;
-
+	private Calculo calculo;
+	
 	private JTable conexionesTable;
 	private DefaultTableModel conexionTableModel;
-
 
 	private List<Equipo> listaEquiposDisponibles; // Lista de equipos disponibles
 	private List<TipoCable> listaCablesDisponibles; // Lista de tipos de cables disponibles
 
-	public VentanaConexiones(Red red) {
+	public VentanaConexiones(Calculo calculo, Red red) {
+		
 		setTitle("Gestión de Conexiones");
 		setSize(800, 400); // Ajustamos el tamaño para mostrar todas las columnas
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		
+
 		this.red = red;
+		this.calculo = calculo;
 
 
 		try {
@@ -52,6 +49,11 @@ public class VentanaConexiones extends JFrame {
 					JOptionPane.ERROR_MESSAGE);
 		}
 
+		inicializarComponentes();
+	}
+
+	private void inicializarComponentes() {
+		
 		// Definimos las columnas a mostrar en la tabla de conexiones
 		String[] conexionColumnNames = { "Equipo 1", "Equipo 2", "Tipo de Cable", "Tipo de Puerto 1",
 				"Tipo de Puerto 2", "Acciones" };
@@ -82,17 +84,17 @@ public class VentanaConexiones extends JFrame {
 	}
 
 	private void mostrarConexionesEnTabla() {
-			List<Conexion> conexiones = red.getConexiones();
-			conexionTableModel.setRowCount(0); // Limpiar la tabla
-			for (Conexion conexion : conexiones) {
-				conexionTableModel.addRow(new Object[] { conexion.getEquipo1().getCodigo(),
-						conexion.getEquipo2().getCodigo(), conexion.getTipoCable().getDescripcion(),
-						conexion.getTipoPuerto1().getCodigo(), conexion.getTipoPuerto2().getCodigo(), "Eliminar" });
-			}
+		List<Conexion> conexiones = red.getConexiones();
+		conexionTableModel.setRowCount(0); // Limpiar la tabla
+		for (Conexion conexion : conexiones) {
+			conexionTableModel.addRow(new Object[] { conexion.getEquipo1().getCodigo(),
+					conexion.getEquipo2().getCodigo(), conexion.getTipoCable().getDescripcion(),
+					conexion.getTipoPuerto1().getCodigo(), conexion.getTipoPuerto2().getCodigo(), "Eliminar" });
+		}
 
-			conexionesTable.getColumn("Acciones").setCellRenderer(new ButtonRenderer("eliminar"));
-			conexionesTable.getColumn("Acciones").setCellEditor(new ButtonEditor(new JCheckBox(), conexionesTable,
-					"conexion", red));
+		conexionesTable.getColumn("Acciones").setCellRenderer(new ButtonRenderer("eliminar"));
+		conexionesTable.getColumn("Acciones")
+				.setCellEditor(new ButtonEditor(new JCheckBox(), conexionesTable, "conexion", red, calculo));
 
 	}
 
@@ -156,7 +158,8 @@ public class VentanaConexiones extends JFrame {
 				TipoPuerto tipoPuerto2 = obtenerTipoPuertoPorCodigo((String) tipoPuerto2ComboBox.getSelectedItem());
 
 				Conexion conexion = new Conexion(equipo1, equipo2, tipoCable, tipoPuerto1, tipoPuerto2);
-				
+
+				calculo.agregarConexionAlGrafo(conexion);
 				red.agregarConexion(conexion);
 				mostrarConexionesEnTabla();
 

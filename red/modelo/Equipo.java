@@ -60,7 +60,7 @@ public class Equipo {
      * @return La velocidad máxima del equipo en Mbps.
      */
     public int getVelocidadMaxima() {
-        int velocidadMaxima = Integer.MAX_VALUE; // Inicializamos con un valor muy alto.
+        int velocidadMaxima = Integer.MAX_VALUE;
         // Iterar sobre los puertos del equipo para encontrar el puerto más lento.
         for (Puerto puerto : puertos) {
             velocidadMaxima = Math.min(velocidadMaxima, puerto.getTipoPuerto().getVelocidad());

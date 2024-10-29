@@ -8,22 +8,18 @@ import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.util.List;
 
-import red.servicio.EquipoService;
-import red.servicio.TipoPuertoService;
-import red.servicio.TipoPuertoServiceImp;
-import red.servicio.UbicacionServiceImp;
-import red.servicio.ConexionService;
-import red.servicio.UbicacionService;
 import red.modelo.Equipo;
 import red.modelo.TipoPuerto;
 import red.modelo.Ubicacion;
+import red.negocio.Calculo;
 import red.negocio.Red;
 import red.modelo.Conexion;
 
 class ButtonEditor extends DefaultCellEditor {
 	
 	private Red red;
-	
+	private Calculo calculo;
+
 	protected JButton button;
 	
 	private String label;
@@ -34,11 +30,13 @@ class ButtonEditor extends DefaultCellEditor {
 	
 
 	// Constructor para el manejo de eliminaciones, especificando el tipo de acción
-	public ButtonEditor(JCheckBox checkBox, JTable table, String actionType, Red red) {
+	public ButtonEditor(JCheckBox checkBox, JTable table, String actionType, Red red, Calculo calculo) {
+		
 		super(checkBox);
 		this.table = table;
 		this.actionType = actionType; // Define si es para equipos o conexiones
 		this.red = red;
+		this.calculo = calculo;
 
 
 		button = new JButton();
@@ -99,6 +97,7 @@ class ButtonEditor extends DefaultCellEditor {
 		if (confirmacion == JOptionPane.YES_OPTION) {
 			try {
 				Equipo equipoAEliminar = red.buscarEquipoPorCodigo(equipoCodigo);
+				calculo.borrarEquipoDelGrafo(equipoAEliminar);
 				red.borrarEquipo(equipoAEliminar);
 				// Detener la edición antes de eliminar la fila
 				stopCellEditing();
@@ -201,6 +200,7 @@ class ButtonEditor extends DefaultCellEditor {
 	            }
 
 	            // Actualizar el equipo en el servicio
+	            calculo.modificarEquipoEnElGrafo(equipoAModificar);
 	            red.modificarEquipo(equipoAModificar);
 
 	            // Mensaje de confirmación y refrescar tabla
@@ -228,6 +228,7 @@ class ButtonEditor extends DefaultCellEditor {
 		if (confirmacion == JOptionPane.YES_OPTION) {
 			try {
 				Conexion conexionAEliminar = red.buscarConexionPorCodigo(equipo1Codigo, equipo2Codigo);
+			//	calculo.borrarConexionDelGrafo(conexionAEliminar);
 				red.borrarConexion(conexionAEliminar);
 
 				// Detener la edición antes de eliminar la fila

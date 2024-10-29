@@ -6,18 +6,6 @@ import red.modelo.Conexion;
 import red.modelo.Equipo;
 import red.negocio.Calculo;
 import red.negocio.Red;
-import red.servicio.ConexionService;
-import red.servicio.ConexionServiceImp;
-import red.servicio.EquipoService;
-import red.servicio.EquipoServiceImp;
-import red.servicio.TipoCableService;
-import red.servicio.TipoCableServiceImp;
-import red.servicio.TipoEquipoService;
-import red.servicio.TipoEquipoServiceImp;
-import red.servicio.TipoPuertoService;
-import red.servicio.TipoPuertoServiceImp;
-import red.servicio.UbicacionService;
-import red.servicio.UbicacionServiceImp;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -61,7 +49,7 @@ public class VentanaPrincipal extends JFrame {
 		// Crear menú
 		menuBar = new JMenuBar();
 
-		JMenu menuOpciones = new JMenu("Opciones");
+		menuOpciones = new JMenu("Opciones");
 		menuBar.add(menuOpciones);
 
 		menuEquipos = new JMenuItem("Gestionar Equipos");
@@ -70,7 +58,7 @@ public class VentanaPrincipal extends JFrame {
 		
 		menuOpciones.add(menuEquipos);
 		menuOpciones.add(menuConexiones);
-		menuOpciones.add(menuConsultas); // Agregar el nuevo ítem al menú
+		menuOpciones.add(menuConsultas);
 
 		setJMenuBar(menuBar);
 
@@ -88,12 +76,12 @@ public class VentanaPrincipal extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 			if (e.getSource().equals(menuEquipos)) {
-				VentanaEquipos ventanaEquipos = new VentanaEquipos(red);
+				VentanaEquipos ventanaEquipos = new VentanaEquipos(calculo, red);
 				ventanaEquipos.setVisible(true); // Mostrar la ventana de equipos
 			}
 			
 			if (e.getSource().equals(menuConexiones)) {
-				VentanaConexiones ventanaConexiones = new VentanaConexiones(red);
+				VentanaConexiones ventanaConexiones = new VentanaConexiones(calculo, red);
 				ventanaConexiones.setVisible(true); // Mostrar la ventana de conexiones
 			}
 			

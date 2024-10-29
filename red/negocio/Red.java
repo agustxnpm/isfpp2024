@@ -171,31 +171,12 @@ public class Red {
      * @param equipo El equipo a borrar.
      */
     public void borrarEquipo(Equipo equipo) {
-        equipos.remove(buscarEquipo(equipo));
+        equipos.remove(equipo);
         equipoService.borrar(equipo);
     }
 
-    /**
-     * Busca un equipo en la red.
-     * 
-     * @param equipo El equipo a buscar.
-     * @return El equipo encontrado o null si no existe.
-     */
-    public Equipo buscarEquipo(Equipo equipo) {
-        int pos = equipos.indexOf(equipo);
-        if (pos == -1)
-            return null;
-        return equipos.get(pos);
-    }
-    
-    public Conexion buscarConexion(Conexion conexion) {
-        int pos = conexiones.indexOf(conexion);
-        if (pos == -1)
-            return null;
-        return conexiones.get(pos);
-    }
 
-    public Equipo buscarEquipoPorCodigo(String codigo) throws FileNotFoundException {
+    public Equipo buscarEquipoPorCodigo(String codigo) {
         List<Equipo> equipos = getEquipos();  // Buscar todos los equipos
         for (Equipo equipo : equipos) {
             if (equipo.getCodigo().equals(codigo)) {
@@ -206,7 +187,7 @@ public class Red {
     }
     
     public void borrarConexion(Conexion conexion) {
-        conexiones.remove(buscarConexion(conexion));
+        conexiones.remove(conexion);
         conexionService.borrar(conexion);
     }
     

@@ -64,6 +64,7 @@ public class FileTextBD {
 			tipoPuertoPostgresqlDAO.insertar(tp);
 		}
 
+		
 		EquipoDAO equipoSecuencialDAO = new EquipoSecuencialDAO();
 		EquipoDAO equipoPostgresqlDAO = new EquipoPostgresqlDAO();
 		
@@ -77,6 +78,7 @@ public class FileTextBD {
 		for (Conexion con : conexionSecuencialDAO.buscarTodos()) {
 			conexionPostgresqlDAO.insertar(con);
 		}
+		
 		
 	}
 }

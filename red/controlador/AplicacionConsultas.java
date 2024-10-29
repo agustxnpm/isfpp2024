@@ -96,7 +96,7 @@ public class AplicacionConsultas {
 				}
 				break;
 			case 6:
-				interfaz.mostrarEquipos(calculo.buscarRuta(calculo.obtenerEquipo("AP09"), calculo.obtenerEquipo("FW02")));
+				//nterfaz.mostrarEquipos(calculo.buscarRuta(calculo.obtenerEquipo("AP09"), calculo.obtenerEquipo("FW02")));
 				break;
 			case 7: 
 				calculo.realizarPingARango("192.168.16.2", "192.168.16.13");

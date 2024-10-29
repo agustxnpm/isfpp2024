@@ -70,15 +70,6 @@ public class Coordinador {
     }
 
     /**
-     * Busca un equipo en la red.
-     * @param equipo El equipo a buscar.
-     * @return El equipo encontrado o null si no existe.
-     */
-    public Equipo buscarEquipo(Equipo equipo) {
-        return red.buscarEquipo(equipo);
-    }
-
-    /**
      * Busca un equipo en la red por su código.
      * @param codigo El código del equipo.
      * @return El equipo encontrado o null si no existe.
