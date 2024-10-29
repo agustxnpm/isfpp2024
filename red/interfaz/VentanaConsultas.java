@@ -10,6 +10,7 @@ import red.modelo.Equipo;
 import red.negocio.Calculo;
 import red.negocio.Red;
 
+
 public class VentanaConsultas extends JFrame {
 
     private Calculo calculo;
@@ -20,7 +21,9 @@ public class VentanaConsultas extends JFrame {
     private JButton pingEquipoButton;
     private JButton detectarProblemasButton;
     private JButton calcularButton; // Button to confirm speed calculation
-    private JButton verificarButton;
+    private JButton verMapaEstadoButton;
+
+	private JButton verificarButton;
     private JComboBox<String> equipo1ComboBox;
     private JComboBox<String> equipo2ComboBox;
 
@@ -35,30 +38,35 @@ public class VentanaConsultas extends JFrame {
 
         inicializarComponentes();
     }
-
-    private void inicializarComponentes() {
+	private void inicializarComponentes() {
         handler = new Handler();
 
         calcularVelocidadButton = new JButton("Calcular Velocidad Máxima");
-        calcularVelocidadButton.setBounds(23, 120, 171, 69);
+        calcularVelocidadButton.setBounds(20, 80, 180, 50);
         calcularVelocidadButton.addActionListener(handler);
 
         pingEquipoButton = new JButton("Realizar Ping a Equipo");
-        pingEquipoButton.setBounds(206, 120, 171, 69);
+        pingEquipoButton.setBounds(220, 80, 180, 50);
         pingEquipoButton.addActionListener(handler);
 
         detectarProblemasButton = new JButton("Detectar Problemas");
-        detectarProblemasButton.setBounds(387, 120, 171, 69);
+        detectarProblemasButton.setBounds(420, 80, 180, 50);
         detectarProblemasButton.addActionListener(handler);
+
+        verMapaEstadoButton = new JButton("Ver Mapa de Estado");
+        verMapaEstadoButton.setBounds(20, 160, 180, 50);
+        verMapaEstadoButton.addActionListener(handler);
 
         JPanel panel = new JPanel();
         panel.setLayout(null);
         panel.add(calcularVelocidadButton);
         panel.add(pingEquipoButton);
         panel.add(detectarProblemasButton);
+        panel.add(verMapaEstadoButton);
 
         getContentPane().add(panel, BorderLayout.CENTER);
     }
+
 
     private void ventanaVelocidad() {
         calcularButton = new JButton("Calcular");
@@ -194,24 +202,31 @@ public class VentanaConsultas extends JFrame {
         String resultado = calculo.verificarConectividad(equipo, gateway);
         JOptionPane.showMessageDialog(this, resultado);
     }
-
+	private void verMapaDeEstado() {
+		// Create a new dialog to show the network map
+		JDialog dialog = new JDialog(this, "Mapa de Estado de la Red", true);
+		dialog.setSize(800, 600);
+		dialog.setLocationRelativeTo(this);
+	
+		// Get the graph panel from Calculo
+		JPanel graphPanel = calculo.crearMapaDeEstado();
+		dialog.add(graphPanel, BorderLayout.CENTER);
+	
+		dialog.setVisible(true);
+	}
+	
     private class Handler implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getSource().equals(calcularVelocidadButton))
                 ventanaVelocidad();
-
             if (e.getSource().equals(pingEquipoButton))
                 realizarPingAEquipo();
-
             if (e.getSource().equals(detectarProblemasButton))
                 detectarProblemasConectividad();
-
-            if (e.getSource().equals(calcularButton))
-                calcularVelocidad();
-
-            if (e.getSource().equals(verificarButton))
-                verificarConectividad();
+            if (e.getSource().equals(verMapaEstadoButton))
+                verMapaDeEstado();
         }
     }
 }
+
