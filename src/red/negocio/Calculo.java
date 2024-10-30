@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-import java.util.TreeSet;
 
 import net.datastructures.Graph;
 import net.datastructures.Vertex;
@@ -120,7 +119,7 @@ public class Calculo {
      *  @returns Conjunto de vecinos de dicho equipo
      */
     private Set<Equipo> vecinos(Equipo eq){
-    	Set<Equipo> vecinos = new TreeSet<>(); // conjunto de equipos vecinos de nuestro equipo
+    	Set<Equipo> vecinos = new HashSet<>(); // conjunto de equipos vecinos de nuestro equipo
     	for(Edge<Conexion> conexion : red.edges())
     		if (conexion.getElement().getEquipo1().equals(eq)) vecinos.add(conexion.getElement().getEquipo2()); // si eq es el equipo 1 de la conexión, agrega al equipo 2
     		else if (conexion.getElement().getEquipo2().equals(eq)) vecinos.add(conexion.getElement().getEquipo1()); // si eq es el equipo 2 de la conexión, agrega al equipo 1
