@@ -20,11 +20,11 @@ import net.datastructures.AdjacencyMapGraph;
 import net.datastructures.GraphAlgorithms;
 import net.datastructures.TreeMap;
 import red.controlador.Coordinador;
-import red.excepciones.ConexionInexistenteException;
+import red.excepciones.ConexionNoConectadaException;
 import red.excepciones.ConexionRepetidaException;
 import red.excepciones.EquipoNoConectadoException;
 import red.excepciones.EquipoRepetidoException;
-import red.excepciones.IpNoEncontradaException;
+import red.excepciones.DireccionIpNoEncontradaException;
 import red.modelo.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -223,7 +223,7 @@ public class Calculo {
 	 * @return La velocidad máxima en Mbps, limitada por el cable o puertos más
 	 *         lentos.
 	 */
-	public int calcularVelocidadMaxima(List<Equipo> ruta) throws ConexionInexistenteException {
+	public int calcularVelocidadMaxima(List<Equipo> ruta) throws ConexionNoConectadaException {
 		int velocidadMaxima = Integer.MAX_VALUE;
 
 		for (int i = 0; i < ruta.size() - 1; i++) {
@@ -232,7 +232,7 @@ public class Calculo {
 
 			Conexion conexion = buscarConexion(equipo1, equipo2);
 			if (conexion == null) {
-				throw new ConexionInexistenteException(
+				throw new ConexionNoConectadaException(
 						"No existe conexión entre " + equipo1.getCodigo() + " y " + equipo2.getCodigo());
 			}
 
@@ -274,13 +274,13 @@ public class Calculo {
 	 */
 
 	public void verificarConectividad(Equipo equipoOrigen, Equipo internetGateway)
-			throws EquipoNoConectadoException, ConexionInexistenteException {
+			throws EquipoNoConectadoException, ConexionNoConectadaException {
 
 		List<Equipo> ruta = buscarRuta(equipoOrigen, internetGateway);
 
 		// Verificar si no existe una ruta
 		if (ruta == null || ruta.isEmpty()) {
-			throw new ConexionInexistenteException("No se encontró una conexion(verificarConectividad) desde el equipo "
+			throw new ConexionNoConectadaException("No se encontró una conexion(verificarConectividad) desde el equipo "
 					+ equipoOrigen.getCodigo() + " hasta el Gateway.");
 		}
 
@@ -306,7 +306,7 @@ public class Calculo {
 				}
 				// Lanzar excepción si el cable está defectuoso
 				if (!conexionFuncionando) {
-					throw new ConexionInexistenteException("Problema con el cable entre " + equipo1.getCodigo() + " y "
+					throw new ConexionNoConectadaException("Problema con el cable entre " + equipo1.getCodigo() + " y "
 							+ equipo2.getCodigo() + ". Se pierde conectividad aquí.");
 				}
 			}
@@ -319,14 +319,14 @@ public class Calculo {
 	 * @param direccionIp Dirección IP del equipo.
 	 * @return true si el ping fue exitoso, false en caso contrario.
 	 */
-	public boolean realizarPingAEquipo(String direccionIp) throws IpNoEncontradaException {
+	public boolean realizarPingAEquipo(String direccionIp) throws DireccionIpNoEncontradaException {
 		direccionIp = direccionIp.trim();
 		for (Vertex<Equipo> equipo : vertices.values()) {
 			if (equipo.getElement().getDireccionesIp().contains(direccionIp)) {
 				return equipo.getElement().realizarPing();
 			}
 		}
-		throw new IpNoEncontradaException("La IP " + direccionIp + " no se encuentra en la red.");
+		throw new DireccionIpNoEncontradaException("La IP " + direccionIp + " no se encuentra en la red.");
 	}
 
 	/**

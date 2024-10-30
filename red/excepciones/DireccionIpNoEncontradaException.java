@@ -4,12 +4,12 @@ package red.excepciones;
  * Excepción personalizada para manejar situaciones donde se intenta agregar
  * una dirección IP que ya está asignada en el sistema.
  */
-public class IpNoEncontradaException extends RuntimeException {
+public class DireccionIpNoEncontradaException extends RuntimeException {
 
     /**
      * Constructor sin argumentos que invoca el constructor de la superclase.
      */
-    public IpNoEncontradaException() {
+    public DireccionIpNoEncontradaException() {
         super();
     }
 
@@ -22,7 +22,7 @@ public class IpNoEncontradaException extends RuntimeException {
      * @param enableSuppression Habilitar o deshabilitar la supresión.
      * @param writableStackTrace Permitir o no la escritura del stack trace.
      */
-    public IpNoEncontradaException(String message, Throwable cause, boolean enableSuppression,
+    public DireccionIpNoEncontradaException(String message, Throwable cause, boolean enableSuppression,
                                         boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
@@ -33,7 +33,7 @@ public class IpNoEncontradaException extends RuntimeException {
      * @param message El mensaje de la excepción.
      * @param cause La causa de la excepción.
      */
-    public IpNoEncontradaException(String message, Throwable cause) {
+    public DireccionIpNoEncontradaException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -42,7 +42,7 @@ public class IpNoEncontradaException extends RuntimeException {
      * 
      * @param message El mensaje de la excepción.
      */
-    public IpNoEncontradaException(String message) {
+    public DireccionIpNoEncontradaException(String message) {
         super(message);
     }
 
@@ -51,7 +51,7 @@ public class IpNoEncontradaException extends RuntimeException {
      * 
      * @param cause La causa de la excepción.
      */
-    public IpNoEncontradaException(Throwable cause) {
+    public DireccionIpNoEncontradaException(Throwable cause) {
         super(cause);
     }
 }

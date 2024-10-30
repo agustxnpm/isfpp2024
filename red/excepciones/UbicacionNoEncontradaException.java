@@ -2,16 +2,15 @@ package red.excepciones;
 
 /**
  * Excepción personalizada para manejar situaciones donde se intenta agregar
- * una conexión que ya existe en el sistema.
+ * una ubicación que ya está registrada en el sistema.
  */
-public class ConexionInexistenteException  extends RuntimeException {
+public class UbicacionNoEncontradaException extends RuntimeException {
 
     /**
      * Constructor sin argumentos que invoca el constructor de la superclase.
      */
-    public ConexionInexistenteException () {
+    public UbicacionNoEncontradaException() {
         super();
-        //abdcd
     }
 
     /**
@@ -23,8 +22,8 @@ public class ConexionInexistenteException  extends RuntimeException {
      * @param enableSuppression Habilitar o deshabilitar la supresión.
      * @param writableStackTrace Permitir o no la escritura del stack trace.
      */
-    public ConexionInexistenteException (String message, Throwable cause, boolean enableSuppression,
-                                     boolean writableStackTrace) {
+    public UbicacionNoEncontradaException(String message, Throwable cause, boolean enableSuppression,
+                                      boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
@@ -34,7 +33,7 @@ public class ConexionInexistenteException  extends RuntimeException {
      * @param message El mensaje de la excepción.
      * @param cause La causa de la excepción.
      */
-    public ConexionInexistenteException (String message, Throwable cause) {
+    public UbicacionNoEncontradaException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -43,7 +42,7 @@ public class ConexionInexistenteException  extends RuntimeException {
      * 
      * @param message El mensaje de la excepción.
      */
-    public ConexionInexistenteException (String message) {
+    public UbicacionNoEncontradaException(String message) {
         super(message);
     }
 
@@ -52,7 +51,7 @@ public class ConexionInexistenteException  extends RuntimeException {
      * 
      * @param cause La causa de la excepción.
      */
-    public ConexionInexistenteException (Throwable cause) {
+    public UbicacionNoEncontradaException(Throwable cause) {
         super(cause);
     }
 }
