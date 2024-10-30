@@ -32,13 +32,19 @@ public class Red {
 
 	
 	public static Red getRed() throws FileNotFoundException {
-		if (red == null) {
+		if (red == null)
 			red = new Red();
-		}
 		return red;
 	}
 	
-	private Red() throws FileNotFoundException {
+	/**
+     * Constructor privado para inicializar la red.
+     * Carga los equipos, conexiones y ubicaciones desde los servicios.
+     * 
+     * @throws FileNotFoundException Si no se encuentran los archivos de datos.
+     */
+
+    private Red() throws FileNotFoundException {
 		super();
 		equipos = new ArrayList<Equipo>();
 		equipoService = new EquipoServiceImp();
@@ -51,13 +57,6 @@ public class Red {
 		ubicaciones.addAll(ubicacionService.buscarTodos());
 		
 	}
-
-    /**
-     * Constructor privado para inicializar la red.
-     * Carga los equipos, conexiones y ubicaciones desde los servicios.
-     * 
-     * @throws FileNotFoundException Si no se encuentran los archivos de datos.
-     */
 
     // Métodos de acceso (getters y setters).
     public String getNombre() {

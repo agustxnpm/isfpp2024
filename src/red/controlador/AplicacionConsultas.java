@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 import red.excepciones.EquipoRepetidoException;
-import red.interfaz.Interfaz;
+import red.interfaz.InterfazConsola;
 import red.modelo.Conexion;
 import red.modelo.Equipo;
 import red.modelo.Ubicacion;
@@ -18,7 +18,7 @@ public class AplicacionConsultas {
 	private Calculo calculo;
 
 	// vista
-	private Interfaz interfaz;
+	private InterfazConsola interfaz;
 
 	// controlador
 	private Coordinador coordinador;
@@ -35,7 +35,7 @@ public class AplicacionConsultas {
 
 		calculo = new Calculo();
 		coordinador = new Coordinador();
-		interfaz = new Interfaz();
+		interfaz = new InterfazConsola();
 
 		/* Se establecen las relaciones entre clases */
 		calculo.setCoordinador(coordinador);
@@ -52,19 +52,9 @@ public class AplicacionConsultas {
 		boolean continuar = true;
 
 		while (continuar) {
-			System.out.println("Seleccione una opción:");
-			System.out.println("1. Listar Equipos");
-			System.out.println("2. Listar Conexiones");
-			System.out.println("3. Listar Ubicaciones");
-			System.out.println("4. Agregar Nuevo Equipo");
-			System.out.println("5. Buscar Equipo por Código");
-			System.out.println("6. Ruta entre dos equipos");
-			System.out.println("7. Realizar ping a un rango de IP");
-			System.out.println("8. Mostrar mapa de estado de la red");
-			System.out.println("9. Verificar conectividad");
-			System.out.println("10. Salir");
+			System.out.println(Constantes.OPCIONES);
 
-			int opcion = Integer.parseInt(interfaz.solicitarOpcion());
+			int opcion = calcularOpcion();
 
 			switch (opcion) {
 			case 1:
@@ -114,6 +104,17 @@ public class AplicacionConsultas {
 				interfaz.mostrarError("Opción no válida. Por favor, seleccione una opción del 1 al 10");
 				break;
 			}
+		}
+	}
+	
+	private int calcularOpcion() {
+		int salida;
+		try {
+			salida = Integer.parseInt(interfaz.solicitarOpcion());
+			return salida;
+		} catch(NumberFormatException e) {
+			interfaz.mostrarError("Opción no válida. Por favor, seleccione un número del 1 al 10");
+			return calcularOpcion();
 		}
 	}
 }

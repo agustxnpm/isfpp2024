@@ -67,12 +67,7 @@ public class VentanaConexiones extends JFrame implements ActionListener {
 		add(scrollConexiones, BorderLayout.CENTER);
 
 		JButton agregarConexionButton = new JButton("Agregar Conexión");
-		agregarConexionButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				agregarConexion();
-			}
-		});
+		agregarConexionButton.addActionListener(e -> agregarConexion());
 
 		JPanel panelInferior = new JPanel();
 		panelInferior.add(agregarConexionButton);
@@ -85,11 +80,10 @@ public class VentanaConexiones extends JFrame implements ActionListener {
 		try {
 			List<Conexion> conexiones = conexionService.buscarTodos();
 			conexionTableModel.setRowCount(0); // Limpiar la tabla
-			for (Conexion conexion : conexiones) {
+			for (Conexion conexion : conexiones)
 				conexionTableModel.addRow(new Object[] { conexion.getEquipo1().getCodigo(),
 						conexion.getEquipo2().getCodigo(), conexion.getTipoCable().getDescripcion(),
 						conexion.getTipoPuerto1().getCodigo(), conexion.getTipoPuerto2().getCodigo(), "Eliminar" });
-			}
 
 			conexionesTable.getColumn("Acciones").setCellRenderer(new ButtonRenderer("eliminar"));
 			conexionesTable.getColumn("Acciones").setCellEditor(
@@ -104,7 +98,7 @@ public class VentanaConexiones extends JFrame implements ActionListener {
 		int confirmacion = JOptionPane.showConfirmDialog(this, "¿Estás seguro de que quieres eliminar esta conexión?",
 				"Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
 
-		if (confirmacion == JOptionPane.YES_OPTION) {
+		if (confirmacion == JOptionPane.YES_OPTION)
 			try {
 				conexionService.borrar(conexion);
 				JOptionPane.showMessageDialog(this, "Conexión eliminada correctamente.", "Éxito",
@@ -115,7 +109,6 @@ public class VentanaConexiones extends JFrame implements ActionListener {
 				JOptionPane.showMessageDialog(this, "Error al eliminar la conexión: " + e.getMessage(), "Error",
 						JOptionPane.ERROR_MESSAGE);
 			}
-		}
 	}
 
 	// Método para obtener un equipo según su código
@@ -164,7 +157,7 @@ public class VentanaConexiones extends JFrame implements ActionListener {
 
 		int result = JOptionPane.showConfirmDialog(this, panel, "Agregar Conexión", JOptionPane.OK_CANCEL_OPTION,
 				JOptionPane.PLAIN_MESSAGE);
-		if (result == JOptionPane.OK_OPTION) {
+		if (result == JOptionPane.OK_OPTION)
 			try {
 				String equipo1Codigo = (String) equipo1ComboBox.getSelectedItem();
 				String equipo2Codigo = (String) equipo2ComboBox.getSelectedItem();
@@ -186,7 +179,6 @@ public class VentanaConexiones extends JFrame implements ActionListener {
 				JOptionPane.showMessageDialog(this, "Error al agregar la conexión: " + e.getMessage(), "Error",
 						JOptionPane.ERROR_MESSAGE);
 			}
-		}
 	}
 
 	// Método para actualizar el JComboBox de TipoPuerto según el equipo
@@ -229,11 +221,9 @@ public class VentanaConexiones extends JFrame implements ActionListener {
 	private TipoPuerto obtenerTipoPuertoPorCodigo(String codigo) {
 		try {
 			List<TipoPuerto> puertos = tipoPuertoService.buscarTodos();
-			for (TipoPuerto p : puertos) {
-				if (p.getCodigo().equals(codigo)) {
+			for (TipoPuerto p : puertos)
+				if (p.getCodigo().equals(codigo))
 					return p;
-				}
-			}
 			
 			return null;
 

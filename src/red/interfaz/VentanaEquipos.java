@@ -66,12 +66,7 @@ public class VentanaEquipos extends JFrame implements ActionListener {
         add(scrollEquipos, BorderLayout.CENTER);
 
         JButton agregarEquipoButton = new JButton("Agregar Equipo");
-        agregarEquipoButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                agregarEquipo();
-            }
-        });
+        agregarEquipoButton.addActionListener(e -> agregarEquipo());
 
         JPanel panelInferior = new JPanel();
         panelInferior.add(agregarEquipoButton);
@@ -117,7 +112,7 @@ public class VentanaEquipos extends JFrame implements ActionListener {
             "¿Estás seguro de que quieres eliminar este equipo?",
             "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
 
-        if (confirmacion == JOptionPane.YES_OPTION) {
+        if (confirmacion == JOptionPane.YES_OPTION)
             try {
                 // Verificar si el equipo realmente existe antes de eliminarlo
                 Equipo equipoExistente = equipoService.buscarPorCodigo(equipo.getCodigo());
@@ -127,16 +122,13 @@ public class VentanaEquipos extends JFrame implements ActionListener {
                     JOptionPane.showMessageDialog(this, 
                         "Equipo eliminado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                     mostrarEquiposEnTabla(); // Refrescar la tabla para actualizar la lista de equipos
-                } else {
-                    JOptionPane.showMessageDialog(this, 
+                } else JOptionPane.showMessageDialog(this, 
                         "El equipo no existe en la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
             } catch (Exception e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(this, 
                     "Error al eliminar el equipo: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
-        }
     }
 
     private void agregarEquipo() {
@@ -177,7 +169,7 @@ public class VentanaEquipos extends JFrame implements ActionListener {
 
         int result = JOptionPane.showConfirmDialog(this, panel, "Agregar Equipo", JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.PLAIN_MESSAGE);
-        if (result == JOptionPane.OK_OPTION) {
+        if (result == JOptionPane.OK_OPTION)
             try {
                 int cantPuertos = Integer.parseInt(cantPuertosField.getText());
                 String tipoEquipo = (String) tipoEquipoComboBox.getSelectedItem();
@@ -202,7 +194,6 @@ public class VentanaEquipos extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Error al agregar el equipo: " + e.getMessage(), "Error",
                         JOptionPane.ERROR_MESSAGE);
             }
-        }
     }
 
     @Override

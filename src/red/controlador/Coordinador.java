@@ -3,7 +3,7 @@ package red.controlador;
 import java.util.List;
 
 import red.excepciones.EquipoRepetidoException;
-import red.interfaz.Interfaz;
+import red.interfaz.InterfazConsola;
 import red.modelo.Conexion;
 import red.modelo.Equipo;
 import red.modelo.Ubicacion;
@@ -18,7 +18,7 @@ public class Coordinador {
 
     // Atributos que representan la red, la interfaz y las operaciones de cálculo.
     private Red red;
-    private Interfaz interfaz;
+    private InterfazConsola interfaz;
     private Calculo calculo;
 
     /**
@@ -41,7 +41,7 @@ public class Coordinador {
      * Obtiene la interfaz asociada al coordinador.
      * @return La interfaz de usuario.
      */
-    public Interfaz getInterfaz() {
+    public InterfazConsola getInterfaz() {
         return interfaz;
     }
 
@@ -49,7 +49,7 @@ public class Coordinador {
      * Establece la interfaz que gestionará el coordinador.
      * @param interfaz La interfaz a establecer.
      */
-    public void setInterfaz(Interfaz interfaz) {
+    public void setInterfaz(InterfazConsola interfaz) {
         this.interfaz = interfaz;
     }
 

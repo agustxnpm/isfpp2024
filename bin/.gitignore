@@ -1,9 +1,0 @@
-# Eclipse
-.project
-.classpath
-.settings/
-
-# VS Code
-.classpath
-.proyect
-.vscode/

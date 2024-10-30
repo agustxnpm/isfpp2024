@@ -33,9 +33,8 @@ public class InterfazConsola {
      * @param equipos Lista de equipos a mostrar.
      */
     public void mostrarEquipos(List<Equipo> equipos) {
-        for (Equipo equipo : equipos) {
+        for (Equipo equipo : equipos)
             System.out.println(equipo);
-        }
     }
 
     /**
@@ -43,9 +42,8 @@ public class InterfazConsola {
      * @param conexiones Lista de conexiones a mostrar.
      */
     public void mostrarConexiones(List<Conexion> conexiones) {
-        for (Conexion conexion : conexiones) {
+        for (Conexion conexion : conexiones)
             System.out.println(conexion);
-        }
     }
 
     /**
@@ -53,9 +51,8 @@ public class InterfazConsola {
      * @param ubicaciones Lista de ubicaciones a mostrar.
      */
     public void mostrarUbicaciones(List<Ubicacion> ubicaciones) {
-        for (Ubicacion ubicacion : ubicaciones) {
+        for (Ubicacion ubicacion : ubicaciones)
             System.out.println(ubicacion);
-        }
     }
 
     /**
@@ -63,9 +60,8 @@ public class InterfazConsola {
      * @param eq Lista de equipos.
      */
     public void mostrarUbicacionesPorEquipo(List<Equipo> eq) {
-        for (Equipo e : eq) {
+        for (Equipo e : eq)
             System.out.println("Equipo: " + e.getDescripcion() + " -> Ubicacion: " + e.getUbicacion().getDescripcion());
-        }
     }
 
     /**

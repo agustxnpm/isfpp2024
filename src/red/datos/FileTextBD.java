@@ -39,44 +39,38 @@ public class FileTextBD {
 		UbicacionDAO ubicacionSecuencialDAO = new UbicacionesSecuencialDAO();
 		UbicacionDAO ubicacionesPostgresqlDAO = new UbicacionesPostgresqlDAO();
 		
-		for (Ubicacion u : ubicacionSecuencialDAO.buscarTodos()) {
+		for (Ubicacion u : ubicacionSecuencialDAO.buscarTodos())
 			ubicacionesPostgresqlDAO.insertar(u);
-		}
 		
 		TipoCableDAO tipoCableSecuencialDAO = new TipoCableSecuencialDAO();
 		TipoCableDAO tipoCablePostgresqlDAO = new TipoCablePostgresqlDAO();
 		
-		for (TipoCable tc : tipoCableSecuencialDAO.buscarTodos()) {
+		for (TipoCable tc : tipoCableSecuencialDAO.buscarTodos())
 			tipoCablePostgresqlDAO.insertar(tc);
-		}
 		
 		TipoEquipoDAO tipoEquipoSecuencialDAO = new TipoEquipoSecuencialDAO();
 		TipoEquipoDAO tipoEquipoPostgresqlDAO = new TipoEquipoPostgresqlDAO();
 		
-		for (TipoEquipo teq : tipoEquipoSecuencialDAO.buscarTodos()){
+		for (TipoEquipo teq : tipoEquipoSecuencialDAO.buscarTodos())
 			tipoEquipoPostgresqlDAO.insertar(teq);
-		}
 		
 		TipoPuertoDAO tipoPuertoSecuencialDAO = new TipoPuertoSecuencialDAO();
 		TipoPuertoDAO tipoPuertoPostgresqlDAO = new TipoPuertoPostgresqlDAO();
 		
-		for (TipoPuerto tp : tipoPuertoSecuencialDAO.buscarTodos()) {
+		for (TipoPuerto tp : tipoPuertoSecuencialDAO.buscarTodos())
 			tipoPuertoPostgresqlDAO.insertar(tp);
-		}
 
 		EquipoDAO equipoSecuencialDAO = new EquipoSecuencialDAO();
 		EquipoDAO equipoPostgresqlDAO = new EquipoPostgresqlDAO();
 		
-		for (Equipo eq : equipoSecuencialDAO.buscarTodos()) {
+		for (Equipo eq : equipoSecuencialDAO.buscarTodos())
 			equipoPostgresqlDAO.insertar(eq);
-		}
 		
 		ConexionDAO conexionSecuencialDAO = new ConexionSecuencialDAO();
 		ConexionDAO conexionPostgresqlDAO = new ConexionPostgresqlDAO();
 		
-		for (Conexion con : conexionSecuencialDAO.buscarTodos()) {
+		for (Conexion con : conexionSecuencialDAO.buscarTodos())
 			conexionPostgresqlDAO.insertar(con);
-		}
 		
 	}
 }

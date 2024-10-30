@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.TreeSet;
 
 import net.datastructures.Graph;
 import net.datastructures.Vertex;
@@ -17,6 +18,7 @@ import red.controlador.Coordinador;
 import red.modelo.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -40,24 +42,21 @@ public class Calculo {
     public void cargarDatos(List<Equipo> eq, List<Conexion> conex) {
         // Mapa para almacenar equipos por su código.
         TreeMap<String, Equipo> equipos = new TreeMap<String, Equipo>();
-        for (Equipo e : eq) {
+        for (Equipo e : eq)
             equipos.put(e.getCodigo(), e);
-        }
 
         // Crear un grafo no dirigido para la red.
         red = new AdjacencyMapGraph<>(false);
 
         // Mapa de vértices de equipos en el grafo.
         vertices = new TreeMap<String, Vertex<Equipo>>();
-        for (Entry<String, Equipo> e : equipos.entrySet()) {
+        for (Entry<String, Equipo> e : equipos.entrySet())
             // Insertar cada equipo como un vértice en el grafo.
             vertices.put(e.getKey(), red.insertVertex(e.getValue()));
-        }
 
         // Insertar conexiones como aristas entre los vértices del grafo.
-        for (Conexion c : conex) {
+        for (Conexion c : conex)
             red.insertEdge(vertices.get(c.getEquipo1().getCodigo()), vertices.get(c.getEquipo2().getCodigo()), c);
-        }
     }
 
     public void setCoordinador(Coordinador coordinador) {
@@ -71,16 +70,14 @@ public class Calculo {
      * @return Equipo con el código proporcionado o null si no se encuentra.
      */
     public Equipo obtenerEquipo(String codigo) {
-        for (Vertex<Equipo> e : vertices.values()) {
-            if (e.getElement().getCodigo().equals(codigo)) {
+        for (Vertex<Equipo> e : vertices.values())
+            if (e.getElement().getCodigo().equals(codigo))
                 return e.getElement();
-            }
-        }
         return null;
     }
 
     /**
-     * Encuentra la ruta entre dos equipos utilizando el algoritmo BFS.
+     * Encuentra la ruta entre dos equipos utilizando el algoritmo BFS (Breadth First Search, o Búsqueda en anchura).
      * 
      * @param equipoInicio Equipo desde donde comienza la búsqueda.
      * @param equipoFin    Equipo destino al que se quiere llegar.
@@ -88,6 +85,8 @@ public class Calculo {
      *         equipoInicio y equipoFin. Si no se encuentra una ruta, retorna null.
      */
     public List<Equipo> buscarRuta(Equipo equipoInicio, Equipo equipoFin) {
+    	if (equipoInicio.equals(equipoFin)) // si ambos equipos son el mismo, devuelve una lista con únicamente dicho equipo
+    		return List.of(equipoInicio);
         Map<Equipo, Equipo> predecesores = new HashMap<>(); // Almacena los predecesores para reconstruir la ruta.
         Queue<Equipo> cola = new LinkedList<>(); // Cola para el algoritmo BFS.
         Set<Equipo> visitados = new HashSet<>(); // Conjunto de equipos ya visitados.
@@ -100,25 +99,32 @@ public class Calculo {
             Equipo actual = cola.poll();
 
             // Si alcanzamos el equipo destino, reconstruimos la ruta.
-            if (actual.equals(equipoFin)) {
-                return reconstruirRuta(predecesores, equipoInicio, equipoFin);
-            }
+            if (actual.equals(equipoFin))
+                return reconstruirRuta(predecesores, equipoInicio); //reconstruirRuta(predecesores, equipoInicio, equipoFin);
 
             // Recorrer todas las conexiones del equipo actual.
-            for (Edge<Conexion> conexion : red.edges()) {
-                // Obtener el equipo vecino a través de la conexión.
-                Equipo vecino = conexion.getElement().getEquipo1().equals(actual) ?
-                        conexion.getElement().getEquipo2() : conexion.getElement().getEquipo1();
-
+            for (Equipo vecino: vecinos(actual))
                 // Si el vecino no ha sido visitado, lo agregamos a la cola.
                 if (!visitados.contains(vecino)) {
                     predecesores.put(vecino, actual);
                     visitados.add(vecino);
                     cola.add(vecino);
                 }
-            }
         }
         return null; // No se encontró una ruta.
+    }
+    
+    /**
+     *  Método auxiliar para obtener a todos los vecinos de un equipo dado
+     *  @param equipo Equipo cuyos vecinos buscamos
+     *  @returns Conjunto de vecinos de dicho equipo
+     */
+    private Set<Equipo> vecinos(Equipo eq){
+    	Set<Equipo> vecinos = new TreeSet<>(); // conjunto de equipos vecinos de nuestro equipo
+    	for(Edge<Conexion> conexion : red.edges())
+    		if (conexion.getElement().getEquipo1().equals(eq)) vecinos.add(conexion.getElement().getEquipo2()); // si eq es el equipo 1 de la conexión, agrega al equipo 2
+    		else if (conexion.getElement().getEquipo2().equals(eq)) vecinos.add(conexion.getElement().getEquipo1()); // si eq es el equipo 2 de la conexión, agrega al equipo 1
+    	return vecinos;
     }
 
     /**
@@ -130,16 +136,16 @@ public class Calculo {
      * @param equipoFin    Equipo destino.
      * @return Lista de equipos que representa la ruta reconstruida.
      */
-    private List<Equipo> reconstruirRuta(Map<Equipo, Equipo> predecesores, Equipo equipoInicio, Equipo equipoFin) {
-        List<Equipo> ruta = new ArrayList<>();
-        Equipo actual = equipoFin;
-
-        // Reconstrucción de la ruta en orden inverso.
-        while (actual != null) {
-            ruta.add(0, actual); // Agregar al inicio de la lista.
-            actual = predecesores.get(actual);
-        }
-        return ruta;
+    
+    private List<Equipo> reconstruirRuta(Map<Equipo, Equipo> predecesores, Equipo inicio) {
+    	/* Lista de los elementos de la ruta pero sin el inicio (formada por los valores del mapa), y con el orden
+    	 * inverso al que deseamos
+    	*/
+    	List<Equipo> ruta = new ArrayList<>(predecesores.values());
+    	
+    	ruta.add(inicio); // Se agrega al equipo del inicio al final de esta lista invertida
+    	Collections.reverse(ruta); // Reconstrucción de la ruta en el orden inverso
+    	return ruta;
     }
 
     /**
@@ -166,6 +172,7 @@ public class Calculo {
                 velocidadMaxima = Math.min(velocidadMaxima,
                         Math.min(velocidadCable, Math.min(velocidadEquipo1, velocidadEquipo2)));
             }
+            else return -1;
         }
         return velocidadMaxima;
     }
@@ -178,14 +185,12 @@ public class Calculo {
      * @return La conexión entre equipo1 y equipo2, o null si no existe.
      */
     private Conexion buscarConexion(Equipo equipo1, Equipo equipo2) {
-        for (Edge<Conexion> conexion : red.edges()) {
+        for (Edge<Conexion> conexion : red.edges())
             if ((conexion.getElement().getEquipo1().equals(equipo1)
                     && conexion.getElement().getEquipo2().equals(equipo2))
                     || (conexion.getElement().getEquipo1().equals(equipo2)
-                            && conexion.getElement().getEquipo2().equals(equipo1))) {
+                            && conexion.getElement().getEquipo2().equals(equipo1)))
                 return conexion.getElement();
-            }
-        }
         return null; // No se encontró conexión entre los dos equipos.
     }
 
@@ -227,9 +232,8 @@ public class Calculo {
                 } else if (!conexionFuncionando) {
                     System.out.println("Problema con el cable entre " + equipo1.getCodigo() + " y " + equipo2.getCodigo() + ". Se pierde conectividad aquí.");
                     return;
-                } else {
+                } else
                     System.out.println("Conectividad correcta entre " + equipo1.getCodigo() + " y " + equipo2.getCodigo());
-                }
             }
         }
 
@@ -243,17 +247,15 @@ public class Calculo {
      * @return true si el ping fue exitoso, false en caso contrario.
      */
     public boolean realizarPingAEquipo(String direccionIp) {
-        for (Vertex<Equipo> equipo : vertices.values()) {
+        for (Vertex<Equipo> equipo : vertices.values())
             if (equipo.getElement().getDireccionesIp().contains(direccionIp)) {
                 boolean respuestaPing = equipo.getElement().realizarPing();
-                if (respuestaPing) {
+                if (respuestaPing)
                     System.out.println("Ping exitoso al equipo con IP: " + direccionIp);
-                } else {
-                    System.out.println("Ping fallido al equipo con IP: " + direccionIp);
-                }
+                else
+                	System.out.println("Ping fallido al equipo con IP: " + direccionIp);
                 return respuestaPing;
             }
-        }
         System.out.println("No se encontró un equipo con la IP: " + direccionIp);
         return false;
     }
@@ -265,13 +267,10 @@ public class Calculo {
      * @param finIp    IP final del rango.
      */
     public void realizarPingARango(String inicioIp, String finIp) {
-        for (Vertex<Equipo> equipo : vertices.values()) {
-            for (String ip : equipo.getElement().getDireccionesIp()) {
-                if (estaDentroDelRango(ip, inicioIp, finIp)) {
+        for (Vertex<Equipo> equipo : vertices.values())
+            for (String ip : equipo.getElement().getDireccionesIp())
+                if (estaDentroDelRango(ip, inicioIp, finIp))
                     realizarPingAEquipo(ip);
-                }
-            }
-        }
     }
 
     /**
@@ -298,9 +297,8 @@ public class Calculo {
         String[] octetos2 = ip2.split("\\.");
         for (int i = 0; i < 4; i++) {
             int diferencia = Integer.parseInt(octetos1[i]) - Integer.parseInt(octetos2[i]);
-            if (diferencia != 0) {
+            if (diferencia != 0)
                 return diferencia;
-            }
         }
         return 0;
     }
