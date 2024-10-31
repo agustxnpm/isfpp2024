@@ -78,7 +78,7 @@ class TestModelo {
 		ubicac4 = new Ubicacion("HOU", "Houston, Texas");
 		equipo1 = new Equipo("eq1", "amd64", "ASUS", "Máquina doméstica", ubicac1, tipoEquipo1, 6, puerto1, false);
 		equipo2 = new Equipo("eq2", "Dell", "HP", "Router de sala de estar", ubicac2, tipoEquipo2, 10, puerto2, true);
-		equipo3 = new Equipo("eq3", null, "", null, ubicac3, tipoEquipo3, 2, null, false);
+		equipo3 = new Equipo("eq3", null, "", null, ubicac3, tipoEquipo3, 2, puerto6, false);
 		equipo4 = new Equipo("eq4", "A05", "Samsung", "Teléfono celular", ubicac1, tipoEquipo4, 4, puerto3, false);
 		equipo5 = new Equipo("eq5", "Clasificado", "NASA", "Antena de control satelital", ubicac4, tipoEquipo3, 200, puerto5, true);
 		equipo6 = new Equipo("eq6", "", null, "Dispositivo de rastreo militar", ubicac3, tipoEquipo1, 220, puerto5, true);
@@ -90,6 +90,8 @@ class TestModelo {
 		equipo1.agregarPuerto(7, puerto4);
 		equipo1.agregarPuerto(2, puerto5);
 		equipo1.agregarPuerto(10, puerto6);
+		equipo1.agregarIp("200.10.240.251");
+		equipo5.agregarIp("166.82.1.10");
 		conex1 = new Conexion(equipo1, equipo2, cable1, puerto1, puerto2);
 		conex2 = new Conexion(equipo2, equipo3, cable2, puerto3, puerto4);
 		conex3 = new Conexion(equipo4, equipo1, cable3, puerto5, puerto5);
@@ -123,12 +125,12 @@ class TestModelo {
 		assertTrue(equipo2.realizarPing());
 		assertFalse(equipo3.realizarPing());
 		assertThrows(IllegalArgumentException.class, () -> equipo1.agregarIp("Tu madre"));
-		equipo1.agregarIp("200.10.240.251");
-		assertThrows(DireccionIpRepetidaException.class, () -> equipo1.agregarIp("200.10.240.251"));
+		assertThrows(DireccionIpRepetidaException.class, () -> equipo1.agregarIp("200.10.240.251")); // IP ya agregada antes del test
 		assertThrows(IllegalArgumentException.class, () -> equipo2.agregarPuerto(0, puerto1));
+		assertThrows(IllegalArgumentException.class, () -> equipo3.agregarPuerto(5, null));
+		assertThrows(IllegalArgumentException.class, () -> new Equipo("eq9", null, "", null, ubicac3, tipoEquipo3, 2, null, false)); // tipo de puerto nulo
 		assertEquals(equipo1.getPuertosInfo(), "TP1,46;TP2,20;TP3,3;TP4,7;TP5,2;TP6,10");
 		assertEquals(equipo2.getPuertosInfo(), "TP2,10");
-		assertEquals(equipo3.getPuertosInfo(), "N/A,2");
 	}
 	
 	// Test del equals y de excepciones lanzadas por la clase Conexión
@@ -147,13 +149,27 @@ class TestModelo {
 	void testCalculo() {
 		assertEquals(equipo3, calculo.obtenerEquipo("eq3"));
 		assertNotEquals(equipo2, calculo.obtenerEquipo("eq5"));
-		assertEquals(null, calculo.obtenerEquipo("Hola"));
-		System.out.println(calculo.buscarRuta(equipo5, equipo1));
+		assertNull(calculo.obtenerEquipo("Hola"));
+		assertThrows(ConexionRepetidaException.class, () -> calculo.agregarConexionAlGrafo(conex1));
+		assertThrows(EquipoRepetidoException.class, () -> calculo.agregarEquipoAlGrafo(equipo1));
 		assertEquals(List.of(equipo5, equipo4, equipo1), calculo.buscarRuta(equipo5, equipo1));
-		assertEquals(calculo.buscarRuta(equipo2, equipo7), null);
-		assertEquals(calculo.calcularVelocidadMaxima(List.of(equipo1, equipo7, equipo5)), -1);
-		assertEquals(calculo.calcularVelocidadMaxima(List.of(equipo1, equipo2, equipo3, equipo5)), 1);
+		assertNull(calculo.buscarRuta(equipo2, equipo7));
+		assertEquals(calculo.calcularVelocidadMaxima(List.of(equipo1, equipo2, equipo3, equipo5)), 5);
+		assertEquals(calculo.calcularVelocidadMaxima(List.of(equipo4, equipo5, equipo3)), 10);
 		
+		/**
+		 *  Los equipos 1 y 6 no están conectados directamente, ni tampoco 1 y 5, pese a que hay un camino del equipo 1 al 5
+		 *  No hay, de hecho, un camino que vaya del equipo 1 al equipo 6
+		*/
+		assertThrows(ConexionNoConectadaException.class, () -> calculo.calcularVelocidadMaxima(List.of(equipo1, equipo6, equipo7)));
+		assertThrows(ConexionNoConectadaException.class, () -> calculo.calcularVelocidadMaxima(List.of(equipo1, equipo5, equipo3)));
+		assertThrows(ConexionNoConectadaException.class, () -> calculo.verificarConectividad(equipo1, equipo6));
+		
+		assertFalse(calculo.realizarPingAEquipo("200.10.240.251"));
+		assertTrue(calculo.realizarPingAEquipo("166.82.1.10"));
+		assertThrows(DireccionIpNoEncontradaException.class, () -> calculo.realizarPingAEquipo("166.82.100.10"));
+		assertThrows(DireccionIpNoEncontradaException.class, () -> calculo.realizarPingAEquipo("Buen día."));
+		//assertThrows(DireccionIpNoEncontradaException.class, () -> calculo.realizarPingARango("200", "40"));
 	}
 
 }

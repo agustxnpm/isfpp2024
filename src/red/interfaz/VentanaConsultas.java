@@ -2,126 +2,200 @@ package red.interfaz;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.FileNotFoundException;
-import java.util.List;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import red.modelo.Equipo;
-import red.modelo.Conexion;
 import red.negocio.Calculo;
-import red.servicio.EquipoService;
-import red.servicio.ConexionService;
-import red.servicio.EquipoServiceImp;
-import red.servicio.TipoCableServiceImp;
-import red.servicio.ConexionServiceImp;
+import red.negocio.Red;
 
 public class VentanaConsultas extends JFrame {
 
-    private EquipoService equipoService;
-    private ConexionService conexionService;
-    private Calculo calculo;
+	private Calculo calculo;
+    private Red red;
+    private Handler manejador; // Manejador de eventos
 
-    public VentanaConsultas() {
+    private JButton calcularVelocidadButton;
+    private JButton pingEquipoButton;
+    private JButton detectarProblemasButton;
+    private JButton calcularButton; // Botón para confirmar cálculo de velocidad
+    private JButton verMapaEstadoButton;
+
+	private JButton verificarButton;
+    private JComboBox<String> equipo1ComboBox;
+    private JComboBox<String> equipo2ComboBox;
+
+    public VentanaConsultas(Calculo calculo, Red red) {
         setTitle("Consultas de la Red");
         setSize(600, 400);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        try {
-            // Inicializar los servicios antes de utilizarlos
-            equipoService = new EquipoServiceImp();
-            conexionService = new ConexionServiceImp();
-            calculo = new Calculo();
-        } catch (FileNotFoundException e) {
-            JOptionPane.showMessageDialog(this, "Error al cargar los datos de las conexiones.", "Error",
-                    JOptionPane.ERROR_MESSAGE);
-        }
 
-     
-        JButton calcularVelocidadButton = new JButton("Calcular Velocidad Máxima");
-        calcularVelocidadButton.addActionListener(e -> calcularVelocidadMaxima());
+        this.calculo = calculo;
+        this.red = red;
 
-        JButton pingEquipoButton = new JButton("Realizar Ping a Equipo");
-        pingEquipoButton.addActionListener(e -> realizarPingAEquipo());
+        inicializarComponentes();
+    }
+	private void inicializarComponentes() {
+        manejador = new Handler();
 
-        JButton detectarProblemasButton = new JButton("Detectar Problemas de Conectividad");
-        detectarProblemasButton.addActionListener(e -> detectarProblemasConectividad());
+        calcularVelocidadButton = new JButton("Calcular Velocidad Máxima");
+        calcularVelocidadButton.setBounds(20, 80, 180, 50);
+        calcularVelocidadButton.addActionListener(manejador);
 
-        JPanel panel = new JPanel(new GridLayout(0, 1));
+        pingEquipoButton = new JButton("Realizar Ping a Equipo");
+        pingEquipoButton.setBounds(220, 80, 180, 50);
+        pingEquipoButton.addActionListener(manejador);
+
+        detectarProblemasButton = new JButton("Detectar Problemas");
+        detectarProblemasButton.setBounds(420, 80, 180, 50);
+        detectarProblemasButton.addActionListener(manejador);
+
+        verMapaEstadoButton = new JButton("Ver Mapa de Estado");
+        verMapaEstadoButton.setBounds(20, 160, 180, 50);
+        verMapaEstadoButton.addActionListener(manejador);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(null);
         panel.add(calcularVelocidadButton);
         panel.add(pingEquipoButton);
         panel.add(detectarProblemasButton);
+        panel.add(verMapaEstadoButton);
 
-        add(panel, BorderLayout.CENTER);
+        getContentPane().add(panel, BorderLayout.CENTER);
     }
 
-    // Método para calcular velocidad máxima basado en dos equipos seleccionados
-    private void calcularVelocidadMaxima() {
-        try {
-            // Busca la lista de equipos y conexiones y los carga en el grafo de Cálculo
-            List<Equipo> equipos = equipoService.buscarTodos();
-            List<Conexion> conexiones = conexionService.buscarTodos();
-            calculo.cargarDatos(equipos, conexiones);
 
-            // Pide al usuario que ingrese los códigos de ambos equipos y los busca, si existen
-            String inicio = JOptionPane.showInputDialog("Ingrese el código del equipo de inicio:");
-            Equipo equipoInicio = equipoService.buscarPorCodigo(inicio);
-            if (equipoInicio == null) {
-            	JOptionPane.showMessageDialog(this, "No se encontró un equipo de inicio con el código " + inicio + ". Parece que dicho equipo no existe\no hubo algún error.",
-            			"Error", JOptionPane.ERROR_MESSAGE);
-            	return;
-            }
-            String fin = JOptionPane.showInputDialog("Ingrese el código del equipo de fin:");
-            Equipo equipoFin = equipoService.buscarPorCodigo(fin); // Código de ejemplo
-            if (equipoFin == null) {
-            	JOptionPane.showMessageDialog(this, "No se encontró un equipo de fin con el código " + fin + ". Parece que dicho equipo no existe\no hubo algún error.",
-            			"Error", JOptionPane.ERROR_MESSAGE);
-            	return;
-            }
+    private void ventanaVelocidad() {
+        calcularButton = new JButton("Calcular");
 
-            // Realiza el cálculo entre ambos equipos
-            List<Equipo> ruta = calculo.buscarRuta(equipoInicio, equipoFin);
+        JPanel panelCentral = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
 
-            if (ruta != null) {
-                int velocidadMaxima = calculo.calcularVelocidadMaxima(ruta);
-                JOptionPane.showMessageDialog(this, "Velocidad máxima de transmisión: " + velocidadMaxima + " Mbps");
-            } else JOptionPane.showMessageDialog(this, "No se encontró una ruta entre los equipos seleccionados.");
-        } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error al cargar los datos.", "Error", JOptionPane.ERROR_MESSAGE);
+        String[] equipoArray = red.getEquipos().stream().map(Equipo::getCodigo).toArray(String[]::new);
+        equipo1ComboBox = new JComboBox<>(equipoArray);
+        equipo2ComboBox = new JComboBox<>(equipoArray);
+
+        JLabel equipo1Label = new JLabel("Equipo 1");
+        JLabel equipo2Label = new JLabel("Equipo 2");
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panelCentral.add(equipo1Label, gbc);
+        gbc.gridx = 1;
+        panelCentral.add(equipo1ComboBox, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panelCentral.add(equipo2Label, gbc);
+        gbc.gridx = 1;
+        panelCentral.add(equipo2ComboBox, gbc);
+
+        JDialog dialog = new JDialog(this, "Calcular Velocidad", true);
+
+        JPanel panelInferior = new JPanel();
+        panelInferior.add(calcularButton);
+
+        calcularButton.addActionListener(manejador);
+
+        dialog.add(panelCentral);
+        dialog.add(panelInferior, BorderLayout.SOUTH);
+        dialog.setSize(500, 300);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
+
+
+    private void realizarPingAEquipo() {
+        JComboBox<String> equipoIpComboBox = new JComboBox<>();
+        for (Equipo equipo : red.getEquipos())
+            for (String ip : equipo.getDireccionesIp())
+                equipoIpComboBox.addItem(equipo.getCodigo() + " (" + ip + ")");
+
+        int result = JOptionPane.showConfirmDialog(this, equipoIpComboBox, "Seleccione equipo y dirección IP",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (result == JOptionPane.OK_OPTION && equipoIpComboBox.getSelectedItem() != null) {
+            String selected = (String) equipoIpComboBox.getSelectedItem();
+            String direccionIp = selected.substring(selected.indexOf("(") + 1, selected.indexOf(")"));
+
+            boolean respuestaPing = calculo.realizarPingAEquipo(direccionIp);
+
+            if (respuestaPing)
+                JOptionPane.showMessageDialog(this, "Ping exitoso al equipo con IP: " + direccionIp);
+            else
+                JOptionPane.showMessageDialog(this, "Ping fallido o equipo no encontrado.");
         }
     }
 
-    // Método para realizar un ping en un equipo seleccionado
-    private void realizarPingAEquipo() {
-        String direccionIp = JOptionPane.showInputDialog(this, "Ingrese la dirección IP del equipo:");
-        boolean respuestaPing = calculo.realizarPingAEquipo(direccionIp);
+    private void detectarProblemasConectividad() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
 
-        if (respuestaPing)
-            JOptionPane.showMessageDialog(this, "Ping exitoso al equipo con IP: " + direccionIp);
-        else JOptionPane.showMessageDialog(this, "Ping fallido o equipo no encontrado.");
+        String[] equipoArray = red.getEquipos().stream().map(Equipo::getCodigo).toArray(String[]::new);
+        equipo1ComboBox = new JComboBox<>(equipoArray);
+        equipo2ComboBox = new JComboBox<>(equipoArray);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(new JLabel("Equipo 1:"), gbc);
+        gbc.gridx = 1;
+        panel.add(equipo1ComboBox, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(new JLabel("Equipo gateway:"), gbc);
+        gbc.gridx = 1;
+        panel.add(equipo2ComboBox, gbc);
+
+        JDialog dialog = new JDialog(this, "Verificar conectividad", true);
+
+        JPanel panelInferior = new JPanel();
+
+        verificarButton = new JButton("Verificar conectividad");
+        panelInferior.add(verificarButton);
+
+        verificarButton.addActionListener(manejador);
+
+        dialog.add(panel);
+        dialog.add(panelInferior, BorderLayout.SOUTH);
+        dialog.setSize(500, 300);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
     }
 
-    // Revisar la conectividad entre dos equipos dados
-    private void detectarProblemasConectividad() {
-        try {
-        	String codigo = JOptionPane.showInputDialog("Ingrese el código del equipo de inicio:");
-        	Equipo equipo = equipoService.buscarPorCodigo(codigo);
-        	if (equipo == null) {
-            	JOptionPane.showMessageDialog(this, "No se encontró un equipo de inicio con el código " + codigo + ". Parece que dicho equipo no existe\no hubo algún error.",
-            			"Error", JOptionPane.ERROR_MESSAGE);
-            	return;
-            }
-        	String codigoGateway = JOptionPane.showInputDialog("Ingrese el código del equipo de Gateway:");
-            Equipo gateway = equipoService.buscarPorCodigo(codigoGateway);
-            if (gateway == null) {
-            	JOptionPane.showMessageDialog(this, "No se encontró un Gateway con el código " + codigoGateway + ". Parece que dicho equipo no existe\no hubo algún error.",
-            			"Error", JOptionPane.ERROR_MESSAGE);
-            	return;
-            }
-
-            calculo.verificarConectividad(equipo, gateway); // Revisar la conectividad
-        } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error al buscar el equipo o Gateway.", "Error", JOptionPane.ERROR_MESSAGE);
+	private void verMapaDeEstado() {
+		// Create a new dialog to show the network map
+		JDialog dialog = new JDialog(this, "Mapa de Estado de la Red", true);
+		dialog.setSize(800, 600);
+		dialog.setLocationRelativeTo(this);
+	
+		// Get the graph panel from Calculo
+		JPanel graphPanel = calculo.crearMapaDeEstado();
+		dialog.add(graphPanel, BorderLayout.CENTER);
+	
+		dialog.setVisible(true);
+	}
+	
+    private class Handler implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (e.getSource().equals(calcularVelocidadButton))
+                ventanaVelocidad();
+            if (e.getSource().equals(pingEquipoButton))
+                realizarPingAEquipo();
+            if (e.getSource().equals(detectarProblemasButton))
+                detectarProblemasConectividad();
+            if (e.getSource().equals(verMapaEstadoButton))
+                verMapaDeEstado();
         }
     }
 

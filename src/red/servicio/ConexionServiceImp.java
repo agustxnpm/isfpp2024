@@ -35,9 +35,4 @@ public class ConexionServiceImp implements ConexionService {
     public List<Conexion> buscarTodos() throws FileNotFoundException {
         return conexionDAO.buscarTodos();
     }
-
-    @Override
-    public Conexion buscarPorCodigo(String equipo1Codigo, String equipo2Codigo) throws FileNotFoundException {
-        return conexionDAO.buscarPorCodigo(equipo1Codigo, equipo2Codigo);
-    }
 }

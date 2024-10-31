@@ -5,19 +5,28 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
+import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.view.mxGraph;
+
 import net.datastructures.Graph;
 import net.datastructures.Vertex;
 import net.datastructures.Edge;
 import net.datastructures.Entry;
 import net.datastructures.AdjacencyMapGraph;
-import net.datastructures.GraphAlgorithms;
 import net.datastructures.TreeMap;
-import red.controlador.Coordinador;
 
+import red.controlador.Coordinador;
+import red.excepciones.ConexionNoConectadaException;
+import red.excepciones.ConexionRepetidaException;
+import red.excepciones.DireccionIpNoEncontradaException;
+import red.excepciones.EquipoNoConectadoException;
+import red.excepciones.EquipoRepetidoException;
 import red.modelo.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -74,6 +83,81 @@ public class Calculo {
                 return e.getElement();
         return null;
     }
+    
+    /**
+	 * Agregar una conexion al grafo
+	 * 
+	 * @param conexion
+	 * @throws ConexionRepetidaException si la conexion ya ha sido insertada en el
+	 *                                   grafo anteriormente
+	 */
+	public void agregarConexionAlGrafo(Conexion conexion) throws ConexionRepetidaException {
+
+		for (Edge<Conexion> edge : red.edges())
+			if (edge.getElement().equals(conexion))
+				throw new ConexionRepetidaException("La conexion ya existe en el grafo");
+
+		Equipo equipo1 = conexion.getEquipo1();
+		Equipo equipo2 = conexion.getEquipo2();
+
+		red.insertEdge(vertices.get(equipo1.getCodigo()), vertices.get(equipo2.getCodigo()), conexion);
+	}
+
+	/**
+	 * Agregar un equipo al grafo
+	 * 
+	 * @param equipo
+	 * @throws EquipoRepetidoException si el equipo ya existe en el grafo (red) se
+	 *                                 lanza una excepcion
+	 */
+	public void agregarEquipoAlGrafo(Equipo equipo) throws EquipoRepetidoException {
+
+		for (Vertex<Equipo> vertex : vertices.values()) {
+			if (vertex.getElement().equals(equipo))
+				throw new EquipoRepetidoException("El equipo ya existe en el grafo");
+		}
+
+		red.insertVertex(equipo);
+
+	}
+
+	public void modificarEquipoEnElGrafo(Equipo equipo) {
+
+		Iterable<Edge<Conexion>> edges = red.outgoingEdges(vertices.get(equipo.getCodigo()));
+
+		for (Vertex<Equipo> vertex : red.vertices())
+			if (vertex.equals(vertices.get(equipo.getCodigo()))) {
+				red.removeVertex(vertex);
+				break;
+			}
+
+		Vertex<Equipo> nuevoVertice = red.insertVertex(equipo);
+		vertices.put(equipo.getCodigo(), nuevoVertice);
+
+		for (Edge<Conexion> e : edges) {
+			red.insertEdge(vertices.get(e.getElement().getEquipo1().getCodigo()),
+					vertices.get(e.getElement().getEquipo2().getCodigo()), e.getElement());
+		}
+	}
+
+	public void borrarEquipoDelGrafo(Equipo equipo) {
+		red.removeVertex(vertices.get(equipo.getCodigo()));
+	}
+	
+	/**
+	 * Método que no funciona porque removeEdge realiza una conversion de tipo en tiempo de
+	 * ejecucion, lo cual lanza error
+	 *
+	 * public void borrarConexionDelGrafo(Conexion conexion) {
+	 * 
+	 * for (Edge<Conexion> edge : red.edges())
+	 * 		if (edge.getElement().equals(conexion)) {
+	 * 			red.removeEdge(edge);
+	 * 				break;
+	 *		}
+	 *}
+	 *
+	 */
 
     /**
      * Encuentra la ruta entre dos equipos utilizando el algoritmo BFS (Breadth First Search, o Búsqueda en anchura).
@@ -83,9 +167,9 @@ public class Calculo {
      * @return Una lista de equipos que representa la ruta más corta entre
      *         equipoInicio y equipoFin. Si no se encuentra una ruta, retorna null.
      */
-    public List<Equipo> buscarRuta(Equipo equipoInicio, Equipo equipoFin) {
+    public List<Equipo> buscarRuta(Equipo equipoInicio, Equipo equipoFin) throws EquipoRepetidoException{
     	if (equipoInicio.equals(equipoFin)) // si ambos equipos son el mismo, devuelve una lista con únicamente dicho equipo
-    		return List.of(equipoInicio);
+    		throw new EquipoRepetidoException("Los equipos ingresados son iguales");
         Map<Equipo, Equipo> predecesores = new HashMap<>(); // Almacena los predecesores para reconstruir la ruta.
         Queue<Equipo> cola = new LinkedList<>(); // Cola para el algoritmo BFS.
         Set<Equipo> visitados = new HashSet<>(); // Conjunto de equipos ya visitados.
@@ -99,7 +183,7 @@ public class Calculo {
 
             // Si alcanzamos el equipo destino, reconstruimos la ruta.
             if (actual.equals(equipoFin))
-                return reconstruirRuta(predecesores, equipoInicio); //reconstruirRuta(predecesores, equipoInicio, equipoFin);
+                return reconstruirRuta(predecesores, equipoInicio, equipoFin);
 
             // Recorrer todas las conexiones del equipo actual.
             for (Equipo vecino: vecinos(actual))
@@ -136,15 +220,21 @@ public class Calculo {
      * @return Lista de equipos que representa la ruta reconstruida.
      */
     
-    private List<Equipo> reconstruirRuta(Map<Equipo, Equipo> predecesores, Equipo inicio) {
-    	/* Lista de los elementos de la ruta pero sin el inicio (formada por los valores del mapa), y con el orden
-    	 * inverso al que deseamos
-    	*/
-    	List<Equipo> ruta = new ArrayList<>(predecesores.values());
-    	
-    	ruta.add(inicio); // Se agrega al equipo del inicio al final de esta lista invertida
-    	Collections.reverse(ruta); // Reconstrucción de la ruta en el orden inverso
-    	return ruta;
+    private List<Equipo> reconstruirRuta(Map<Equipo, Equipo> predecesores, Equipo equipoInicio, Equipo equipoFin) {
+    	List<Equipo> ruta = new ArrayList<>();
+		Equipo actual = equipoFin;
+
+		// Reconstrucción de la ruta en orden inverso.
+		while (actual != null) {
+			ruta.add(0, actual); // Agregar al inicio de la lista.
+			actual = predecesores.get(actual);
+		}
+		
+		// Comprueba que el primer elemento en la ruta es el equipoInicio, lo cual garantiza que se encontró un camino.
+	    if (!ruta.isEmpty() && ruta.get(0).equals(equipoInicio))
+	    	return ruta;
+	    
+	    return null; // Si la ruta no comienza con equipoInicio, significa que no se encontró una ruta válida.
     }
 
     /**
@@ -153,7 +243,7 @@ public class Calculo {
      * @param ruta Lista de equipos que forman la ruta.
      * @return La velocidad máxima en Mbps, limitada por el cable o puertos más lentos.
      */
-    public int calcularVelocidadMaxima(List<Equipo> ruta) {
+    public int calcularVelocidadMaxima(List<Equipo> ruta) throws ConexionNoConectadaException{
         int velocidadMaxima = Integer.MAX_VALUE; // Inicialmente la velocidad es muy alta.
 
         // Iterar sobre la ruta para analizar cada conexión entre equipos.
@@ -162,16 +252,18 @@ public class Calculo {
             Equipo equipo2 = ruta.get(i + 1);
 
             Conexion conexion = buscarConexion(equipo1, equipo2); // Buscar la conexión entre dos equipos.
-            if (conexion != null) {
-                int velocidadCable = conexion.getTipoCable().getVelocidad();
-                int velocidadEquipo1 = equipo1.getVelocidadMaxima();
-                int velocidadEquipo2 = equipo2.getVelocidadMaxima();
+            
+            if (conexion == null) // Puede fallar por ausencia de conexión
+                throw new ConexionNoConectadaException("No existe conexión entre " + equipo1.getCodigo() + " y " + equipo2.getCodigo());
+            
+            // Suponemos que hay una conexión
+            int velocidadCable = conexion.getTipoCable().getVelocidad();
+            int velocidadEquipo1 = equipo1.getVelocidadMaxima();
+            int velocidadEquipo2 = equipo2.getVelocidadMaxima();
 
-                // Determinar la velocidad más baja entre el cable y los puertos de los equipos.
-                velocidadMaxima = Math.min(velocidadMaxima,
-                        Math.min(velocidadCable, Math.min(velocidadEquipo1, velocidadEquipo2)));
-            }
-            else return -1;
+            // Determinar la velocidad más baja entre el cable y los puertos de los equipos.
+            velocidadMaxima = Math.min(velocidadMaxima,
+                    Math.min(velocidadCable, Math.min(velocidadEquipo1, velocidadEquipo2))); 
         }
         return velocidadMaxima;
     }
@@ -200,15 +292,14 @@ public class Calculo {
      * @param equipoOrigen    Equipo de origen.
      * @param internetGateway Equipo que representa el Gateway.
      */
-    public void verificarConectividad(Equipo equipoOrigen, Equipo internetGateway) {
+    public void verificarConectividad(Equipo equipoOrigen, Equipo internetGateway) throws EquipoNoConectadoException, ConexionNoConectadaException {
         List<Equipo> ruta = buscarRuta(equipoOrigen, internetGateway);
 
-        if (ruta == null || ruta.isEmpty()) {
-            System.out.println("No se encontró una ruta desde el equipo " + equipoOrigen.getCodigo() + " hasta el Gateway.");
-            return;
-        }
+        if (ruta == null || ruta.isEmpty()) 
+        	throw new ConexionNoConectadaException("No se encontró una conexion(verificarConectividad) desde el equipo "
+					+ equipoOrigen.getCodigo() + " hasta el Gateway.");
 
-        System.out.println("Verificando conectividad desde el equipo " + equipoOrigen.getCodigo() + " hasta el Gateway...");
+        // Ahora suponemos que la ruta no es vacía
 
         // Verificar cada equipo y conexión en la ruta.
         for (int i = 0; i < ruta.size() - 1; i++) {
@@ -216,27 +307,27 @@ public class Calculo {
             Equipo equipo2 = ruta.get(i + 1);
             Conexion conexion = buscarConexion(equipo1, equipo2);
 
-            if (conexion != null) {
-                boolean equipo1Activo = equipo1.realizarPing();
-                boolean equipo2Activo = equipo2.realizarPing();
-                boolean conexionFuncionando = conexion.getTipoCable().getVelocidad() > 0;
+            if (conexion == null)
+                throw new ConexionNoConectadaException("Error en verificarConectividad por no haber conexión desde el equipo "
+                		+ equipo1.getCodigo() + " hasta el equipo " + equipo2.getCodigo() + " a pesar de estar el primer equipo en la posición "
+                		+ ruta.indexOf(equipo1) + " y el segundo en la posición " + ruta.indexOf(equipo2) + " de la ruta calculada.");
+            
+            boolean equipo1Activo = equipo1.realizarPing();
+            boolean equipo2Activo = equipo2.realizarPing();
+            boolean conexionFuncionando = conexion.getTipoCable().getVelocidad() > 0;
 
-                // Informar si algún equipo está inactivo o el cable está dañado.
-                if (!equipo1Activo) {
-                    System.out.println("El equipo " + equipo1.getCodigo() + " está inactivo. Se pierde conectividad aquí.");
-                    return;
-                } else if (!equipo2Activo) {
-                    System.out.println("El equipo " + equipo2.getCodigo() + " está inactivo. Se pierde conectividad aquí.");
-                    return;
-                } else if (!conexionFuncionando) {
-                    System.out.println("Problema con el cable entre " + equipo1.getCodigo() + " y " + equipo2.getCodigo() + ". Se pierde conectividad aquí.");
-                    return;
-                } else
-                    System.out.println("Conectividad correcta entre " + equipo1.getCodigo() + " y " + equipo2.getCodigo());
-            }
+            // Lanzar excepción si algún equipo está inactivo o el cable está dañado.
+            if (!equipo1Activo)
+            	throw new EquipoNoConectadoException("El equipo " + equipo1.getCodigo() + " está inactivo. Se pierde conectividad aquí.");
+            if (!equipo2Activo)
+            	throw new EquipoNoConectadoException("El equipo " + equipo2.getCodigo() + " está inactivo. Se pierde conectividad aquí.");
+            if (!conexionFuncionando)
+            	throw new ConexionNoConectadaException("Problema con el cable entre " + equipo1.getCodigo() + " y "
+						+ equipo2.getCodigo() + ". Se pierde conectividad aquí.");
+            //System.out.println("Conectividad correcta entre " + equipo1.getCodigo() + " y " + equipo2.getCodigo());
         }
 
-        System.out.println("El equipo " + equipoOrigen.getCodigo() + " tiene conectividad hasta el Gateway.");
+        //System.out.println("El equipo " + equipoOrigen.getCodigo() + " tiene conectividad hasta el Gateway.");
     }
 
     /**
@@ -244,19 +335,15 @@ public class Calculo {
      * 
      * @param direccionIp Dirección IP del equipo.
      * @return true si el ping fue exitoso, false en caso contrario.
+     * @throws DireccionIpNoEncontradaException si ningún equipo contiene a la dirección IP
      */
-    public boolean realizarPingAEquipo(String direccionIp) {
-        for (Vertex<Equipo> equipo : vertices.values())
-            if (equipo.getElement().getDireccionesIp().contains(direccionIp)) {
-                boolean respuestaPing = equipo.getElement().realizarPing();
-                if (respuestaPing)
-                    System.out.println("Ping exitoso al equipo con IP: " + direccionIp);
-                else
-                	System.out.println("Ping fallido al equipo con IP: " + direccionIp);
-                return respuestaPing;
-            }
-        System.out.println("No se encontró un equipo con la IP: " + direccionIp);
-        return false;
+    public boolean realizarPingAEquipo(String direccionIp) throws DireccionIpNoEncontradaException {
+    	direccionIp = direccionIp.trim();
+    	for (Vertex<Equipo> equipo : vertices.values())
+            if (equipo.getElement().getDireccionesIp().contains(direccionIp)) // Si la dirección IP se encuentra en la red (al menos un equipo
+                return equipo.getElement().realizarPing();
+    	// Si la dirección IP no se encuentra en ningún equipo
+    	throw new DireccionIpNoEncontradaException("La IP " + direccionIp + " no se encuentra en la red.");
     }
 
     /**
@@ -301,4 +388,47 @@ public class Calculo {
         }
         return 0;
     }
+    
+ // Método para crear el panel con disposición organizada
+
+ 	public JPanel crearMapaDeEstado() {
+ 		mxGraph graph = new mxGraph();
+ 		Object parent = graph.getDefaultParent();
+
+ 		// Empieza a actualizar el modelo del grafo
+ 		graph.getModel().beginUpdate();
+ 		Map<String, Object> vertexMap = new HashMap<>();
+
+ 		try {
+ 			// Añadir los equipos como vértices
+ 			for (Vertex<Equipo> vertex : vertices.values()) {
+ 				Equipo equipo = vertex.getElement();
+ 				Object v = graph.insertVertex(parent, equipo.getCodigo(),
+ 						equipo.getCodigo() + "\n" + equipo.getDescripcion(),
+ 						0, 0, 80, 30); // Ajusta el tamaño aquí
+ 				vertexMap.put(equipo.getCodigo(), v);
+ 			}
+
+ 			// Añadir conexiones como aristas entre vértices
+ 			for (Edge<Conexion> edge : red.edges()) {
+ 				Conexion conexion = edge.getElement();
+ 				Object equipo1 = vertexMap.get(conexion.getEquipo1().getCodigo());
+ 				Object equipo2 = vertexMap.get(conexion.getEquipo2().getCodigo());
+ 				graph.insertEdge(parent, null, conexion.getTipoCable().getDescripcion(), equipo1, equipo2);
+ 			}
+ 		} finally {
+ 			graph.getModel().endUpdate();
+ 		}
+
+ 		// Configura el layout (jerárquico o circular según prefieras)
+ 		mxHierarchicalLayout layout = new mxHierarchicalLayout(graph);
+ 		layout.execute(graph.getDefaultParent());
+
+ 		// Crear el componente del grafo y ajustarlo al panel
+ 		mxGraphComponent graphComponent = new mxGraphComponent(graph);
+ 		JPanel panel = new JPanel(new BorderLayout());
+ 		panel.add(graphComponent, BorderLayout.CENTER);
+
+ 		return panel;
+ 	}
 }

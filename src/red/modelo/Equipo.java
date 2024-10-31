@@ -170,6 +170,8 @@ public class Equipo {
     public void agregarPuerto(int cantPuertos, TipoPuerto tipoPuerto) throws IllegalArgumentException {
         if (cantPuertos <= 0)
             throw new IllegalArgumentException("El equipo debe tener al menos un puerto");
+        if (tipoPuerto == null)
+        	throw new IllegalArgumentException("El puerto ingresado a " + codigo + " no puede ser nulo.");
 
         Puerto puerto = new Puerto(cantPuertos, tipoPuerto);
         if (puertos.contains(puerto)) {
@@ -191,17 +193,16 @@ public class Equipo {
      */
     public String getPuertosInfo() {
         StringBuilder puertosInfo = new StringBuilder();
-        for (Puerto p : puertos) {  
-            if (p.getTipoPuerto() != null)  // Verificar que el tipo de puerto no sea null
-                puertosInfo.append(p.getTipoPuerto().getCodigo())   // Código del tipo de puerto
+        for (Puerto p : puertos) {
+        	/*  No es necesario porque el método agregarPuerto (ya invocado en el mismo constructor) verifica que
+			*	no se ingrese un puerto nulo
+
+            if (p.getTipoPuerto() == null)  // Verificar que el tipo de puerto no sea null
+                throw new IllegalArgumentException(); */
+
+            puertosInfo.append(p.getTipoPuerto().getCodigo())   // Código del tipo de puerto
                             .append(",")
                             .append(p.getCantidadPuertos())               // Cantidad de puertos
-                            .append(";");
-            else
-                // Si el TipoPuerto es null, podemos manejarlo aquí
-                puertosInfo.append("N/A")   // O cualquier otra información predeterminada
-                            .append(",")
-                            .append(p.getCantidadPuertos())               
                             .append(";");
         }
     
@@ -239,8 +240,8 @@ public class Equipo {
         private TipoPuerto tipoPuerto;
 
         public Puerto(int cantidadPuertos, TipoPuerto tipoPuerto) {
-            super();
-            this.cantidadPuertos = cantidadPuertos;
+        	super();
+        	this.cantidadPuertos = cantidadPuertos;
             this.tipoPuerto = tipoPuerto;
         }
 

@@ -3,52 +3,42 @@ package red.interfaz;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.util.List;
 
-import red.servicio.EquipoService;
-import red.servicio.TipoPuertoService;
-import red.servicio.TipoPuertoServiceImp;
-import red.servicio.UbicacionServiceImp;
-import red.servicio.ConexionService;
-import red.servicio.UbicacionService;
 import red.modelo.Equipo;
 import red.modelo.TipoPuerto;
 import red.modelo.Ubicacion;
+import red.negocio.Calculo;
+import red.negocio.Red;
 import red.modelo.Conexion;
 
 class ButtonEditor extends DefaultCellEditor {
+	private Red red;
+	private Calculo calculo;
+
 	protected JButton button;
+	
 	private String label;
-	private boolean isPushed;
+	private boolean presionado;
 	private JTable table;
-	private String actionType; // Nueva variable para determinar el tipo de acción ("equipo" o "conexion")
-	private EquipoService equipoService;
-	private ConexionService conexionService;
-	private UbicacionService uS;
-	private TipoPuertoService tS;
+	private String tipoAccion; // Nueva variable para determinar el tipo de acción ("equipo" o "conexion")
+	
+	
 
 	// Constructor para el manejo de eliminaciones, especificando el tipo de acción
-	public ButtonEditor(JCheckBox checkBox, JTable table, String actionType, EquipoService equipoService,
-			ConexionService conexionService) {
+	public ButtonEditor(JCheckBox checkBox, JTable table, String tipoAccion, Red red, Calculo calculo) {
+		
 		super(checkBox);
 		this.table = table;
-		this.actionType = actionType; // Define si es para equipos o conexiones
-		this.equipoService = equipoService;
-		this.conexionService = conexionService;
-		uS = new UbicacionServiceImp();
-	    tS = new TipoPuertoServiceImp();
+		this.tipoAccion = tipoAccion; // Define si es para equipos o conexiones
+		this.red = red;
+		this.calculo = calculo;
+
 
 		button = new JButton();
 		button.setOpaque(true);
-		button.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				fireEditingStopped();
-			}
-		});
+		button.addActionListener(e -> fireEditingStopped());
 	}
 
 	@Override
@@ -60,52 +50,51 @@ class ButtonEditor extends DefaultCellEditor {
 			button.setForeground(table.getForeground());
 			button.setBackground(table.getBackground());
 		}
-		label = (value == null) ? actionType.equals("eliminar") ? "Eliminar" : "Modificar" : value.toString();
+		label = (value == null) ? tipoAccion.equals("eliminar") ? "Eliminar" : "Modificar" : value.toString();
 		button.setText(label);
-		isPushed = true;
+		presionado = true;
 		return button;
 	}
 
 	@Override
 	public Object getCellEditorValue() {
-		if (isPushed) {
-			int selectedRow = table.getSelectedRow();
+		if (presionado) {
+			int filaSeleccionada = table.getSelectedRow();
 
 			// Verificación para evitar el índice -1 (sin fila seleccionada)
-			if (selectedRow == -1) {
+			if (filaSeleccionada == -1) {
 				JOptionPane.showMessageDialog(null, "Por favor selecciona una fila válida antes de eliminar.", "Error",
 						JOptionPane.ERROR_MESSAGE);
 				return label;
 			}
 
 			// Dependiendo del tipo de acción, se llama al método correspondiente
-			if ("equipo".equals(actionType)) {
-				eliminarEquipo(selectedRow);
-			} else if ("conexion".equals(actionType)) {
-				eliminarConexion(selectedRow);
-			} else if ("modificar".equals(actionType)) {
-				modificarEquipo(selectedRow); // Método para modificar
-			}
+			if ("equipo".equals(tipoAccion))
+				eliminarEquipo(filaSeleccionada);
+			else if ("conexion".equals(tipoAccion))
+				eliminarConexion(filaSeleccionada);
+			else if ("modificar".equals(tipoAccion))
+				modificarEquipo(filaSeleccionada); // Método para modificar
 		}
-		isPushed = false;
+		presionado = false;
 		return label;
 	}
 
 	// Método para eliminar un equipo
-	private void eliminarEquipo(int selectedRow) {
-		String equipoCodigo = (String) table.getValueAt(selectedRow, 0); // Código del equipo
+	private void eliminarEquipo(int filaSeleccionada) {
+		String equipoCodigo = (String) table.getValueAt(filaSeleccionada, 0); // Código del equipo
 		int confirmacion = JOptionPane.showConfirmDialog(null, "¿Estás seguro de que quieres eliminar este equipo?",
 				"Confirmar eliminación", JOptionPane.YES_NO_OPTION);
-		if (confirmacion == JOptionPane.YES_OPTION) {
+		if (confirmacion == JOptionPane.YES_OPTION)
 			try {
-				Equipo equipoAEliminar = equipoService.buscarPorCodigo(equipoCodigo);
-				equipoService.borrar(equipoAEliminar);
-
+				Equipo equipoAEliminar = red.buscarEquipoPorCodigo(equipoCodigo);
+				calculo.borrarEquipoDelGrafo(equipoAEliminar);
+				red.borrarEquipo(equipoAEliminar);
 				// Detener la edición antes de eliminar la fila
 				stopCellEditing();
 
 				// Eliminar la fila del modelo de la tabla
-				((DefaultTableModel) table.getModel()).removeRow(selectedRow);
+				((DefaultTableModel) table.getModel()).removeRow(filaSeleccionada);
 
 				JOptionPane.showMessageDialog(null, "Equipo eliminado correctamente.", "Éxito",
 						JOptionPane.INFORMATION_MESSAGE);
@@ -114,11 +103,10 @@ class ButtonEditor extends DefaultCellEditor {
 				JOptionPane.showMessageDialog(null, "Error al eliminar el equipo: " + e.getMessage(), "Error",
 						JOptionPane.ERROR_MESSAGE);
 			}
-		}
 	}
 
-	private void modificarEquipo(int selectedRow) {
-	    String equipoCodigo = (String) table.getValueAt(selectedRow, 0);
+	private void modificarEquipo(int filaSeleccionada) {
+	    String equipoCodigo = (String) table.getValueAt(filaSeleccionada, 0);
 	    Equipo equipoAModificar;
 	    
 	    List<Ubicacion> listUbicaciones;
@@ -126,8 +114,8 @@ class ButtonEditor extends DefaultCellEditor {
 
 
 	    try {
-	        listUbicaciones = uS.buscarTodos();
-	        listTipoPuerto = tS.buscarTodos();
+	        listUbicaciones = red.getUbicaciones();
+	        listTipoPuerto = red.getTipoPuertoService().buscarTodos();
 	        String[] ubicacionArray = listUbicaciones.stream().map(Ubicacion::getDescripcion).toArray(String[]::new);
 	        String[] tipoPuertoArray = listTipoPuerto.stream().map(TipoPuerto::getCodigo).toArray(String[]::new);
 
@@ -170,7 +158,7 @@ class ButtonEditor extends DefaultCellEditor {
 	        
 
 	        // Buscar el equipo y mostrar el diálogo de modificación
-	        equipoAModificar = equipoService.buscarPorCodigo(equipoCodigo);
+	        equipoAModificar = red.buscarEquipoPorCodigo(equipoCodigo);
 	        codigoField.setText(equipoAModificar.getCodigo());
 	        tipoEquipoField.setText(equipoAModificar.getTipoEquipo().getDescripcion());
 	        estadoField.setText(Boolean.toString(equipoAModificar.isEstado()));
@@ -190,27 +178,24 @@ class ButtonEditor extends DefaultCellEditor {
 	            String ubicacionSeleccionada = (String) ubicacionComboBox.getSelectedItem();
 	            String tipoPuertoSeleccionado = (String) tipoPuertoComboBox.getSelectedItem();
 	            
-	            for (Ubicacion ub : listUbicaciones) {
-	            	if (ub.getDescripcion().equals(ubicacionSeleccionada)) {
+	            for (Ubicacion ub : listUbicaciones)
+	            	if (ub.getDescripcion().equals(ubicacionSeleccionada))
 	    	            equipoAModificar.setUbicacion(ub);
-	            	}
-	            }
-	            for (TipoPuerto p : listTipoPuerto) {
-	            	if (p.getCodigo().equals(tipoPuertoSeleccionado)) {
+	            for (TipoPuerto p : listTipoPuerto)
+	            	if (p.getCodigo().equals(tipoPuertoSeleccionado))
 	    	            equipoAModificar.agregarPuerto(Integer.parseInt(cantPuertosField.getText()), p);
-	            	}
-	            }
 
 	            // Actualizar el equipo en el servicio
-	            equipoService.actualizar(equipoAModificar);
+	            calculo.modificarEquipoEnElGrafo(equipoAModificar);
+	            red.modificarEquipo(equipoAModificar);
 
 	            // Mensaje de confirmación y refrescar tabla
 	            JOptionPane.showMessageDialog(null, "Equipo modificado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-	            ((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.getModelo(), selectedRow, 3);
-	            ((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.getMarca(), selectedRow, 2);
-	            ((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.getDescripcion(), selectedRow, 1);
-	            ((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.getUbicacion().getDescripcion(), selectedRow, 5);
-	            ((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.getPuertosInfo(), selectedRow, 7);
+	            ((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.getModelo(), filaSeleccionada, 3);
+	            ((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.getMarca(), filaSeleccionada, 2);
+	            ((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.getDescripcion(), filaSeleccionada, 1);
+	            ((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.getUbicacion().getDescripcion(), filaSeleccionada, 5);
+	            ((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.getPuertosInfo(), filaSeleccionada, 7);
 
 	        }
 	    } catch (FileNotFoundException e) {
@@ -221,21 +206,22 @@ class ButtonEditor extends DefaultCellEditor {
 
 
 	// Método para eliminar una conexión
-	private void eliminarConexion(int selectedRow) {
-		String equipo1Codigo = (String) table.getValueAt(selectedRow, 0); // Código del primer equipo
-		String equipo2Codigo = (String) table.getValueAt(selectedRow, 1); // Código del segundo equipo
+	private void eliminarConexion(int filaSeleccionada) {
+		String equipo1Codigo = (String) table.getValueAt(filaSeleccionada, 0); // Código del primer equipo
+		String equipo2Codigo = (String) table.getValueAt(filaSeleccionada, 1); // Código del segundo equipo
 		int confirmacion = JOptionPane.showConfirmDialog(null, "¿Estás seguro de que quieres eliminar esta conexión?",
 				"Confirmar eliminación", JOptionPane.YES_NO_OPTION);
 		if (confirmacion == JOptionPane.YES_OPTION) {
 			try {
-				Conexion conexionAEliminar = conexionService.buscarPorCodigo(equipo1Codigo, equipo2Codigo);
-				conexionService.borrar(conexionAEliminar);
+				Conexion conexionAEliminar = red.buscarConexionPorCodigo(equipo1Codigo, equipo2Codigo);
+			//	calculo.borrarConexionDelGrafo(conexionAEliminar);
+				red.borrarConexion(conexionAEliminar);
 
 				// Detener la edición antes de eliminar la fila
 				stopCellEditing();
 
 				// Eliminar la fila del modelo de la tabla
-				((DefaultTableModel) table.getModel()).removeRow(selectedRow);
+				((DefaultTableModel) table.getModel()).removeRow(filaSeleccionada);
 
 				JOptionPane.showMessageDialog(null, "Conexión eliminada correctamente.", "Éxito",
 						JOptionPane.INFORMATION_MESSAGE);
@@ -249,7 +235,7 @@ class ButtonEditor extends DefaultCellEditor {
 
 	@Override
 	public boolean stopCellEditing() {
-		isPushed = false;
+		presionado = false;
 		return super.stopCellEditing();
 	}
 

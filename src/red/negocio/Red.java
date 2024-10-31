@@ -1,12 +1,20 @@
 package red.negocio;
 
 import java.util.List;
+
+import red.excepciones.ConexionRepetidaException;
 import red.excepciones.EquipoRepetidoException;
 import red.modelo.*;
 import red.servicio.ConexionService;
 import red.servicio.ConexionServiceImp;
 import red.servicio.EquipoService;
 import red.servicio.EquipoServiceImp;
+import red.servicio.TipoCableService;
+import red.servicio.TipoCableServiceImp;
+import red.servicio.TipoEquipoService;
+import red.servicio.TipoEquipoServiceImp;
+import red.servicio.TipoPuertoService;
+import red.servicio.TipoPuertoServiceImp;
 import red.servicio.UbicacionService;
 import red.servicio.UbicacionServiceImp;
 
@@ -29,6 +37,9 @@ public class Red {
     private ConexionService conexionService; // Servicio para gestionar las conexiones.
     private List<Ubicacion> ubicaciones; // Lista de ubicaciones de la red.
     private UbicacionService ubicacionService; // Servicio para gestionar las ubicaciones.
+    private TipoEquipoService tipoEquipoService; // Servicio para TipoEquipo
+	private TipoPuertoService tipoPuertoService; // Servicio para TipoPuerto
+	private TipoCableService tipoCableService;
 
 	
 	public static Red getRed() throws FileNotFoundException {
@@ -55,7 +66,9 @@ public class Red {
 		ubicaciones = new ArrayList<Ubicacion>();
 		ubicacionService = new UbicacionServiceImp();
 		ubicaciones.addAll(ubicacionService.buscarTodos());
-		
+		tipoEquipoService = new TipoEquipoServiceImp();
+		tipoPuertoService = new TipoPuertoServiceImp();
+		tipoCableService = new TipoCableServiceImp();
 	}
 
     // Métodos de acceso (getters y setters).
@@ -78,6 +91,30 @@ public class Red {
     public List<Ubicacion> getUbicaciones() {
         return ubicaciones;
     }
+    
+    public EquipoService getEquipoService() {
+		return equipoService;
+	}
+
+	public ConexionService getConexionService() {
+		return conexionService;
+	}
+
+	public UbicacionService getUbicacionService() {
+		return ubicacionService;
+	}
+
+	public TipoEquipoService getTipoEquipoService() {
+		return tipoEquipoService;
+	}
+
+	public TipoPuertoService getTipoPuertoService() {
+		return tipoPuertoService;
+	}
+
+	public TipoCableService getTipoCableService() {
+		return tipoCableService;
+	}
 
     @Override
     public String toString() {
@@ -129,6 +166,16 @@ public class Red {
         equipos.add(equipo);
         equipoService.insertar(equipo);
     }
+    
+    public void agregarConexion(Conexion conexion) throws ConexionRepetidaException {
+        // Verificar que no se añadan equipos con un código ya existente.
+        if (conexiones.contains(conexion))
+            throw new ConexionRepetidaException("La conexion ya existe en la red");
+
+        // Agregar el equipo a la lista y persistir en el servicio.
+        conexiones.add(conexion);
+        conexionService.insertar(conexion);
+    }
 
     /**
      * Modifica un equipo existente en la red.
@@ -162,5 +209,33 @@ public class Red {
         if (pos == -1)
             return null;
         return equipos.get(pos);
+    }
+    
+    public Equipo buscarEquipoPorCodigo(String codigo) {
+        List<Equipo> equipos = getEquipos();  // Buscar todos los equipos
+        for (Equipo equipo : equipos) {
+            if (equipo.getCodigo().equals(codigo)) {
+                return equipo;  // Retornar el equipo que coincida con el código
+            }
+        }
+        return null;  // Retornar null si no se encuentra
+    }
+    
+    public void borrarConexion(Conexion conexion) {
+        conexiones.remove(conexion);
+        conexionService.borrar(conexion);
+    }
+    
+    public Conexion buscarConexionPorCodigo(String equipo1Codigo, String equipo2Codigo) {
+        // Buscar la conexión dentro de la lista de conexiones.
+        for (Conexion conexion : conexiones) {
+            if (conexion.getEquipo1().getCodigo().equals(equipo1Codigo) && 
+                conexion.getEquipo2().getCodigo().equals(equipo2Codigo)) {
+                // Si encuentra la conexión, devolverla.
+                return conexion;
+            }
+        }
+        // Si no encuentra ninguna conexión, devolver null.
+        return null;
     }
 }
