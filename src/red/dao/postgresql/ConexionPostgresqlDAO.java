@@ -201,7 +201,6 @@ public class ConexionPostgresqlDAO implements ConexionDAO {
 		List<TipoPuerto> prts = puertosDAO.buscarTodos();
 		for (TipoPuerto p : prts)
 			puertos.put(p.getCodigo(), p);
-		
 		return puertos;
 	}
 }

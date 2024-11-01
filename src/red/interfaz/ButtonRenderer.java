@@ -4,6 +4,7 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.Component;
 
 class ButtonRenderer extends JButton implements TableCellRenderer {
+
     private String actionType;
 
     public ButtonRenderer(String actionType) {

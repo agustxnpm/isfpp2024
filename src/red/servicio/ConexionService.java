@@ -40,4 +40,3 @@ public interface ConexionService {
     List<Conexion> buscarTodos() throws FileNotFoundException;
 }
 
-

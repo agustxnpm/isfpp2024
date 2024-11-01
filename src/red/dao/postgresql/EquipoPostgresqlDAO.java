@@ -41,7 +41,6 @@ public class EquipoPostgresqlDAO implements EquipoDAO {
 
 			con = BDConexion.getConnection();
 			con.setAutoCommit(false); // Desactivar el autocommit
-
 			String sql = "INSERT INTO poo2024.equipos_palma (codigo, descripcion, marca, modelo, tipo_equipo, ubicacion, estado, info_puertos) "
 					+ "VALUES(?,?,?,?,?,?,?,?) ";
 			pstm = con.prepareStatement(sql);
