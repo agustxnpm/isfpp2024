@@ -3,8 +3,6 @@ package red.interfaz;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.util.List;
 import red.modelo.Equipo;
@@ -62,12 +60,7 @@ public class VentanaEquipos extends JFrame {
 		add(scrollEquipos, BorderLayout.CENTER);
 
 		JButton agregarEquipoButton = new JButton("Agregar Equipo");
-		agregarEquipoButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				agregarEquipo();
-			}
-		});
+		agregarEquipoButton.addActionListener(e -> agregarEquipo());
 
 		JPanel panelInferior = new JPanel();
 		panelInferior.add(agregarEquipoButton);
