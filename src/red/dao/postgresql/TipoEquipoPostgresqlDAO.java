@@ -21,9 +21,8 @@ public class TipoEquipoPostgresqlDAO implements TipoEquipoDAO {
 		ResultSet rs = null;
 		try {
 			con = BDConexion.getConnection();
-			String sql = "";
-			sql += "INSERT INTO poo2024.tipo_equipo_palma (codigo, descripcion) ";
-			sql += "VALUES(?, ?) ";
+			String sql = "INSERT INTO poo2024.tipo_equipo_palma (codigo, descripcion) "
+					+ "VALUES(?, ?) ";
 			pstm = con.prepareStatement(sql);
 			pstm.setString(1, tipoEquipo.getCodigo());
 			pstm.setString(2, tipoEquipo.getDescripcion());
@@ -52,9 +51,9 @@ public class TipoEquipoPostgresqlDAO implements TipoEquipoDAO {
 		ResultSet rs = null;
 		try {
 			con = BDConexion.getConnection();
-			String sql = "UPDATE poo2024.tipo_equipo_palma ";
-			sql += "SET descripcion = ?";
-			sql += "WHERE codigo = ?";
+			String sql = "UPDATE poo2024.tipo_equipo_palma "
+					+ "SET descripcion = ?"
+					+ "WHERE codigo = ?";
 			
 			pstm = con.prepareStatement(sql);
 			pstm.setString(1, tipoEquipo.getDescripcion());
@@ -84,8 +83,7 @@ public class TipoEquipoPostgresqlDAO implements TipoEquipoDAO {
 		ResultSet rs = null;
 		try {
 			con = BDConexion.getConnection();
-			String sql = "";
-			sql += "DELETE FROM poo2024.tipo_equipo_palma WHERE codigo = ? ";
+			String sql = "DELETE FROM poo2024.tipo_equipo_palma WHERE codigo = ? ";
 			pstm = con.prepareStatement(sql);
 			pstm.setString(1, tipoEquipo.getCodigo());
 			pstm.executeUpdate();
@@ -117,9 +115,9 @@ public class TipoEquipoPostgresqlDAO implements TipoEquipoDAO {
 			pstm = con.prepareStatement(sql);
 			rs = pstm.executeQuery();
 			List<TipoEquipo> ret = new ArrayList<TipoEquipo>();
-			while (rs.next()) {
+			while (rs.next())
 				ret.add(new TipoEquipo(rs.getString("codigo"), rs.getString("descripcion")));
-			}
+
 			return ret;
 		} catch (Exception ex) {
 			ex.printStackTrace();

@@ -35,7 +35,7 @@ public class AplicacionConsultas {
 
 		calculo = new Calculo();
 		coordinador = new Coordinador();
-		interfaz = new InterfazConsola();
+		interfaz = new InterfazConsola(coordinador);
 
 		/* Se establecen las relaciones entre clases */
 		calculo.setCoordinador(coordinador);

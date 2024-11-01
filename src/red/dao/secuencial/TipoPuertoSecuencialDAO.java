@@ -71,20 +71,18 @@ public class TipoPuertoSecuencialDAO implements TipoPuertoDAO {
         try {
             outFile = new Formatter(file);
             // Escribir cada tipo de puerto en una línea del archivo.
-            for (TipoPuerto e : list) {
+            for (TipoPuerto e : list)
                 outFile.format("%s;%s;%s;\n",
                         e.getCodigo(),        // Código del tipo de puerto.
                         e.getDescripcion(),   // Descripción del tipo de puerto.
                         e.getVelocidad());    // Velocidad del tipo de puerto.
-            }
         } catch (FileNotFoundException fileNotFoundException) {
             System.err.println("Error al crear el archivo.");
         } catch (FormatterClosedException formatterClosedException) {
             System.err.println("Error al escribir en el archivo.");
         } finally {
-            if (outFile != null) {
+            if (outFile != null)
                 outFile.close(); // Cerrar el archivo para liberar recursos.
-            }
         }
     }
 

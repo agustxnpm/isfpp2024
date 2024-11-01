@@ -37,6 +37,7 @@ public class EquipoSecuencialDAO implements EquipoDAO {
     /**
      * Constructor que carga los tipos de equipos, ubicaciones y tipos de puertos.
      * También obtiene el nombre del archivo de equipos desde un archivo de configuración.
+     * @throws FileNotFoundException si por alguna razón el archivo no pudo ser encontrado o leído.
      */
     public EquipoSecuencialDAO() throws FileNotFoundException {
         tipoEquipo = cargarTipoEquipo();
@@ -53,6 +54,7 @@ public class EquipoSecuencialDAO implements EquipoDAO {
      * Lee los equipos desde un archivo y los carga en una lista.
      * @param fileName El nombre del archivo desde donde leer.
      * @return Lista de equipos leídos.
+     * @throws FileNotFoundException si por alguna razón el archivo no pudo ser encontrado o leído.
      */
     private List<Equipo> readFromFile(String fileName) throws FileNotFoundException {
         List<Equipo> equipos = new ArrayList<>();
@@ -104,11 +106,9 @@ public class EquipoSecuencialDAO implements EquipoDAO {
                 if (lineScanner.hasNext()) {
                     String ipInfo = lineScanner.next();
                     String[] direccionesIpArray = ipInfo.split(",");
-                    for (String ip : direccionesIpArray) {
-                        if (!ip.isEmpty()) {
+                    for (String ip : direccionesIpArray)
+                        if (!ip.isEmpty())
                             equipo.agregarIp(ip);
-                        }
-                    }
                 }
 
                 // Leer el estado del equipo (true/false) y asignarlo.
@@ -138,9 +138,8 @@ public class EquipoSecuencialDAO implements EquipoDAO {
                 List<String> ips = e.getDireccionesIp();
                 for (int i = 0; i < ips.size(); i++) {
                     ipAddresses.append(ips.get(i));
-                    if (i < ips.size() - 1) {
+                    if (i < ips.size() - 1)
                         ipAddresses.append(",");
-                    }
                 }
 
                 outFile.format("%s;%s;%s;%s;%s;%s;%s;%s;%s;\n",
@@ -160,9 +159,8 @@ public class EquipoSecuencialDAO implements EquipoDAO {
         } catch (FormatterClosedException formatterClosedException) {
             System.err.println("Error al escribir en el archivo.");
         } finally {
-            if (outFile != null) {
+            if (outFile != null)
                 outFile.close(); // Cerrar el archivo para liberar recursos.
-            }
         }
     }
 
@@ -174,9 +172,8 @@ public class EquipoSecuencialDAO implements EquipoDAO {
         Map<String, TipoEquipo> tipoEquipos = new HashMap<>();
         TipoEquipoDAO tipoEquiposDAO = new TipoEquipoSecuencialDAO();
         List<TipoEquipo> tEq = tipoEquiposDAO.buscarTodos();
-        for (TipoEquipo t : tEq) {
+        for (TipoEquipo t : tEq)
             tipoEquipos.put(t.getCodigo(), t);
-        }
         return tipoEquipos;
     }
 
@@ -188,9 +185,8 @@ public class EquipoSecuencialDAO implements EquipoDAO {
         Map<String, Ubicacion> ubicaciones = new HashMap<>();
         UbicacionDAO ubicacionesDAO = new UbicacionesSecuencialDAO();
         List<Ubicacion> ub = ubicacionesDAO.buscarTodos();
-        for (Ubicacion u : ub) {
+        for (Ubicacion u : ub)
             ubicaciones.put(u.getCodigo(), u);
-        }
         return ubicaciones;
     }
 
@@ -202,9 +198,8 @@ public class EquipoSecuencialDAO implements EquipoDAO {
         Map<String, TipoPuerto> puertos = new HashMap<>();
         TipoPuertoDAO puertosDAO = new TipoPuertoSecuencialDAO();
         List<TipoPuerto> prts = puertosDAO.buscarTodos();
-        for (TipoPuerto p : prts) {
+        for (TipoPuerto p : prts)
             puertos.put(p.getCodigo(), p);
-        }
         return puertos;
     }
 

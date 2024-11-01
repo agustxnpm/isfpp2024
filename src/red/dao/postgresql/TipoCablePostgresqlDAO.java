@@ -21,9 +21,8 @@ public class TipoCablePostgresqlDAO implements TipoCableDAO{
 		ResultSet rs = null;
 		try {
 			con = BDConexion.getConnection();
-			String sql = "";
-			sql += "INSERT INTO poo2024.tipo_cable_palma (codigo, descripcion, velocidad) ";
-			sql += "VALUES(?, ?, ?) ";
+			String sql = "INSERT INTO poo2024.tipo_cable_palma (codigo, descripcion, velocidad) "
+					+ "VALUES(?, ?, ?) ";
 			pstm = con.prepareStatement(sql);
 			pstm.setString(1, tipoCable.getCodigo());
 			pstm.setString(2, tipoCable.getDescripcion());
@@ -53,9 +52,9 @@ public class TipoCablePostgresqlDAO implements TipoCableDAO{
 		ResultSet rs = null;
 		try {
 			con = BDConexion.getConnection();
-			String sql = "UPDATE poo2024.tipo_cable_palma ";
-			sql += "SET descripcion = ?, velocidad = ?";
-			sql += "WHERE codigo = ?";
+			String sql = "UPDATE poo2024.tipo_cable_palma "
+					+ "SET descripcion = ?, velocidad = ?"
+					+ "WHERE codigo = ?";
 			
 			pstm = con.prepareStatement(sql);
 			pstm.setString(1, tipoCable.getDescripcion());
@@ -119,9 +118,9 @@ public class TipoCablePostgresqlDAO implements TipoCableDAO{
 			pstm = con.prepareStatement(sql);
 			rs = pstm.executeQuery();
 			List<TipoCable> ret = new ArrayList<TipoCable>();
-			while (rs.next()) {
+			while (rs.next())
 				ret.add(new TipoCable(rs.getString("codigo"), rs.getString("descripcion"), Integer.parseInt(rs.getString("velocidad"))));
-			}
+
 			return ret;
 		} catch (Exception ex) {
 			ex.printStackTrace();

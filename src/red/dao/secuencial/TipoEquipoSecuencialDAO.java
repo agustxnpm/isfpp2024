@@ -70,19 +70,17 @@ public class TipoEquipoSecuencialDAO implements TipoEquipoDAO {
         try {
             outFile = new Formatter(file);
             // Escribir cada tipo de equipo en una línea del archivo.
-            for (TipoEquipo e : list) {
+            for (TipoEquipo e : list)
                 outFile.format("%s;%s;\n",
                         e.getCodigo(),        // Código del tipo de equipo.
                         e.getDescripcion());  // Descripción del tipo de equipo.
-            }
         } catch (FileNotFoundException fileNotFoundException) {
             System.err.println("Error al crear el archivo.");
         } catch (FormatterClosedException formatterClosedException) {
             System.err.println("Error al escribir en el archivo.");
         } finally {
-            if (outFile != null) {
+            if (outFile != null)
                 outFile.close(); // Cerrar el archivo para liberar recursos.
-            }
         }
     }
 

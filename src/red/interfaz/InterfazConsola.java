@@ -3,7 +3,6 @@ package red.interfaz;
 import java.util.List;
 import java.util.Scanner;
 
-import net.datastructures.Vertex;
 import red.controlador.Coordinador;
 import red.modelo.Conexion;
 import red.modelo.Equipo;
@@ -18,7 +17,20 @@ import red.modelo.Ubicacion;
 public class InterfazConsola {
 
     private Coordinador coordinador; // Coordinador para manejar la lógica de negocio.
-    private Scanner scanner = new Scanner(System.in); // Scanner para leer entradas del usuario.
+    private Scanner scanner; // Scanner para leer entradas del usuario.
+    
+    //Constructor vacío
+    public InterfazConsola() {
+    	super();
+    	this.scanner = new Scanner(System.in);
+    }
+    
+    //Constructor para inicializar el coordinador al crearse el programa
+    public InterfazConsola(Coordinador coordinador) {
+    	super();
+    	this.coordinador = coordinador;
+    	this.scanner = new Scanner(System.in);
+    }
 
     /**
      * Asigna el coordinador para manejar las operaciones de la red.
@@ -122,10 +134,9 @@ public class InterfazConsola {
      */
     public void mostrarMapaDeEstado(List<Equipo> eq) {
         System.out.println("Mapa del estado actual de la red:");
-        for (Equipo equipo : eq) {
+        for (Equipo equipo : eq)
             System.out.println(
                     equipo.getCodigo() + " - IPs: " + equipo.getDireccionesIp() + " - Estado: " + equipo.isEstado());
-        }
     }
 
     /**

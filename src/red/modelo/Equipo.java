@@ -166,6 +166,7 @@ public class Equipo {
      * 
      * @param cantPuertos Cantidad de puertos.
      * @param tipoPuerto Tipo de puerto.
+     * @throws IllegalArgumentException si la cantidad de puertos no es mayor a 0 o el tipo de puerto es nulo
      */
     public void agregarPuerto(int cantPuertos, TipoPuerto tipoPuerto) throws IllegalArgumentException {
         if (cantPuertos <= 0)
@@ -174,16 +175,14 @@ public class Equipo {
         	throw new IllegalArgumentException("El puerto ingresado a " + codigo + " no puede ser nulo.");
 
         Puerto puerto = new Puerto(cantPuertos, tipoPuerto);
-        if (puertos.contains(puerto)) {
+        if (puertos.contains(puerto)) { // si ya hay una instancia de Puerto con el tipo de puerto dado
         	// Incrementa a la cantidad de puertos con el tipo de puerto en cuestión, la cantidad ingresada al método
             int index = puertos.indexOf(puerto);
             Puerto puertoExistente = puertos.get(index);
             puertoExistente.setCantidadPuertos(puertoExistente.getCantidadPuertos() + puerto.getCantidadPuertos());
             puertos.set(index, puertoExistente);
-            return;
         }
-
-        puertos.add(puerto);
+        else puertos.add(puerto);
     }
 
     /**

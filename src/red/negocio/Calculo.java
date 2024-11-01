@@ -58,8 +58,9 @@ public class Calculo {
 
         // Mapa de vértices de equipos en el grafo.
         vertices = new TreeMap<String, Vertex<Equipo>>();
+        
+        // Insertar cada equipo como un vértice en el grafo.
         for (Entry<String, Equipo> e : equipos.entrySet())
-            // Insertar cada equipo como un vértice en el grafo.
             vertices.put(e.getKey(), red.insertVertex(e.getValue()));
 
         // Insertar conexiones como aristas entre los vértices del grafo.
@@ -112,10 +113,9 @@ public class Calculo {
 	 */
 	public void agregarEquipoAlGrafo(Equipo equipo) throws EquipoRepetidoException {
 
-		for (Vertex<Equipo> vertex : vertices.values()) {
+		for (Vertex<Equipo> vertex : vertices.values())
 			if (vertex.getElement().equals(equipo))
 				throw new EquipoRepetidoException("El equipo ya existe en el grafo");
-		}
 
 		red.insertVertex(equipo);
 
@@ -134,10 +134,9 @@ public class Calculo {
 		Vertex<Equipo> nuevoVertice = red.insertVertex(equipo);
 		vertices.put(equipo.getCodigo(), nuevoVertice);
 
-		for (Edge<Conexion> e : edges) {
+		for (Edge<Conexion> e : edges)
 			red.insertEdge(vertices.get(e.getElement().getEquipo1().getCodigo()),
 					vertices.get(e.getElement().getEquipo2().getCodigo()), e.getElement());
-		}
 	}
 
 	public void borrarEquipoDelGrafo(Equipo equipo) {

@@ -42,9 +42,8 @@ public class EquipoPostgresqlDAO implements EquipoDAO {
 			con = BDConexion.getConnection();
 			con.setAutoCommit(false); // Desactivar el autocommit
 
-			String sql = "";
-			sql += "INSERT INTO poo2024.equipos_palma (codigo, descripcion, marca, modelo, tipo_equipo, ubicacion, estado, info_puertos) ";
-			sql += "VALUES(?,?,?,?,?,?,?,?) ";
+			String sql = "INSERT INTO poo2024.equipos_palma (codigo, descripcion, marca, modelo, tipo_equipo, ubicacion, estado, info_puertos) "
+					+ "VALUES(?,?,?,?,?,?,?,?) ";
 			pstm = con.prepareStatement(sql);
 			pstm.setString(1, equipo.getCodigo());
 			pstm.setString(2, equipo.getDescripcion());
@@ -101,9 +100,9 @@ public class EquipoPostgresqlDAO implements EquipoDAO {
 			con = BDConexion.getConnection();
 			con.setAutoCommit(false); // Desactivar el autocommit
 
-			String sql = "UPDATE poo2024.equipos_palma ";
-			sql += "SET descripcion = ?, marca = ?, modelo = ?, tipo_equipo = ?, ubicacion = ?, estado = ?, info_puertos = ? ";
-			sql += "WHERE codigo = ? ";
+			String sql = "UPDATE poo2024.equipos_palma "
+					+ "SET descripcion = ?, marca = ?, modelo = ?, tipo_equipo = ?, ubicacion = ?, estado = ?, info_puertos = ? "
+					+ "WHERE codigo = ? ";
 			pstm = con.prepareStatement(sql);
 			pstm.setString(1, equipo.getDescripcion());
 			pstm.setString(2, equipo.getMarca());
@@ -228,9 +227,11 @@ public class EquipoPostgresqlDAO implements EquipoDAO {
 						Boolean.parseBoolean(rs.getString("estado")));
 				
 				for (int i = 2; i < puertoParts.length; i += 2) {
-					// comienza desde el indice 2 ya que ya agregamos el
-					// primer puerto (cantidad, tipo) al momento de
-					// instanciar Equipo
+					/**
+					 * comienza desde el indice 2 ya que ya agregamos el
+					 * primer puerto (cantidad, tipo) al momento de
+					 * instanciar Equipo
+					*/
 					tipoPuertoCodigo = puertoParts[i];
 					cantPuertos = Integer.parseInt(puertoParts[i + 1]);
 					TipoPuerto tipoPuerto = this.tipoPuerto.get(tipoPuertoCodigo);
@@ -260,9 +261,8 @@ public class EquipoPostgresqlDAO implements EquipoDAO {
 		Map<String, TipoEquipo> tipoEquipos = new HashMap<String, TipoEquipo>();
 		TipoEquipoDAO tipoEquiposDAO = new TipoEquipoPostgresqlDAO();
 		List<TipoEquipo> tEq = tipoEquiposDAO.buscarTodos();
-		for (TipoEquipo t : tEq) {
+		for (TipoEquipo t : tEq)
 			tipoEquipos.put(t.getCodigo(), t);
-		}
 
 		return tipoEquipos;
 	}
@@ -271,9 +271,8 @@ public class EquipoPostgresqlDAO implements EquipoDAO {
 		Map<String, Ubicacion> ubicaciones = new HashMap<String, Ubicacion>();
 		UbicacionDAO ubicacionesDAO = new UbicacionesPostgresqlDAO();
 		List<Ubicacion> ub = ubicacionesDAO.buscarTodos();
-		for (Ubicacion u : ub) {
+		for (Ubicacion u : ub)
 			ubicaciones.put(u.getCodigo(), u);
-		}
 
 		return ubicaciones;
 	}
@@ -282,9 +281,8 @@ public class EquipoPostgresqlDAO implements EquipoDAO {
 		Map<String, TipoPuerto> puertos = new HashMap<String, TipoPuerto>();
 		TipoPuertoDAO puertosDAO = new TipoPuertoPostgresqlDAO();
 		List<TipoPuerto> prts = puertosDAO.buscarTodos();
-		for (TipoPuerto p : prts) {
+		for (TipoPuerto p : prts)
 			puertos.put(p.getCodigo(), p);
-		}
 
 		return puertos;
 	}

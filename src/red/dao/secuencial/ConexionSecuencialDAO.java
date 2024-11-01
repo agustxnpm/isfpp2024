@@ -89,14 +89,13 @@ public class ConexionSecuencialDAO implements ConexionDAO {
         try {
             outFile = new Formatter(file);
             // Escribir cada conexión en una línea del archivo.
-            for (Conexion e : list) {
+            for (Conexion e : list)
                 outFile.format("%s;%s;%s;%s;%s;\n",
                         e.getEquipo1().getCodigo(),
                         e.getTipoPuerto1().getCodigo(),
                         e.getEquipo2().getCodigo(),
                         e.getTipoPuerto2().getCodigo(),
                         e.getTipoCable().getCodigo());
-            }
         } catch (FileNotFoundException fileNotFoundException) {
             System.err.println("Error creando el archivo.");
         } catch (FormatterClosedException formatterClosedException) {
@@ -115,9 +114,8 @@ public class ConexionSecuencialDAO implements ConexionDAO {
         Map<String, Equipo> equipos = new HashMap<>();
         EquipoDAO equipoDAO = new EquipoSecuencialDAO();
         List<Equipo> eq = equipoDAO.buscarTodos();
-        for (Equipo e : eq) {
+        for (Equipo e : eq)
             equipos.put(e.getCodigo(), e);
-        }
         return equipos;
     }
 
@@ -129,9 +127,8 @@ public class ConexionSecuencialDAO implements ConexionDAO {
         Map<String, TipoCable> cables = new HashMap<>();
         TipoCableDAO cablesDAO = new TipoCableSecuencialDAO();
         List<TipoCable> cbls = cablesDAO.buscarTodos();
-        for (TipoCable c : cbls) {
+        for (TipoCable c : cbls)
             cables.put(c.getCodigo(), c);
-        }
         return cables;
     }
 
@@ -143,9 +140,8 @@ public class ConexionSecuencialDAO implements ConexionDAO {
         Map<String, TipoPuerto> puertos = new HashMap<>();
         TipoPuertoDAO puertosDAO = new TipoPuertoSecuencialDAO();
         List<TipoPuerto> prts = puertosDAO.buscarTodos();
-        for (TipoPuerto p : prts) {
+        for (TipoPuerto p : prts)
             puertos.put(p.getCodigo(), p);
-        }
         return puertos;
     }
 
