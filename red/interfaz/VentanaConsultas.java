@@ -9,6 +9,7 @@ import java.util.List;
 import red.modelo.Equipo;
 import red.negocio.Calculo;
 import red.negocio.Red;
+import java.util.List;
 
 
 public class VentanaConsultas extends JFrame {
@@ -114,6 +115,7 @@ public class VentanaConsultas extends JFrame {
 		dialog.setVisible(true);
 	}
 
+
 	private void calcularVelocidad() {
 		String equipo1Codigo = (String) equipo1ComboBox.getSelectedItem();
 		String equipo2Codigo = (String) equipo2ComboBox.getSelectedItem();
@@ -132,6 +134,8 @@ public class VentanaConsultas extends JFrame {
 					+ equipo2.getCodigo() + " es de " + calculo.calcularVelocidadMaxima(ruta) + " Mbps");
 		}
 	}
+
+
 	private void realizarPingAEquipo() {
 		JComboBox<String> equipoIpComboBox = new JComboBox<>();
 		for (Equipo equipo : red.getEquipos()) {
@@ -196,6 +200,7 @@ public class VentanaConsultas extends JFrame {
 		dialog.setLocationRelativeTo(this);
 		dialog.setVisible(true);
 	}
+
 
 	private void verificarConectividad() {
 		String equipo1Codigo = (String) equipo1ComboBox.getSelectedItem();
