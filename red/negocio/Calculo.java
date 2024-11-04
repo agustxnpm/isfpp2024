@@ -132,29 +132,22 @@ public class Calculo {
 		}
 	}
 
-	
 	/**
 	 * no funciona porque removeEdge realiza una conversion de tipo en tiempo de
 	 * ejecucion, lo cual lanza error
 	 **/
-	
-	/*
-	public void borrarEquipoDelGrafo(Equipo equipo) {
-		red.removeVertex(vertices.get(equipo.getCodigo()));
-	}
 
-	*/
+	/*
+	 * public void borrarEquipoDelGrafo(Equipo equipo) {
+	 * red.removeVertex(vertices.get(equipo.getCodigo())); }
+	 * 
+	 */
 
 	/*
 	 * public void borrarConexionDelGrafo(Conexion conexion) {
 	 * 
-	 * for (Edge<Conexion> edge : red.edges()) {
-	 * if (edge.getElement().equals(conexion)) {
-	 * red.removeEdge(edge);
-	 * break;
-	 * }
-	 * }
-	 * }
+	 * for (Edge<Conexion> edge : red.edges()) { if
+	 * (edge.getElement().equals(conexion)) { red.removeEdge(edge); break; } } }
 	 */
 
 	/**
@@ -277,7 +270,7 @@ public class Calculo {
 	 * @param internetGateway Equipo que representa el Gateway.
 	 */
 
-	public void verificarConectividad(Equipo equipoOrigen, Equipo internetGateway)
+	public String verificarConectividad(Equipo equipoOrigen, Equipo internetGateway)
 			throws EquipoNoConectadoException, ConexionNoConectadaException {
 
 		List<Equipo> ruta = buscarRuta(equipoOrigen, internetGateway);
@@ -313,8 +306,11 @@ public class Calculo {
 					throw new ConexionNoConectadaException("Problema con el cable entre " + equipo1.getCodigo() + " y "
 							+ equipo2.getCodigo() + ". Se pierde conectividad aquí.");
 				}
+
 			}
+
 		}
+		return "El equipo posee conectividad";
 	}
 
 	/**
@@ -396,8 +392,7 @@ public class Calculo {
 			for (Vertex<Equipo> vertex : vertices.values()) {
 				Equipo equipo = vertex.getElement();
 				Object v = graph.insertVertex(parent, equipo.getCodigo(),
-						equipo.getCodigo() + "\n" + equipo.getDescripcion(),
-						0, 0, 80, 30); // Ajusta el tamaño aquí
+						equipo.getCodigo() + "\n" + equipo.getDescripcion(), 0, 0, 80, 30); // Ajusta el tamaño aquí
 				vertexMap.put(equipo.getCodigo(), v);
 			}
 

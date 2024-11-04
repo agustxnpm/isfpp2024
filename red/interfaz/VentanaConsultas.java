@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.util.List;
 
 import red.modelo.Equipo;
 import red.negocio.Calculo;
@@ -13,9 +13,10 @@ import red.negocio.Red;
 
 public class VentanaConsultas extends JFrame {
 
-    private Calculo calculo;
-    private Red red;
-    private Handler handler; // Event handler
+	private Calculo calculo;
+	private Red red;
+	private Handler handler; // Event handler
+
 
     private JButton calcularVelocidadButton;
     private JButton pingEquipoButton;
@@ -27,17 +28,18 @@ public class VentanaConsultas extends JFrame {
     private JComboBox<String> equipo1ComboBox;
     private JComboBox<String> equipo2ComboBox;
 
-    public VentanaConsultas(Calculo calculo, Red red) {
-        setTitle("Consultas de la Red");
-        setSize(600, 400);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+	public VentanaConsultas(Calculo calculo, Red red) {
+		setTitle("Consultas de la Red");
+		setSize(600, 400);
+		setLocationRelativeTo(null);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        this.calculo = calculo;
-        this.red = red;
+		this.calculo = calculo;
+		this.red = red;
 
-        inicializarComponentes();
-    }
+		inicializarComponentes();
+	}
+
 	private void inicializarComponentes() {
         handler = new Handler();
 
@@ -64,119 +66,169 @@ public class VentanaConsultas extends JFrame {
         panel.add(detectarProblemasButton);
         panel.add(verMapaEstadoButton);
 
-        getContentPane().add(panel, BorderLayout.CENTER);
-    }
+		getContentPane().add(panel, BorderLayout.CENTER);
+	}
+
 
 
     private void ventanaVelocidad() {
         calcularButton = new JButton("Calcular");
 
-        JPanel panelCentral = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.CENTER;
+		JPanel panelCentral = new JPanel(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(10, 10, 10, 10);
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.anchor = GridBagConstraints.CENTER;
 
-        String[] equipoArray = red.getEquipos().stream().map(Equipo::getCodigo).toArray(String[]::new);
-        equipo1ComboBox = new JComboBox<>(equipoArray);
-        equipo2ComboBox = new JComboBox<>(equipoArray);
+		String[] equipoArray = red.getEquipos().stream().map(Equipo::getCodigo).toArray(String[]::new);
+		equipo1ComboBox = new JComboBox<>(equipoArray);
+		equipo2ComboBox = new JComboBox<>(equipoArray);
 
-        JLabel equipo1Label = new JLabel("Equipo 1");
-        JLabel equipo2Label = new JLabel("Equipo 2");
+		JLabel equipo1Label = new JLabel("Equipo 1");
+		JLabel equipo2Label = new JLabel("Equipo 2");
 
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        panelCentral.add(equipo1Label, gbc);
-        gbc.gridx = 1;
-        panelCentral.add(equipo1ComboBox, gbc);
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		panelCentral.add(equipo1Label, gbc);
+		gbc.gridx = 1;
+		panelCentral.add(equipo1ComboBox, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        panelCentral.add(equipo2Label, gbc);
-        gbc.gridx = 1;
-        panelCentral.add(equipo2ComboBox, gbc);
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		panelCentral.add(equipo2Label, gbc);
+		gbc.gridx = 1;
+		panelCentral.add(equipo2ComboBox, gbc);
 
-        JDialog dialog = new JDialog(this, "Calcular Velocidad", true);
+		JDialog dialog = new JDialog(this, "Calcular Velocidad", true);
 
-        JPanel panelInferior = new JPanel();
-        panelInferior.add(calcularButton);
+		JPanel panelInferior = new JPanel();
+		panelInferior.add(calcularButton);
 
-        calcularButton.addActionListener(handler);
+		calcularButton.addActionListener(handler);
 
-        dialog.add(panelCentral);
-        dialog.add(panelInferior, BorderLayout.SOUTH);
-        dialog.setSize(500, 300);
-        dialog.setLocationRelativeTo(this);
-        dialog.setVisible(true);
-    }
+		dialog.add(panelCentral);
+		dialog.add(panelInferior, BorderLayout.SOUTH);
+		dialog.setSize(500, 300);
+		dialog.setLocationRelativeTo(this);
+		dialog.setVisible(true);
+	}
 
+	private void calcularVelocidad() {
+		String equipo1Codigo = (String) equipo1ComboBox.getSelectedItem();
+		String equipo2Codigo = (String) equipo2ComboBox.getSelectedItem();
 
-    private void realizarPingAEquipo() {
-        JComboBox<String> equipoIpComboBox = new JComboBox<>();
-        for (Equipo equipo : red.getEquipos()) {
-            for (String ip : equipo.getDireccionesIp()) {
-                equipoIpComboBox.addItem(equipo.getCodigo() + " (" + ip + ")");
-            }
-        }
+		Equipo equipo1 = red.buscarEquipoPorCodigo(equipo1Codigo);
+		Equipo equipo2 = red.buscarEquipoPorCodigo(equipo2Codigo);
 
-        int result = JOptionPane.showConfirmDialog(this, equipoIpComboBox, "Seleccione equipo y dirección IP",
-                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+		List<Equipo> ruta = calculo.buscarRuta(equipo1, equipo2);
 
-        if (result == JOptionPane.OK_OPTION && equipoIpComboBox.getSelectedItem() != null) {
-            String selected = (String) equipoIpComboBox.getSelectedItem();
-            String direccionIp = selected.substring(selected.indexOf("(") + 1, selected.indexOf(")"));
+		if (ruta == null) {
+			JOptionPane.showMessageDialog(this,
+					"No se encontró ruta entre " + equipo1.getCodigo() + " y " + equipo2.getCodigo(), "Error",
+					JOptionPane.ERROR_MESSAGE);
+		} else {
+			JOptionPane.showMessageDialog(this, "La velocidad máxima entre " + equipo1.getCodigo() + " y "
+					+ equipo2.getCodigo() + " es de " + calculo.calcularVelocidadMaxima(ruta) + " Mbps");
+		}
+	}
+	private void realizarPingAEquipo() {
+		JComboBox<String> equipoIpComboBox = new JComboBox<>();
+		for (Equipo equipo : red.getEquipos()) {
+			for (String ip : equipo.getDireccionesIp()) {
+				equipoIpComboBox.addItem(equipo.getCodigo() + " (" + ip + ")");
+			}
+		}
 
-            boolean respuestaPing = calculo.realizarPingAEquipo(direccionIp);
+		int result = JOptionPane.showConfirmDialog(this, equipoIpComboBox, "Seleccione equipo y dirección IP",
+				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-            if (respuestaPing) {
-                JOptionPane.showMessageDialog(this, "Ping exitoso al equipo con IP: " + direccionIp);
-            } else {
-                JOptionPane.showMessageDialog(this, "Ping fallido o equipo no encontrado.");
-            }
-        }
-    }
+		if (result == JOptionPane.OK_OPTION && equipoIpComboBox.getSelectedItem() != null) {
+			String selected = (String) equipoIpComboBox.getSelectedItem();
+			String direccionIp = selected.substring(selected.indexOf("(") + 1, selected.indexOf(")"));
 
-    private void detectarProblemasConectividad() {
-        JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.CENTER;
+			boolean respuestaPing = calculo.realizarPingAEquipo(direccionIp);
 
-        String[] equipoArray = red.getEquipos().stream().map(Equipo::getCodigo).toArray(String[]::new);
-        equipo1ComboBox = new JComboBox<>(equipoArray);
-        equipo2ComboBox = new JComboBox<>(equipoArray);
+			if (respuestaPing) {
+				JOptionPane.showMessageDialog(this, "Ping exitoso al equipo con IP: " + direccionIp);
+			} else {
+				JOptionPane.showMessageDialog(this, "Ping fallido o equipo no encontrado.");
+			}
+		}
+	}
 
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        panel.add(new JLabel("Equipo 1:"), gbc);
-        gbc.gridx = 1;
-        panel.add(equipo1ComboBox, gbc);
+	private void detectarProblemasConectividad() {
+		JPanel panel = new JPanel(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(10, 10, 10, 10);
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.anchor = GridBagConstraints.CENTER;
 
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        panel.add(new JLabel("Equipo gateway:"), gbc);
-        gbc.gridx = 1;
-        panel.add(equipo2ComboBox, gbc);
+		String[] equipoArray = red.getEquipos().stream().map(Equipo::getCodigo).toArray(String[]::new);
+		equipo1ComboBox = new JComboBox<>(equipoArray);
+		equipo2ComboBox = new JComboBox<>(equipoArray);
 
-        JDialog dialog = new JDialog(this, "Verificar conectividad", true);
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		panel.add(new JLabel("Equipo 1:"), gbc);
+		gbc.gridx = 1;
+		panel.add(equipo1ComboBox, gbc);
 
-        JPanel panelInferior = new JPanel();
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		panel.add(new JLabel("Equipo gateway:"), gbc);
+		gbc.gridx = 1;
+		panel.add(equipo2ComboBox, gbc);
 
-        verificarButton = new JButton("Verificar conectividad");
-        panelInferior.add(verificarButton);
+		JDialog dialog = new JDialog(this, "Verificar conectividad", true);
 
-        verificarButton.addActionListener(handler);
+		JPanel panelInferior = new JPanel();
 
-        dialog.add(panel);
-        dialog.add(panelInferior, BorderLayout.SOUTH);
-        dialog.setSize(500, 300);
-        dialog.setLocationRelativeTo(this);
-        dialog.setVisible(true);
-    }
+		verificarButton = new JButton("Verificar conectividad");
+		panelInferior.add(verificarButton);
 
+		verificarButton.addActionListener(handler);
+
+		dialog.add(panel);
+		dialog.add(panelInferior, BorderLayout.SOUTH);
+		dialog.setSize(500, 300);
+		dialog.setLocationRelativeTo(this);
+		dialog.setVisible(true);
+	}
+
+	private void verificarConectividad() {
+		String equipo1Codigo = (String) equipo1ComboBox.getSelectedItem();
+		String equipo2Codigo = (String) equipo2ComboBox.getSelectedItem();
+		Equipo equipo = red.buscarEquipoPorCodigo(equipo1Codigo);
+		Equipo gateway = red.buscarEquipoPorCodigo(equipo2Codigo);
+
+		String resultado = calculo.verificarConectividad(equipo, gateway);
+		JOptionPane.showMessageDialog(this, resultado);
+	}
+
+	private class Handler implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (e.getSource().equals(calcularVelocidadButton))
+				ventanaVelocidad();
+
+			if (e.getSource().equals(pingEquipoButton))
+				realizarPingAEquipo();
+
+			if (e.getSource().equals(detectarProblemasButton))
+				detectarProblemasConectividad();
+
+			if (e.getSource().equals(calcularButton))
+				calcularVelocidad();
+
+			if (e.getSource().equals(verificarButton))
+				verificarConectividad();
+			
+			if (e.getSource().equals(verMapaEstadoButton))
+                verMapaDeEstado();
+		}
+	}
 	private void verMapaDeEstado() {
 		// Create a new dialog to show the network map
 		JDialog dialog = new JDialog(this, "Mapa de Estado de la Red", true);
@@ -190,18 +242,6 @@ public class VentanaConsultas extends JFrame {
 		dialog.setVisible(true);
 	}
 	
-    private class Handler implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (e.getSource().equals(calcularVelocidadButton))
-                ventanaVelocidad();
-            if (e.getSource().equals(pingEquipoButton))
-                realizarPingAEquipo();
-            if (e.getSource().equals(detectarProblemasButton))
-                detectarProblemasConectividad();
-            if (e.getSource().equals(verMapaEstadoButton))
-                verMapaDeEstado();
-        }
-    }
+
 }
 
