@@ -79,6 +79,6 @@ public class FileTextBD {
 			conexionPostgresqlDAO.insertar(con);
 		}
 		
-		
+		System.out.println("datos migrados");
 	}
 }

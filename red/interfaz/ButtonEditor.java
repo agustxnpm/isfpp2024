@@ -97,7 +97,7 @@ class ButtonEditor extends DefaultCellEditor {
 		if (confirmacion == JOptionPane.YES_OPTION) {
 			try {
 				Equipo equipoAEliminar = red.buscarEquipoPorCodigo(equipoCodigo);
-				calculo.borrarEquipoDelGrafo(equipoAEliminar);
+			//	calculo.borrarEquipoDelGrafo(equipoAEliminar);
 				red.borrarEquipo(equipoAEliminar);
 				// Detener la edición antes de eliminar la fila
 				stopCellEditing();
@@ -193,14 +193,17 @@ class ButtonEditor extends DefaultCellEditor {
 	    	            equipoAModificar.setUbicacion(ub);
 	            	}
 	            }
-	            for (TipoPuerto p : listTipoPuerto) {
-	            	if (p.getCodigo().equals(tipoPuertoSeleccionado)) {
-	    	            equipoAModificar.agregarPuerto(Integer.parseInt(cantPuertosField.getText()), p);
-	            	}
+	            if (!cantPuertosField.getText().isBlank()) {
+	            	 for (TipoPuerto p : listTipoPuerto) {
+	 	            	if (p.getCodigo().equals(tipoPuertoSeleccionado)) {
+	 	    	            equipoAModificar.agregarPuerto(Integer.parseInt(cantPuertosField.getText()), p);
+	 	            	}
+	 	            }
 	            }
+	           
 
 	            // Actualizar el equipo en el servicio
-	            calculo.modificarEquipoEnElGrafo(equipoAModificar);
+	            //calculo.modificarEquipoEnElGrafo(equipoAModificar);
 	            red.modificarEquipo(equipoAModificar);
 
 	            // Mensaje de confirmación y refrescar tabla

@@ -132,14 +132,18 @@ public class Calculo {
 		}
 	}
 
-	public void borrarEquipoDelGrafo(Equipo equipo) {
-		red.removeVertex(vertices.get(equipo.getCodigo()));
-	}
-
+	
 	/**
 	 * no funciona porque removeEdge realiza una conversion de tipo en tiempo de
 	 * ejecucion, lo cual lanza error
 	 **/
+	
+	/*
+	public void borrarEquipoDelGrafo(Equipo equipo) {
+		red.removeVertex(vertices.get(equipo.getCodigo()));
+	}
+
+	*/
 
 	/*
 	 * public void borrarConexionDelGrafo(Conexion conexion) {
