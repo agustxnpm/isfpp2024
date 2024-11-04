@@ -130,8 +130,14 @@ public class VentanaConsultas extends JFrame {
 					"No se encontró ruta entre " + equipo1.getCodigo() + " y " + equipo2.getCodigo(), "Error",
 					JOptionPane.ERROR_MESSAGE);
 		} else {
-			JOptionPane.showMessageDialog(this, "La velocidad máxima entre " + equipo1.getCodigo() + " y "
-					+ equipo2.getCodigo() + " es de " + calculo.calcularVelocidadMaxima(ruta) + " Mbps");
+			try {
+				int velocidad = calculo.calcularVelocidadMaxima(ruta);
+				JOptionPane.showMessageDialog(this, "La velocidad máxima entre " + equipo1.getCodigo() + " y "
+						+ equipo2.getCodigo() + " es de " + velocidad + " Mbps");
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(this, e.getMessage());
+			}
+			
 		}
 	}
 
@@ -208,8 +214,13 @@ public class VentanaConsultas extends JFrame {
 		Equipo equipo = red.buscarEquipoPorCodigo(equipo1Codigo);
 		Equipo gateway = red.buscarEquipoPorCodigo(equipo2Codigo);
 
-		String resultado = calculo.verificarConectividad(equipo, gateway);
-		JOptionPane.showMessageDialog(this, resultado);
+		try {
+			String resultado = calculo.verificarConectividad(equipo, gateway);
+			JOptionPane.showMessageDialog(this, resultado);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(this, e.getMessage());
+
+		}
 	}
 
 	private class Handler implements ActionListener {
