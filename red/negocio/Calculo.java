@@ -223,6 +223,11 @@ public class Calculo {
 	public int calcularVelocidadMaxima(List<Equipo> ruta) throws ConexionNoConectadaException {
 		int velocidadMaxima = Integer.MAX_VALUE;
 
+		if (ruta.size() == 1) {
+			velocidadMaxima = 0;
+			return velocidadMaxima;
+			
+		}
 		for (int i = 0; i < ruta.size() - 1; i++) {
 			Equipo equipo1 = ruta.get(i);
 			Equipo equipo2 = ruta.get(i + 1);
