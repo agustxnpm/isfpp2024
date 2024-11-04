@@ -4,11 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
+
 
 import red.modelo.Equipo;
 import red.negocio.Calculo;
 import red.negocio.Red;
+import java.util.List;
+
 
 public class VentanaConsultas extends JFrame {
 
@@ -16,13 +18,16 @@ public class VentanaConsultas extends JFrame {
 	private Red red;
 	private Handler handler; // Event handler
 
-	private JButton calcularVelocidadButton;
-	private JButton pingEquipoButton;
-	private JButton detectarProblemasButton;
-	private JButton calcularButton; // Button to confirm speed calculation
+
+    private JButton calcularVelocidadButton;
+    private JButton pingEquipoButton;
+    private JButton detectarProblemasButton;
+    private JButton calcularButton; // Button to confirm speed calculation
+    private JButton verMapaEstadoButton;
+
 	private JButton verificarButton;
-	private JComboBox<String> equipo1ComboBox;
-	private JComboBox<String> equipo2ComboBox;
+    private JComboBox<String> equipo1ComboBox;
+    private JComboBox<String> equipo2ComboBox;
 
 	public VentanaConsultas(Calculo calculo, Red red) {
 		setTitle("Consultas de la Red");
@@ -37,31 +42,38 @@ public class VentanaConsultas extends JFrame {
 	}
 
 	private void inicializarComponentes() {
-		handler = new Handler();
+        handler = new Handler();
 
-		calcularVelocidadButton = new JButton("Calcular Velocidad Máxima");
-		calcularVelocidadButton.setBounds(23, 120, 171, 69);
-		calcularVelocidadButton.addActionListener(handler);
+        calcularVelocidadButton = new JButton("Calcular Velocidad Máxima");
+        calcularVelocidadButton.setBounds(20, 80, 180, 50);
+        calcularVelocidadButton.addActionListener(handler);
 
-		pingEquipoButton = new JButton("Realizar Ping a Equipo");
-		pingEquipoButton.setBounds(206, 120, 171, 69);
-		pingEquipoButton.addActionListener(handler);
+        pingEquipoButton = new JButton("Realizar Ping a Equipo");
+        pingEquipoButton.setBounds(220, 80, 180, 50);
+        pingEquipoButton.addActionListener(handler);
 
-		detectarProblemasButton = new JButton("Detectar Problemas");
-		detectarProblemasButton.setBounds(387, 120, 171, 69);
-		detectarProblemasButton.addActionListener(handler);
+        detectarProblemasButton = new JButton("Detectar Problemas");
+        detectarProblemasButton.setBounds(420, 80, 180, 50);
+        detectarProblemasButton.addActionListener(handler);
 
-		JPanel panel = new JPanel();
-		panel.setLayout(null);
-		panel.add(calcularVelocidadButton);
-		panel.add(pingEquipoButton);
-		panel.add(detectarProblemasButton);
+        verMapaEstadoButton = new JButton("Ver Mapa de Estado");
+        verMapaEstadoButton.setBounds(20, 160, 180, 50);
+        verMapaEstadoButton.addActionListener(handler);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(null);
+        panel.add(calcularVelocidadButton);
+        panel.add(pingEquipoButton);
+        panel.add(detectarProblemasButton);
+        panel.add(verMapaEstadoButton);
 
 		getContentPane().add(panel, BorderLayout.CENTER);
 	}
 
-	private void ventanaVelocidad() {
-		calcularButton = new JButton("Calcular");
+
+
+    private void ventanaVelocidad() {
+        calcularButton = new JButton("Calcular");
 
 		JPanel panelCentral = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -121,6 +133,7 @@ public class VentanaConsultas extends JFrame {
 					+ equipo2.getCodigo() + " es de " + calculo.calcularVelocidadMaxima(ruta) + " Mbps");
 		}
 	}
+
 
 	private void realizarPingAEquipo() {
 		JComboBox<String> equipoIpComboBox = new JComboBox<>();
@@ -216,4 +229,19 @@ public class VentanaConsultas extends JFrame {
 				verificarConectividad();
 		}
 	}
+	private void verMapaDeEstado() {
+		// Create a new dialog to show the network map
+		JDialog dialog = new JDialog(this, "Mapa de Estado de la Red", true);
+		dialog.setSize(800, 600);
+		dialog.setLocationRelativeTo(this);
+	
+		// Get the graph panel from Calculo
+		JPanel graphPanel = calculo.crearMapaDeEstado();
+		dialog.add(graphPanel, BorderLayout.CENTER);
+	
+		dialog.setVisible(true);
+	}
+	
+
 }
+

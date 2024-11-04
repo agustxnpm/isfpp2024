@@ -2,7 +2,6 @@ package red.modelo;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
@@ -60,11 +59,10 @@ public class Equipo {
      * @return La velocidad máxima del equipo en Mbps.
      */
     public int getVelocidadMaxima() {
-        int velocidadMaxima = Integer.MAX_VALUE;
+        int velocidadMaxima = Integer.MAX_VALUE; // Inicializamos con un valor muy alto.
         // Iterar sobre los puertos del equipo para encontrar el puerto más lento.
-        for (Puerto puerto : puertos) {
+        for (Puerto puerto : puertos)
             velocidadMaxima = Math.min(velocidadMaxima, puerto.getTipoPuerto().getVelocidad());
-        }
         return velocidadMaxima; // Retornar la velocidad más baja.
     }
 
@@ -138,11 +136,11 @@ public class Equipo {
     public List<String> getDireccionesIp() {
         return direccionesIp;
     }
-    
 
     /**
      * Agrega una dirección IP al equipo, verificando que sea válida y que no esté repetida.
      * @param ip La dirección IP a agregar.
+     * @throws IllegalArgumentException si la IP no tiene el formato válido
      * @throws DireccionIpRepetidaException Si la IP ya está asignada al equipo.
      */
     public void agregarIp(String ip) throws DireccionIpRepetidaException {
@@ -152,9 +150,8 @@ public class Equipo {
         Matcher matcher = pattern.matcher(ip);
 
         // Validar si la IP tiene formato válido.
-        if (!matcher.matches()) {
+        if (!matcher.matches())
             throw new IllegalArgumentException("La direccion IP no es valida");
-        }
 
         // Verificar si la IP ya existe en el equipo.
         if (direccionesIp.contains(ip))
@@ -171,12 +168,14 @@ public class Equipo {
      * @param tipoPuerto Tipo de puerto.
      */
     public void agregarPuerto(int cantPuertos, TipoPuerto tipoPuerto) throws IllegalArgumentException {
-        if (cantPuertos <= 0) {
+        if (cantPuertos <= 0)
             throw new IllegalArgumentException("El equipo debe tener al menos un puerto");
-        }
+        if (tipoPuerto == null)
+        	throw new IllegalArgumentException("El puerto ingresado a " + codigo + " no puede ser nulo.");
 
         Puerto puerto = new Puerto(cantPuertos, tipoPuerto);
         if (puertos.contains(puerto)) {
+        	// Incrementa a la cantidad de puertos con el tipo de puerto en cuestión, la cantidad ingresada al método
             int index = puertos.indexOf(puerto);
             Puerto puertoExistente = puertos.get(index);
             puertoExistente.setCantidadPuertos(puertoExistente.getCantidadPuertos() + puerto.getCantidadPuertos());
@@ -194,29 +193,25 @@ public class Equipo {
      */
     public String getPuertosInfo() {
         StringBuilder puertosInfo = new StringBuilder();
-        for (Puerto p : puertos) {  
-            if (p.getTipoPuerto() != null) {  // Verificar que el tipo de puerto no sea null
-                puertosInfo.append(p.getTipoPuerto().getCodigo())   // Código del tipo de puerto
+        for (Puerto p : puertos) {
+        	/*  No es necesario porque el método agregarPuerto (ya invocado en el mismo constructor) verifica que
+			*	no se ingrese un puerto nulo
+
+            if (p.getTipoPuerto() == null)  // Verificar que el tipo de puerto no sea null
+                throw new IllegalArgumentException(); */
+
+            puertosInfo.append(p.getTipoPuerto().getCodigo())   // Código del tipo de puerto
                             .append(",")
                             .append(p.getCantidadPuertos())               // Cantidad de puertos
                             .append(";");
-            } else {
-                // Si el TipoPuerto es null, podemos manejarlo aquí
-                puertosInfo.append("N/A")   // O cualquier otra información predeterminada
-                            .append(",")
-                            .append(p.getCantidadPuertos())               
-                            .append(";");
-            }
         }
     
         // Eliminar el último punto y coma para que no haya un separador extra
-        if (puertosInfo.length() > 0) {
+        if (puertosInfo.length() > 0)
             puertosInfo.setLength(puertosInfo.length() - 1);
-        }
     
         return puertosInfo.toString();
     }
- 
     
 
     @Override
@@ -240,13 +235,13 @@ public class Equipo {
     }
 
     // Clase interna que representa un puerto.
-    public class Puerto {
+    private class Puerto {
         private int cantidadPuertos;
         private TipoPuerto tipoPuerto;
 
         public Puerto(int cantidadPuertos, TipoPuerto tipoPuerto) {
-            super();
-            this.cantidadPuertos = cantidadPuertos;
+        	super();
+        	this.cantidadPuertos = cantidadPuertos;
             this.tipoPuerto = tipoPuerto;
         }
 
