@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import com.mxgraph.layout.mxCircleLayout;
@@ -70,10 +71,48 @@ public class Calculo {
 		}
 	}
 
+	/**
+	 * Obtener equipos conectados transitivamente a partir de un equipo.
+	 */
+	public Set<Equipo> obtenerEquiposConectadosTransitivamente(Equipo equipoInicial) {
+		Set<Equipo> equiposConectados = new HashSet<>();
+		Queue<Equipo> cola = new LinkedList<>();
+		Set<Equipo> visitados = new HashSet<>();
+
+		cola.add(equipoInicial);
+		visitados.add(equipoInicial);
+
+		while (!cola.isEmpty()) {
+			Equipo actual = cola.poll();
+			equiposConectados.add(actual);
+
+			// Recorremos todas las conexiones del equipo actual
+			for (Edge<Conexion> conexion : red.incomingEdges(vertices.get(actual.getCodigo()))) {
+				Equipo vecino = conexion.getElement().getEquipo1().equals(actual) ? conexion.getElement().getEquipo2()
+						: conexion.getElement().getEquipo1();
+				if (!visitados.contains(vecino)) {
+					cola.add(vecino);
+					visitados.add(vecino);
+				}
+			}
+		}
+		return equiposConectados;
+	}
+
 	public void setCoordinador(Coordinador coordinador) {
 		this.coordinador = coordinador;
 	}
+	
+	public List<String> obtenerTodasLasIPs() {
+	    List<String> ips = new ArrayList<>();
+	    for (Vertex<Equipo> vertice : vertices.values()) {
+	        Equipo equipo = vertice.getElement();
+	        ips.addAll(equipo.getDireccionesIp()); // Suponiendo que el método getDireccionesIp() devuelve una lista de IPs.
+	    }
+	    return ips;
+	}
 
+	
 	/**
 	 * Agregar una conexion al grafo
 	 * 
@@ -282,7 +321,7 @@ public class Calculo {
 
 		// Verificar si no existe una ruta
 		if (ruta == null || ruta.isEmpty()) {
-			throw new ConexionNoConectadaException("No se encontró una conexion(verificarConectividad) desde el equipo "
+			throw new ConexionNoConectadaException("No se encontró una conexion desde el equipo "
 					+ equipoOrigen.getCodigo() + " hasta el Gateway.");
 		}
 
@@ -339,15 +378,30 @@ public class Calculo {
 	 * 
 	 * @param inicioIp IP inicial del rango.
 	 * @param finIp    IP final del rango.
+	 * @return Una lista de mensajes con el resultado de cada ping.
 	 */
-	public void realizarPingARango(String inicioIp, String finIp) {
+	public List<String> realizarPingARango(String inicioIp, String finIp) {
+		List<String> resultados = new ArrayList<>();
+		boolean pingExitoso = false;
+
 		for (Vertex<Equipo> equipo : vertices.values()) {
 			for (String ip : equipo.getElement().getDireccionesIp()) {
 				if (estaDentroDelRango(ip, inicioIp, finIp)) {
-					realizarPingAEquipo(ip);
+					boolean respuesta = realizarPingAEquipo(ip);
+					String mensaje = (respuesta ? "Ping exitoso" : "Ping fallido") + " al equipo con IP: " + ip;
+					resultados.add(mensaje);
+					pingExitoso = true;
 				}
 			}
 		}
+
+		if (!pingExitoso) {
+			String mensajeSinResultados = "No se encontraron equipos dentro del rango especificado.";
+			resultados.add(mensajeSinResultados);
+			JOptionPane.showMessageDialog(null, mensajeSinResultados, "Sin resultados", JOptionPane.WARNING_MESSAGE);
+		}
+
+		return resultados;
 	}
 
 	/**
@@ -383,7 +437,6 @@ public class Calculo {
 	}
 
 	// Método para crear el panel con disposición organizada
-
 	public JPanel crearMapaDeEstado() {
 		mxGraph graph = new mxGraph();
 		Object parent = graph.getDefaultParent();
@@ -396,8 +449,19 @@ public class Calculo {
 			// Añadir los equipos como vértices
 			for (Vertex<Equipo> vertex : vertices.values()) {
 				Equipo equipo = vertex.getElement();
+
+				// Establece el color según el estado del equipo
+				String color = equipo.isEstado() ? "green" : "red";
+
+				// Crea un estilo para el equipo basado en el estado
+				Map<String, Object> estilo = new HashMap<>();
+				estilo.put("fillColor", color);
+				graph.getStylesheet().putCellStyle("EQUIPO_" + equipo.getCodigo(), estilo);
+
+				// Inserta el vértice con el estilo correspondiente
 				Object v = graph.insertVertex(parent, equipo.getCodigo(),
-						equipo.getCodigo() + "\n" + equipo.getDescripcion(), 0, 0, 80, 30); // Ajusta el tamaño aquí
+						equipo.getCodigo() + "\n" + equipo.getDescripcion(), 0, 0, 80, 30,
+						"EQUIPO_" + equipo.getCodigo());
 				vertexMap.put(equipo.getCodigo(), v);
 			}
 
@@ -412,7 +476,7 @@ public class Calculo {
 			graph.getModel().endUpdate();
 		}
 
-		// Configura el layout (jerárquico o circular según prefieras)
+		// Configura el layout jerárquico
 		mxHierarchicalLayout layout = new mxHierarchicalLayout(graph);
 		layout.execute(graph.getDefaultParent());
 

@@ -5,6 +5,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.Random;
+
 import red.modelo.Equipo;
 import red.modelo.TipoEquipo;
 import red.modelo.TipoPuerto;
@@ -25,7 +27,7 @@ public class VentanaEquipos extends JFrame {
 
 	public VentanaEquipos(Calculo calculo, Red red) {
 		setTitle("Gestión de Equipos");
-		setSize(900, 400); // Ajustar el tamaño para ver todas las columnas
+		setSize(1200, 400); // Ajustar el tamaño para ver todas las columnas
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -45,14 +47,14 @@ public class VentanaEquipos extends JFrame {
 	}
 
 	private void inicializarComponentes() {
-		
+
 		String[] equipoColumnNames = { "Código", "Descripción", "Marca", "Modelo", "Tipo Equipo", "Ubicación", "Estado",
-				"Info Puertos", "Acciones", "Modificar" };
+				"Info Puertos", "Direccion IP", "Acciones", "Modificar" };
 		equipoTableModel = new DefaultTableModel(equipoColumnNames, 0);
 		equiposTable = new JTable(equipoTableModel) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				return column == 8 || column == 9; 
+				return column == 9 || column == 10;
 			}
 		};
 
@@ -74,6 +76,7 @@ public class VentanaEquipos extends JFrame {
 		equipoTableModel.setRowCount(0); // Limpiar la tabla
 		// Añadir filas a la tabla con todos los datos del equipo
 		for (Equipo equipo : equipos) {
+			List<String> direccionesIp ;
 			String estadoTexto = equipo.isEstado() ? "Activo" : "Inactivo"; // Convertir booleano a texto legible
 			equipoTableModel.addRow(new Object[] { equipo.getCodigo(), equipo.getDescripcion(), equipo.getMarca(),
 					equipo.getModelo(), equipo.getTipoEquipo().getDescripcion(),
@@ -81,6 +84,8 @@ public class VentanaEquipos extends JFrame {
 					equipo.getUbicacion().getDescripcion(),
 
 					estadoTexto, equipo.getPuertosInfo(),
+					
+					equipo.getDireccionesIp().toString(),
 
 					"Eliminar", "Modificar" });
 		}
@@ -94,6 +99,28 @@ public class VentanaEquipos extends JFrame {
 		equiposTable.getColumn("Modificar")
 				.setCellEditor(new ButtonEditor(new JCheckBox(), equiposTable, "modificar", red, calculo));
 
+	}
+
+	private String generarIPAleatoria(Calculo calculo) {
+		List<String> ipsExistentes = calculo.obtenerTodasLasIPs();
+		Random random = new Random();
+		int tercerOcteto = 16; // Inicialmente 192.168.16.x
+		int cuartoOcteto;
+
+		while (true) {
+			cuartoOcteto = random.nextInt(256); // Genera un número entre 0 y 255
+			String ipGenerada = "192.168." + tercerOcteto + "." + cuartoOcteto;
+
+			if (!ipsExistentes.contains(ipGenerada)) {
+				return ipGenerada; // Devuelve la IP si no está en la lista de existentes
+			}
+
+			// Si todas las IPs posibles en 192.168.16.x están asignadas, pasa al siguiente
+			// octeto
+			if (cuartoOcteto == 255 && !ipsExistentes.contains("192.168." + (tercerOcteto + 1) + ".0")) {
+				tercerOcteto++;
+			}
+		}
 	}
 
 	private void agregarEquipo() {
@@ -150,9 +177,15 @@ public class VentanaEquipos extends JFrame {
 				Equipo equipo = new Equipo(codigoField.getText(), modeloField.getText(), marcaField.getText(),
 						descripcionField.getText(), selectedUbicacion, new TipoEquipo(tipoEquipo, ""), cantPuertos,
 						selectedPuerto, true);
+				
+				// asignar una ip aleatoria al equipo
+				String ipAsignada = generarIPAleatoria(calculo);
+				equipo.agregarIp(ipAsignada);
+				
 				calculo.agregarEquipoAlGrafo(equipo);
 				red.agregarEquipo(equipo);
 				mostrarEquiposEnTabla(); // Refrescar la tabla después de la inserción
+				JOptionPane.showMessageDialog(this, "Equipo añadido correctamente");
 			} catch (Exception e) {
 				e.printStackTrace();
 				JOptionPane.showMessageDialog(this, "Error al agregar el equipo: " + e.getMessage(), "Error",

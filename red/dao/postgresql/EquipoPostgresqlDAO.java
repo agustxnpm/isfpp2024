@@ -167,17 +167,16 @@ public class EquipoPostgresqlDAO implements EquipoDAO {
 			con = BDConexion.getConnection();
 			con.setAutoCommit(false); // Desactivar el autocommit
 
+			String sqlDeleteIp = "DELETE FROM poo2024.direcciones_ip_palma WHERE equipo_codigo = ?";
+			pstm = con.prepareStatement(sqlDeleteIp);
+			pstm.setString(1, equipo.getCodigo());
+			pstm.executeUpdate();
+
 			String sql = "";
 			sql += "DELETE FROM poo2024.equipos_palma WHERE codigo = ? ";
 			pstm = con.prepareStatement(sql);
 			pstm.setString(1, equipo.getCodigo());
 			pstm.executeUpdate();
-
-			String sqlDeleteIp = "DELETE FROM poo2024.direcciones_ip_palma WHERE equipo_codigo = ?";
-			try (PreparedStatement pstmDeleteIp = con.prepareStatement(sqlDeleteIp)) {
-				pstmDeleteIp.setString(1, equipo.getCodigo());
-				pstmDeleteIp.executeUpdate();
-			}
 
 			con.commit();
 
@@ -221,12 +220,12 @@ public class EquipoPostgresqlDAO implements EquipoDAO {
 				String[] puertoParts = infoPuertos.split("[,;]");
 				String tipoPuertoCodigo = puertoParts[0];
 				int cantPuertos = Integer.parseInt(puertoParts[1]);
-				
+
 				Equipo eq = new Equipo(rs.getString("codigo"), rs.getString("modelo"), rs.getString("marca"),
 						rs.getString("descripcion"), ubicaciones.get(rs.getString("ubicacion")),
 						tipoEquipo.get(rs.getString("tipo_equipo")), cantPuertos, tipoPuerto.get(tipoPuertoCodigo),
 						Boolean.parseBoolean(rs.getString("estado")));
-				
+
 				for (int i = 2; i < puertoParts.length; i += 2) {
 					// comienza desde el indice 2 ya que ya agregamos el
 					// primer puerto (cantidad, tipo) al momento de
@@ -241,21 +240,20 @@ public class EquipoPostgresqlDAO implements EquipoDAO {
 			String sqlIp = "SELECT equipo_codigo, direccion_ip FROM poo2024.direcciones_ip_palma";
 			pstm = con.prepareStatement(sqlIp);
 			rs = pstm.executeQuery();
-			
+
 			while (rs.next()) {
 				String equipoCodigo = rs.getString("equipo_codigo");
 				String direccionIp = rs.getString("direccion_ip");
 				for (Equipo e : ret) {
 					if (e.getCodigo().equals(equipoCodigo)) {
 						if (direccionIp != null && !direccionIp.isEmpty()) {
-                            e.agregarIp(direccionIp);
-                        }
+							e.agregarIp(direccionIp);
+						}
 					}
 				}
-				
+
 			}
 
-			
 			return ret;
 		} catch (Exception ex) {
 			ex.printStackTrace();

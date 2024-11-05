@@ -97,7 +97,6 @@ class ButtonEditor extends DefaultCellEditor {
 		if (confirmacion == JOptionPane.YES_OPTION) {
 			try {
 				Equipo equipoAEliminar = red.buscarEquipoPorCodigo(equipoCodigo);
-			//	calculo.borrarEquipoDelGrafo(equipoAEliminar);
 				red.borrarEquipo(equipoAEliminar);
 				// Detener la edición antes de eliminar la fila
 				stopCellEditing();
@@ -203,7 +202,6 @@ class ButtonEditor extends DefaultCellEditor {
 	           
 
 	            // Actualizar el equipo en el servicio
-	            //calculo.modificarEquipoEnElGrafo(equipoAModificar);
 	            red.modificarEquipo(equipoAModificar);
 
 	            // Mensaje de confirmación y refrescar tabla
@@ -258,6 +256,10 @@ class ButtonEditor extends DefaultCellEditor {
 
 	@Override
 	protected void fireEditingStopped() {
-		super.fireEditingStopped();
+		try {
+			super.fireEditingStopped();
+		} catch (Exception e) {
+			// solo atrapar la excepcion (no afecta al funcionamiento)
+		}
 	}
 }
