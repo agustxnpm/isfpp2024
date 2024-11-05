@@ -27,8 +27,9 @@ public class VentanaConsultas extends JFrame {
     private JButton verificarButton;
     private JComboBox<String> equipo1ComboBox;
     private JComboBox<String> equipo2ComboBox;
-
-    public VentanaConsultas(Calculo calculo, Red red) {
+    private boolean modo; // true = modo simulacion, false = modo real;
+    
+    public VentanaConsultas(Calculo calculo, Red red, boolean modo) {
         setTitle("Consultas de la Red");
         setSize(600, 400);
         setLocationRelativeTo(null);
@@ -36,7 +37,7 @@ public class VentanaConsultas extends JFrame {
 
         this.calculo = calculo;
         this.red = red;
-
+        this.modo = modo;
         inicializarComponentes();
     }
 

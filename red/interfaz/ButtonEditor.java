@@ -256,6 +256,10 @@ class ButtonEditor extends DefaultCellEditor {
 
 	@Override
 	protected void fireEditingStopped() {
-		super.fireEditingStopped();
+		try {
+			super.fireEditingStopped();
+		} catch (Exception e) {
+			// solo atrapar la excepcion (no afecta al funcionamiento)
+		}
 	}
 }

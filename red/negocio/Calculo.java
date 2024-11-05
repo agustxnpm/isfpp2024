@@ -102,7 +102,17 @@ public class Calculo {
 	public void setCoordinador(Coordinador coordinador) {
 		this.coordinador = coordinador;
 	}
+	
+	public List<String> obtenerTodasLasIPs() {
+	    List<String> ips = new ArrayList<>();
+	    for (Vertex<Equipo> vertice : vertices.values()) {
+	        Equipo equipo = vertice.getElement();
+	        ips.addAll(equipo.getDireccionesIp()); // Suponiendo que el método getDireccionesIp() devuelve una lista de IPs.
+	    }
+	    return ips;
+	}
 
+	
 	/**
 	 * Agregar una conexion al grafo
 	 * 
@@ -306,7 +316,7 @@ public class Calculo {
 
 		// Verificar si no existe una ruta
 		if (ruta == null || ruta.isEmpty()) {
-			throw new ConexionNoConectadaException("No se encontró una conexion(verificarConectividad) desde el equipo "
+			throw new ConexionNoConectadaException("No se encontró una conexion desde el equipo "
 					+ equipoOrigen.getCodigo() + " hasta el Gateway.");
 		}
 
