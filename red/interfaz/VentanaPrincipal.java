@@ -180,6 +180,7 @@ public class VentanaPrincipal extends JFrame {
 						.addContainerGap(842, Short.MAX_VALUE))
 				.addGroup(gl_contentPane.createSequentialGroup().addGap(20).addComponent(lblModoActual)
 						.addContainerGap(900, Short.MAX_VALUE)));
+		
 		gl_contentPane.setVerticalGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup().addComponent(lblISFPP)
 						.addPreferredGap(ComponentPlacement.RELATED).addComponent(lblPOO)

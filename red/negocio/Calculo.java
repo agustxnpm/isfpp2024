@@ -8,6 +8,10 @@ import java.util.Set;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 import com.mxgraph.layout.mxCircleLayout;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 
@@ -112,7 +116,28 @@ public class Calculo {
 	    return ips;
 	}
 
-	
+	/** metodo para hacer ping a un host real usando el comado de cmd **/
+	public static void ping(String host, int cantPings) {
+		 ProcessBuilder processBuilder = new ProcessBuilder();  
+	        // Construir el comando de ping. Este ejemplo es para Windows. Para Linux, usa "ping -c 4"  
+	        processBuilder.command("ping", "-n", Integer.toString(cantPings), host); // Cambia "-c" a "-n" si usas Windows  
+	        
+	        try {
+	        	 Process process = processBuilder.start();  
+	             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));  
+	             String line;  
+	             while ((line = reader.readLine()) != null) {  
+	                 System.out.println(line);  
+	             }  
+	             int exitCode = process.waitFor();  
+	             System.out.println("\nExited with error code : " + exitCode);  
+	        } catch (IOException e) {
+	            e.printStackTrace();  
+
+	        } catch (InterruptedException e){
+	            e.printStackTrace();
+	        }
+	}
 	/**
 	 * Agregar una conexion al grafo
 	 * 
@@ -398,7 +423,6 @@ public class Calculo {
 		if (!pingExitoso) {
 			String mensajeSinResultados = "No se encontraron equipos dentro del rango especificado.";
 			resultados.add(mensajeSinResultados);
-			JOptionPane.showMessageDialog(null, mensajeSinResultados, "Sin resultados", JOptionPane.WARNING_MESSAGE);
 		}
 
 		return resultados;
