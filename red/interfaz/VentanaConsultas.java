@@ -34,13 +34,13 @@ public class VentanaConsultas extends JFrame {
 	private JComboBox<String> equipo2ComboBox;
 	private JTextField ipInicioTextField; // Campo de texto para la IP de inicio
 	private JTextField ipFinTextField; // Campo de texto para la IP de fin
+	private JTextField cantPingsTextField; // campo para ingresar la cantidad de pings
+	private int cantPings;
 	private boolean modo; // true = modo simulacion, false = modo real;
-
-
 
 	public VentanaConsultas(Calculo calculo, Red red, boolean modo) {
 		setTitle("Consultas de la Red");
-		setSize(600, 400);
+		setSize(650, 400);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -178,7 +178,7 @@ public class VentanaConsultas extends JFrame {
 	private void realizarPingAEquipo() {
 		// Crear un diálogo personalizado
 		dialog = new JDialog(this, "Ping a Equipo o Rango de IPs", true);
-		dialog.setSize(500, 300);
+		dialog.setSize(500, 350);
 		dialog.setLayout(new GridBagLayout());
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
@@ -232,6 +232,16 @@ public class VentanaConsultas extends JFrame {
 			ipFinTextField.setVisible(isSelected);
 		});
 
+		// Campo de texto para la cantidad de pings
+		gbc.gridy++;
+		gbc.gridx = 0;
+		JLabel cantPingsLabel = new JLabel("Cantidad de pings:");
+		dialog.add(cantPingsLabel, gbc);
+
+		gbc.gridx++;
+		cantPingsTextField = new JTextField(5); // Campo de texto para la cantidad de pings
+		dialog.add(cantPingsTextField, gbc);
+
 		// Botón para realizar el ping
 		gbc.gridy++;
 		gbc.gridx = 0;
@@ -245,93 +255,153 @@ public class VentanaConsultas extends JFrame {
 		dialog.setVisible(true);
 	}
 
-	// Método para hacer ping a un solo equipo
-	private void pingAEquipo(String direccionIp, JDialog dialog) {
+	private void pingReal(String direccionIp, JDialog dialog, int cantPings) {
+	        // Crear el JDialog para mostrar los resultados
+	        JDialog resultDialog = new JDialog(dialog, "Resultados del Ping Real", false); // No modal
+	        JTextArea textArea = new JTextArea(20, 50);
+	        textArea.setEditable(false);
+	        JScrollPane scrollPane = new JScrollPane(textArea);
+	        JButton detenerButton = new JButton("Detener");
+
+	        // Panel de control para el botón
+	        JPanel panelControl = new JPanel();
+	        panelControl.add(detenerButton);
+
+	        // Configurar el JDialog
+	        resultDialog.setLayout(new BorderLayout());
+	        resultDialog.add(scrollPane, BorderLayout.CENTER);
+	        resultDialog.add(panelControl, BorderLayout.SOUTH);
+	        resultDialog.pack();
+	        resultDialog.setLocationRelativeTo(null);
+	        resultDialog.setAlwaysOnTop(true);
+	        resultDialog.setVisible(true);
+
+	        // Variable de control para detener el proceso
+	        final boolean[] detener = {false};
+
+	        // Acción del botón "Detener"
+	        detenerButton.addActionListener(e -> detener[0] = true);
+
+	        // Crear un SwingWorker para realizar el ping
+	        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+	            @Override
+	            protected Void doInBackground() {
+	                calculo.ping(direccionIp, cantPings, textArea, detener);
+	                return null;
+	            }
+
+	            @Override
+	            protected void done() {
+	                if (!detener[0]) {
+	                    textArea.append("Ping completado.\n");
+	                }
+	            }
+	        };
+
+	        // Ejecutar el SwingWorker
+	        worker.execute();
+	}
+
+
+	// Método para hacer ping a un solo equipo, si modo == true, realiza ping
+	// simulado, de otro modo ping real
+	private void pingAEquipo(String direccionIp, JDialog dialog, int cantPings) {
 		try {
 			if (!direccionIp.isEmpty()) {
-				boolean respuestaPing = calculo.realizarPingAEquipo(direccionIp);
-				String mensaje = respuestaPing ? "Ping exitoso" : "Ping fallido";
-				JOptionPane.showMessageDialog(dialog, mensaje + " al equipo con IP: " + direccionIp,
-						"Resultado del Ping", JOptionPane.INFORMATION_MESSAGE);
+				if (modo) {
+					boolean respuestaPing = calculo.realizarPingAEquipo(direccionIp);
+					String mensaje = respuestaPing ? "Ping exitoso" : "Ping fallido";
+					JOptionPane.showMessageDialog(dialog, mensaje + " al equipo con IP: " + direccionIp,
+							"Resultado del Ping", JOptionPane.INFORMATION_MESSAGE);
+				} else {
+					pingReal(direccionIp, dialog, cantPings);
+				}
+
 			} else {
 				JOptionPane.showMessageDialog(dialog, "Por favor, ingresa una IP válida.", "Error",
 						JOptionPane.ERROR_MESSAGE);
 			}
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(dialog, e.getMessage(), "Error",
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(dialog, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 		}
 
 	}
 
 	// Método para hacer ping a un rango de IPs
-	private void pingARango(String inicioIp, String finIp, JDialog dialog) {
-		if (!inicioIp.isEmpty() && !finIp.isEmpty()) {
-			// Crear el JDialog para mostrar los resultados
-			JDialog resultDialog = new JDialog(dialog, "Resultados del Ping", false); // false indica que no es modal
-			JTextArea textArea = new JTextArea(20, 50);
-			textArea.setEditable(false);
-			JScrollPane scrollPane = new JScrollPane(textArea);
-			JButton detenerButton = new JButton("Detener");
+	private void pingARango(String inicioIp, String finIp, JDialog dialog, int cantPings) {
+	    if (!inicioIp.isEmpty() && !finIp.isEmpty()) {
+	        // Crear el JDialog para mostrar los resultados
+	        JDialog resultDialog = new JDialog(dialog, "Resultados del Ping", false); // false indica que no es modal
+	        JTextArea textArea = new JTextArea(20, 50);
+	        textArea.setEditable(false);
+	        JScrollPane scrollPane = new JScrollPane(textArea);
+	        JButton detenerButton = new JButton("Detener");
 
-			// Panel de control inferior para el botón
-			JPanel panelControl = new JPanel();
-			panelControl.add(detenerButton);
+	        // Panel de control inferior para el botón
+	        JPanel panelControl = new JPanel();
+	        panelControl.add(detenerButton);
 
-			// Configurar el JDialog
-			resultDialog.setLayout(new BorderLayout());
-			resultDialog.add(scrollPane, BorderLayout.CENTER);
-			resultDialog.add(panelControl, BorderLayout.SOUTH);
-			resultDialog.pack();
-			resultDialog.setLocationRelativeTo(null);
+	        // Configurar el JDialog
+	        resultDialog.setLayout(new BorderLayout());
+	        resultDialog.add(scrollPane, BorderLayout.CENTER);
+	        resultDialog.add(panelControl, BorderLayout.SOUTH);
+	        resultDialog.pack();
+	        resultDialog.setLocationRelativeTo(null);
 
-			// Asegurar que el JDialog esté siempre al frente
-			resultDialog.setAlwaysOnTop(true);
-			resultDialog.setVisible(true);
+	        // Asegurar que el JDialog esté siempre al frente
+	        resultDialog.setAlwaysOnTop(true);
+	        resultDialog.setVisible(true);
 
-			// Variable de control para detener el proceso
-			final boolean[] detener = { false };
+	        // Variable de control para detener el proceso
+	        final boolean[] detener = {false};
 
-			// Agregar acción al botón "Detener"
-			detenerButton.addActionListener(e -> detener[0] = true);
+	        // Agregar acción al botón "Detener"
+	        detenerButton.addActionListener(e -> detener[0] = true);
 
-			// Crear el SwingWorker para realizar los pings en segundo plano
-			SwingWorker<Void, String> worker = new SwingWorker<>() {
-				@Override
-				protected Void doInBackground() throws Exception {
-					List<String> pingResults = calculo.realizarPingARango(inicioIp, finIp);
-					for (String resultado : pingResults) {
-						if (detener[0]) {
-							publish("Ping detenido por el usuario.\n");
-							break;
-						}
-						publish(resultado); // Publicar el resultado
-						Thread.sleep(2000); // Simular la demora de 2 segundos
-					}
-					return null;
-				}
+	        // Crear el SwingWorker para realizar los pings en segundo plano
+	        SwingWorker<Void, String> worker = new SwingWorker<>() {
+	            @Override
+	            protected Void doInBackground() throws Exception {
+	                if (modo) {
+	                    // Modo simulación
+	                    List<String> pingResults = calculo.realizarPingARango(inicioIp, finIp);
+	                    for (String resultado : pingResults) {
+	                        if (detener[0]) {
+	                            publish("Ping detenido por el usuario.\n");
+	                            break;
+	                        }
+	                        publish(resultado); // Publicar el resultado
+	                        Thread.sleep(2000); // Simular la demora de 2 segundos
+	                    }
+	                } else {
+	                    // Modo real
+	                    calculo.pingRango(inicioIp, finIp, cantPings, textArea, detener);
+	                }
+	                return null;
+	            }
 
-				@Override
-				protected void process(List<String> chunks) {
-					for (String resultado : chunks) {
-						textArea.append(resultado + "\n"); // Mostrar el resultado en el JTextArea
-					}
-				}
+	            @Override
+	            protected void process(List<String> chunks) {
+	                for (String resultado : chunks) {
+	                    textArea.append(resultado + "\n"); // Mostrar el resultado en el JTextArea
+	                }
+	            }
 
-				@Override
-				protected void done() {
-					if (!detener[0]) {
-						textArea.append("Ping a rango completado.\n");
-					}
-				}
-			};
+	            @Override
+	            protected void done() {
+	                if (!detener[0]) {
+	                    textArea.append("Ping a rango completado.\n");
+	                }
+	            }
+	        };
 
-			worker.execute(); // Ejecutar la tarea
-		} else {
-			JOptionPane.showMessageDialog(dialog, "Por favor, ingresa un rango de IPs válido.", "Error",
-					JOptionPane.ERROR_MESSAGE);
-		}
+	        worker.execute(); // Ejecutar la tarea
+	    } else {
+	        JOptionPane.showMessageDialog(dialog, "Por favor, ingresa un rango de IPs válido.", "Error",
+	                JOptionPane.ERROR_MESSAGE);
+	    }
 	}
+
 
 	private void detectarProblemasConectividad() {
 		JPanel panel = new JPanel(new GridBagLayout());
@@ -388,6 +458,19 @@ public class VentanaConsultas extends JFrame {
 		}
 	}
 
+	private void verMapaDeEstado() {
+		// Create a new dialog to show the network map
+		JDialog dialog = new JDialog(this, "Mapa de Estado de la Red", true);
+		dialog.setSize(800, 600);
+		dialog.setLocationRelativeTo(this);
+
+		// Get the graph panel from Calculo
+		JPanel graphPanel = calculo.crearMapaDeEstado();
+		dialog.add(graphPanel, BorderLayout.CENTER);
+
+		dialog.setVisible(true);
+	}
+
 	private class Handler implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -413,29 +496,23 @@ public class VentanaConsultas extends JFrame {
 				actualizarEquiposConectados();
 
 			if (e.getSource().equals(pingButton)) {
+
+				try {
+					cantPings = Integer.parseInt(cantPingsTextField.getText().trim());
+				} catch (NumberFormatException ex) {
+					cantPings = 0;
+				}
+
 				if (rangoCheckBox.isSelected()) {
 					// Obtener datos de los campos de texto y realizar ping al rango
-					pingARango(ipInicioTextField.getText().trim(), ipFinTextField.getText().trim(), dialog);
+					pingARango(ipInicioTextField.getText().trim(), ipFinTextField.getText().trim(), dialog, cantPings);
 				} else {
 					// Obtener la IP y realizar ping a un solo equipo
-					pingAEquipo(equipoTextField.getText().trim(), dialog);
+					pingAEquipo(equipoTextField.getText().trim(), dialog, cantPings);
 				}
 			}
 
 		}
 	} // fin clase Handler
-
-	private void verMapaDeEstado() {
-		// Create a new dialog to show the network map
-		JDialog dialog = new JDialog(this, "Mapa de Estado de la Red", true);
-		dialog.setSize(800, 600);
-		dialog.setLocationRelativeTo(this);
-
-		// Get the graph panel from Calculo
-		JPanel graphPanel = calculo.crearMapaDeEstado();
-		dialog.add(graphPanel, BorderLayout.CENTER);
-
-		dialog.setVisible(true);
-	}
 
 }

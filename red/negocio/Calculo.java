@@ -7,10 +7,13 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
+
 import java.awt.BorderLayout;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 
 import com.mxgraph.layout.mxCircleLayout;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
@@ -106,38 +109,17 @@ public class Calculo {
 	public void setCoordinador(Coordinador coordinador) {
 		this.coordinador = coordinador;
 	}
-	
+
 	public List<String> obtenerTodasLasIPs() {
-	    List<String> ips = new ArrayList<>();
-	    for (Vertex<Equipo> vertice : vertices.values()) {
-	        Equipo equipo = vertice.getElement();
-	        ips.addAll(equipo.getDireccionesIp()); // Suponiendo que el método getDireccionesIp() devuelve una lista de IPs.
-	    }
-	    return ips;
+		List<String> ips = new ArrayList<>();
+		for (Vertex<Equipo> vertice : vertices.values()) {
+			Equipo equipo = vertice.getElement();
+			ips.addAll(equipo.getDireccionesIp()); // Suponiendo que el método getDireccionesIp() devuelve una lista de
+													// IPs.
+		}
+		return ips;
 	}
 
-	/** metodo para hacer ping a un host real usando el comado de cmd **/
-	public static void ping(String host, int cantPings) {
-		 ProcessBuilder processBuilder = new ProcessBuilder();  
-	        // Construir el comando de ping. Este ejemplo es para Windows. Para Linux, usa "ping -c 4"  
-	        processBuilder.command("ping", "-n", Integer.toString(cantPings), host); // Cambia "-c" a "-n" si usas Windows  
-	        
-	        try {
-	        	 Process process = processBuilder.start();  
-	             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));  
-	             String line;  
-	             while ((line = reader.readLine()) != null) {  
-	                 System.out.println(line);  
-	             }  
-	             int exitCode = process.waitFor();  
-	             System.out.println("\nExited with error code : " + exitCode);  
-	        } catch (IOException e) {
-	            e.printStackTrace();  
-
-	        } catch (InterruptedException e){
-	            e.printStackTrace();
-	        }
-	}
 	/**
 	 * Agregar una conexion al grafo
 	 * 
@@ -195,24 +177,6 @@ public class Calculo {
 					vertices.get(e.getElement().getEquipo2().getCodigo()), e.getElement());
 		}
 	}
-
-	/**
-	 * no funciona porque removeEdge realiza una conversion de tipo en tiempo de
-	 * ejecucion, lo cual lanza error
-	 **/
-
-	/*
-	 * public void borrarEquipoDelGrafo(Equipo equipo) {
-	 * red.removeVertex(vertices.get(equipo.getCodigo())); }
-	 * 
-	 */
-
-	/*
-	 * public void borrarConexionDelGrafo(Conexion conexion) {
-	 * 
-	 * for (Edge<Conexion> edge : red.edges()) { if
-	 * (edge.getElement().equals(conexion)) { red.removeEdge(edge); break; } } }
-	 */
 
 	/**
 	 * Encuentra la ruta entre dos equipos utilizando el algoritmo BFS.
@@ -290,7 +254,7 @@ public class Calculo {
 		if (ruta.size() == 1) {
 			velocidadMaxima = 0;
 			return velocidadMaxima;
-			
+
 		}
 		for (int i = 0; i < ruta.size() - 1; i++) {
 			Equipo equipo1 = ruta.get(i);
@@ -346,8 +310,8 @@ public class Calculo {
 
 		// Verificar si no existe una ruta
 		if (ruta == null || ruta.isEmpty()) {
-			throw new ConexionNoConectadaException("No se encontró una conexion desde el equipo "
-					+ equipoOrigen.getCodigo() + " hasta el Gateway.");
+			throw new ConexionNoConectadaException(
+					"No se encontró una conexion desde el equipo " + equipoOrigen.getCodigo() + " hasta el Gateway.");
 		}
 
 		// Verificar cada equipo y conexión en la ruta
@@ -400,6 +364,7 @@ public class Calculo {
 
 	/**
 	 * Realiza ping a todos los equipos cuyas IPs estén dentro de un rango.
+	 * Funciona unicamente para el modo simulacion de la aplicacion
 	 * 
 	 * @param inicioIp IP inicial del rango.
 	 * @param finIp    IP final del rango.
@@ -427,6 +392,91 @@ public class Calculo {
 
 		return resultados;
 	}
+
+	/**
+	 * Realiza un ping a un rango de IP
+	 * Funciona para el modo real de la aplicacion
+	 * 
+	 * @param hostInicio direccion ip inicio
+	 * @param hostFinal	direccion ip final
+	 * @param cantPings	cantidad de pings
+	 */
+	public void pingRango(String hostInicio, String hostFinal, int cantPings, JTextArea textArea, boolean[] detener) {
+        try {
+            // Convertir hostInicio y hostFinal a enteros
+            long ipInicio = ipToLong(InetAddress.getByName(hostInicio));
+            long ipFinal = ipToLong(InetAddress.getByName(hostFinal));
+
+            // Validar que hostInicio sea menor o igual a hostFinal
+            if (ipInicio > ipFinal) {
+            	throw new IllegalArgumentException("El host inicio debe ser mayor que el host final");
+            }
+
+            // Recorrer el rango de direcciones IP y hacer ping
+            for (long i = ipInicio; i <= ipFinal; i++) {
+                String ipActual = longToIp(i);
+                ping(ipActual, cantPings, textArea, detener);
+                if (detener[0])
+                	break;
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Método para convertir una IP en formato InetAddress a un número long
+    private static long ipToLong(InetAddress ip) {
+        byte[] bytes = ip.getAddress();
+        long result = 0;
+        for (byte b : bytes) {
+            result = (result << 8) | (b & 0xFF);
+        }
+        return result;
+    }
+
+    // Método para convertir un número long a formato de dirección IP
+    private static String longToIp(long ip) {
+        return String.format("%d.%d.%d.%d",
+                (ip >> 24) & 0xFF,
+                (ip >> 16) & 0xFF,
+                (ip >> 8) & 0xFF,
+                ip & 0xFF);
+    }
+
+    /** Método para hacer ping a un host real usando el comando de cmd **/
+    public void ping(String host, int cantPings, JTextArea textArea, boolean[] detener) {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+
+        // Construir el comando de ping. Este ejemplo es para Windows.
+        if (cantPings == 0) {
+            processBuilder.command("ping", host);
+        } else {
+            processBuilder.command("ping", "-n", Integer.toString(cantPings), host);
+        }
+
+        try {
+            Process process = processBuilder.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (detener[0]) {
+                    textArea.append("Ping detenido por el usuario.\n");
+                    process.destroy(); // Detener el proceso de ping
+                    break;
+                }
+                textArea.append(line + "\n");
+            }
+            int exitCode = process.waitFor();
+            if (!detener[0]) {
+                textArea.append("\nExited with error code: " + exitCode + "\n");
+            }
+        } catch (IOException e) {
+            textArea.append("Error: " + e.getMessage() + "\n");
+        } catch (InterruptedException e) {
+            textArea.append("Proceso interrumpido.\n");
+        }
+    }
 
 	/**
 	 * Verifica si una dirección IP está dentro de un rango de IPs.
