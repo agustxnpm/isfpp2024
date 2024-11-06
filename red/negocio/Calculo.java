@@ -444,39 +444,54 @@ public class Calculo {
                 ip & 0xFF);
     }
 
-    /** Método para hacer ping a un host real usando el comando de cmd **/
-    public void ping(String host, int cantPings, JTextArea textArea, boolean[] detener) {
-        ProcessBuilder processBuilder = new ProcessBuilder();
+    /** Método para hacer ping a un host real usando el comando de cmd o terminal **/
+public void ping(String host, int cantPings, JTextArea textArea, boolean[] detener) {
+    ProcessBuilder processBuilder = new ProcessBuilder();
+    String os = System.getProperty("os.name").toLowerCase(); // Verifica el sistema operativo
 
-        // Construir el comando de ping. Este ejemplo es para Windows.
+    // Construir el comando de ping según el sistema operativo
+    if (os.contains("win")) {
+        // Comando de ping para Windows
         if (cantPings == 0) {
             processBuilder.command("ping", host);
         } else {
             processBuilder.command("ping", "-n", Integer.toString(cantPings), host);
         }
-
-        try {
-            Process process = processBuilder.start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (detener[0]) {
-                    textArea.append("Ping detenido por el usuario.\n");
-                    process.destroy(); // Detener el proceso de ping
-                    break;
-                }
-                textArea.append(line + "\n");
-            }
-            int exitCode = process.waitFor();
-            if (!detener[0]) {
-                textArea.append("\nExited with error code: " + exitCode + "\n");
-            }
-        } catch (IOException e) {
-            textArea.append("Error: " + e.getMessage() + "\n");
-        } catch (InterruptedException e) {
-            textArea.append("Proceso interrumpido.\n");
+    } else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
+        // Comando de ping para Linux/Unix/Mac
+        if (cantPings == 0) {
+            processBuilder.command("ping", host);
+        } else {
+            processBuilder.command("ping", "-c", Integer.toString(cantPings), host);
         }
+    } else {
+        textArea.append("Sistema operativo no soportado.\n");
+        return;
     }
+
+    try {
+        Process process = processBuilder.start();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            if (detener[0]) {
+                textArea.append("Ping detenido por el usuario.\n");
+                process.destroy(); // Detener el proceso de ping
+                break;
+            }
+            textArea.append(line + "\n");
+        }
+        int exitCode = process.waitFor();
+        if (!detener[0]) {
+            textArea.append("\nProceso finalizado con código de salida: " + exitCode + "\n");
+        }
+    } catch (IOException e) {
+        textArea.append("Error: " + e.getMessage() + "\n");
+    } catch (InterruptedException e) {
+        textArea.append("Proceso interrumpido.\n");
+    }
+}
+
 
 	/**
 	 * Verifica si una dirección IP está dentro de un rango de IPs.
