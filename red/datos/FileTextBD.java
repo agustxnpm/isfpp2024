@@ -53,7 +53,7 @@ public class FileTextBD {
 		TipoEquipoDAO tipoEquipoSecuencialDAO = new TipoEquipoSecuencialDAO();
 		TipoEquipoDAO tipoEquipoPostgresqlDAO = new TipoEquipoPostgresqlDAO();
 		
-		for (TipoEquipo teq : tipoEquipoSecuencialDAO.buscarTodos()){
+		for (TipoEquipo teq : tipoEquipoSecuencialDAO.buscarTodos()) {
 			tipoEquipoPostgresqlDAO.insertar(teq);
 		}
 		
