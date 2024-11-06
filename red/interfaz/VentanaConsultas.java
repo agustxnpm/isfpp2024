@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Set;
+
+import red.excepciones.DireccionIpNoEncontradaException;
 import red.modelo.Equipo;
 import red.negocio.Calculo;
 import red.negocio.Red;
@@ -28,7 +30,7 @@ public class VentanaConsultas extends JFrame {
     private JComboBox<String> equipo1ComboBox;
     private JComboBox<String> equipo2ComboBox;
     private boolean modo; // true = modo simulacion, false = modo real;
-    
+
     public VentanaConsultas(Calculo calculo, Red red, boolean modo) {
         setTitle("Consultas de la Red");
         setSize(600, 400);
@@ -166,12 +168,8 @@ public class VentanaConsultas extends JFrame {
             JOptionPane.showMessageDialog(this, "No se pudo encontrar uno de los equipos.", "Error",
                     JOptionPane.ERROR_MESSAGE);
         }
-    }
-
-    private void realizarPingAEquipo() {
-        // Crear un panel para contener los elementos de entrada
+    }private void realizarPingAEquipo() { 
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setPreferredSize(new Dimension(400, 250)); // Ajusta el tamaño de la ventana
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.gridx = 0;
@@ -179,87 +177,115 @@ public class VentanaConsultas extends JFrame {
         gbc.anchor = GridBagConstraints.WEST;
     
         JCheckBox rangoCheckBox = new JCheckBox("Ping a un rango de equipos");
-        panel.add(rangoCheckBox, gbc);
+        panel.add(rangoCheckBox, gbc);  
     
+        // Campo para IP individual con prefijo 192.168
         gbc.gridy++;
-        JLabel equipoLabel = new JLabel("Selecciona un equipo:");
-        panel.add(equipoLabel, gbc);
+        JLabel ipLabel = new JLabel("IP:");
+        JLabel prefixLabel = new JLabel("192.168.");
+        JTextField octet3Field = new JTextField(3);
+        JTextField octet4Field = new JTextField(3);
     
+        panel.add(ipLabel, gbc);
         gbc.gridx++;
-        JComboBox<String> equipoComboBox = new JComboBox<>();
-        for (Equipo equipo : red.getEquipos()) {
-            for (String ip : equipo.getDireccionesIp()) {
-                equipoComboBox.addItem(equipo.getCodigo() + " (" + ip + ")");
-            }
-        }
-        panel.add(equipoComboBox, gbc);
+        panel.add(prefixLabel, gbc);
+        gbc.gridx++;
+        panel.add(octet3Field, gbc);
+        gbc.gridx++;
+        panel.add(octet4Field, gbc);
     
+        // Campos para rango de IPs con prefijo 192.168
         gbc.gridy++;
         gbc.gridx = 0;
         JLabel ipInicioLabel = new JLabel("IP de inicio:");
-        JComboBox<String> ipInicioComboBox = new JComboBox<>();
+        JLabel prefixLabelInicio = new JLabel("192.168.");
+        JTextField inicioOctet3Field = new JTextField(3);
+        JTextField inicioOctet4Field = new JTextField(3);
+    
+        gbc.gridy++;
+        gbc.gridx = 0;
         JLabel ipFinLabel = new JLabel("IP de fin:");
-        JComboBox<String> ipFinComboBox = new JComboBox<>();
+        JLabel prefixLabelFin = new JLabel("192.168.");
+        JTextField finOctet3Field = new JTextField(3);
+        JTextField finOctet4Field = new JTextField(3);
     
-        for (Equipo equipo : red.getEquipos()) {
-            for (String ip : equipo.getDireccionesIp()) {
-                ipInicioComboBox.addItem(ip);
-                ipFinComboBox.addItem(ip);
-            }
-        }
-    
+        // Agregar elementos para IP de inicio
         panel.add(ipInicioLabel, gbc);
         gbc.gridx++;
-        panel.add(ipInicioComboBox, gbc);
+        panel.add(prefixLabelInicio, gbc);
+        gbc.gridx++;
+        panel.add(inicioOctet3Field, gbc);
+        gbc.gridx++;
+        panel.add(inicioOctet4Field, gbc);
+    
+        // Agregar elementos para IP de fin
         gbc.gridy++;
         gbc.gridx = 0;
         panel.add(ipFinLabel, gbc);
         gbc.gridx++;
-        panel.add(ipFinComboBox, gbc);
+        panel.add(prefixLabelFin, gbc);
+        gbc.gridx++;
+        panel.add(finOctet3Field, gbc);
+        gbc.gridx++;
+        panel.add(finOctet4Field, gbc);
     
+        // Ocultar campos de rango inicialmente
         ipInicioLabel.setVisible(false);
-        ipInicioComboBox.setVisible(false);
+        prefixLabelInicio.setVisible(false);
+        inicioOctet3Field.setVisible(false);
+        inicioOctet4Field.setVisible(false);
         ipFinLabel.setVisible(false);
-        ipFinComboBox.setVisible(false);
+        prefixLabelFin.setVisible(false);
+        finOctet3Field.setVisible(false);
+        finOctet4Field.setVisible(false);
     
         rangoCheckBox.addActionListener(e -> {
             boolean isSelected = rangoCheckBox.isSelected();
-            equipoLabel.setVisible(!isSelected);
-            equipoComboBox.setVisible(!isSelected);
+            ipLabel.setVisible(!isSelected);
+            prefixLabel.setVisible(!isSelected);
+            octet3Field.setVisible(!isSelected);
+            octet4Field.setVisible(!isSelected);
+    
             ipInicioLabel.setVisible(isSelected);
-            ipInicioComboBox.setVisible(isSelected);
+            prefixLabelInicio.setVisible(isSelected);
+            inicioOctet3Field.setVisible(isSelected);
+            inicioOctet4Field.setVisible(isSelected);
             ipFinLabel.setVisible(isSelected);
-            ipFinComboBox.setVisible(isSelected);
+            prefixLabelFin.setVisible(isSelected);
+            finOctet3Field.setVisible(isSelected);
+            finOctet4Field.setVisible(isSelected);
         });
+    
+        panel.setPreferredSize(new Dimension(400, 250));
     
         int result = JOptionPane.showConfirmDialog(this, panel, "Ping a Equipo o Rango de IPs",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
     
         if (result == JOptionPane.OK_OPTION) {
             if (rangoCheckBox.isSelected()) {
-                // Realizar ping a un rango de IPs
-                String inicioIp = (String) ipInicioComboBox.getSelectedItem();
-                String finIp = (String) ipFinComboBox.getSelectedItem();
-                if (inicioIp != null && finIp != null) {
-                    List<String> pingResults = calculo.realizarPingARango(inicioIp, finIp);
-                    JOptionPane.showMessageDialog(this, String.join("\n", pingResults), "Resultados del Ping", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Por favor, selecciona un rango de IPs válido.", "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                }
+                String inicioIp = "192.168." + inicioOctet3Field.getText().trim() + "." + inicioOctet4Field.getText().trim();
+                String finIp = "192.168." + finOctet3Field.getText().trim() + "." + finOctet4Field.getText().trim();
+                List<String> resultados = calculo.realizarPingARango(inicioIp, finIp);
+    
+                JTextArea resultArea = new JTextArea();
+                resultados.forEach(line -> resultArea.append(line + "\n"));
+                resultArea.setEditable(false);
+                JOptionPane.showMessageDialog(this, new JScrollPane(resultArea), "Resultados de Ping", JOptionPane.INFORMATION_MESSAGE);
+    
             } else {
-                // Realizar ping a un solo equipo
-                String selected = (String) equipoComboBox.getSelectedItem();
-                if (selected != null) {
-                    String direccionIp = selected.substring(selected.indexOf("(") + 1, selected.indexOf(")"));
-                    boolean respuestaPing = calculo.realizarPingAEquipo(direccionIp);
-                    String mensaje = respuestaPing ? "Ping exitoso" : "Ping fallido";
-                    JOptionPane.showMessageDialog(this, mensaje + " al equipo con IP: " + direccionIp, "Resultado del Ping", JOptionPane.INFORMATION_MESSAGE);
+                String ip = "192.168." + octet3Field.getText().trim() + "." + octet4Field.getText().trim();
+                try {
+                    boolean respuestaPing = calculo.realizarPingAEquipo(ip);
+                    String mensaje = respuestaPing ? "Ping exitoso al equipo con IP: " + ip : "Ping fallido o equipo no encontrado.";
+                    JOptionPane.showMessageDialog(this, mensaje, "Resultado de Ping", JOptionPane.INFORMATION_MESSAGE);
+                } catch (DireccionIpNoEncontradaException ex) {
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
     }
-     
+        
+    
     private void detectarProblemasConectividad() {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
