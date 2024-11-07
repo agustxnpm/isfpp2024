@@ -262,56 +262,64 @@ public class VentanaConsultas extends JFrame {
 	}
 
 	private void pingReal(String direccionIp, JDialog dialog, int cantPings) {
-	        // Crear el JDialog para mostrar los resultados
-	        JDialog resultDialog = new JDialog(dialog, "Resultados del Ping Real", false); // No modal
-	        JTextArea textArea = new JTextArea(20, 50);
-	        textArea.setEditable(false);
-	        JScrollPane scrollPane = new JScrollPane(textArea);
-	        JButton detenerButton = new JButton("Detener");
+		// Crear el JDialog para mostrar los resultados
+		JDialog resultDialog = new JDialog(dialog, "Resultados del Ping Real", false); // No modal
+		JTextArea textArea = new JTextArea(20, 50);
+		textArea.setEditable(false);
+		JScrollPane scrollPane = new JScrollPane(textArea);
+		JButton detenerButton = new JButton("Detener");
 
-	        // Panel de control para el botón
-	        JPanel panelControl = new JPanel();
-	        panelControl.add(detenerButton);
+		// Crear la barra de progreso
+		JProgressBar progressBar = new JProgressBar();
+		progressBar.setStringPainted(true);
 
-	        // Configurar el JDialog
-	        resultDialog.setLayout(new BorderLayout());
-	        resultDialog.add(scrollPane, BorderLayout.CENTER);
-	        resultDialog.add(panelControl, BorderLayout.SOUTH);
-	        resultDialog.pack();
-	        resultDialog.setLocationRelativeTo(null);
-	        resultDialog.setAlwaysOnTop(true);
-	        resultDialog.setVisible(true);
+		// Panel de control para el botón y la barra de progreso
+		JPanel panelControl = new JPanel(new BorderLayout());
+		panelControl.add(progressBar, BorderLayout.NORTH);
+		panelControl.add(detenerButton, BorderLayout.EAST);
 
-	        // Variable de control para detener el proceso
-	        final boolean[] detener = {false};
+		// Configurar el JDialog
+		resultDialog.setLayout(new BorderLayout());
+		resultDialog.add(scrollPane, BorderLayout.CENTER);
+		resultDialog.add(panelControl, BorderLayout.SOUTH);
+		resultDialog.pack();
+		resultDialog.setLocationRelativeTo(null);
+		resultDialog.setAlwaysOnTop(true);
+		resultDialog.setVisible(true);
 
-	        // Acción del botón "Detener"
-	        detenerButton.addActionListener(e -> detener[0] = true);
+		// Variable de control para detener el proceso
+		final boolean[] detener = { false };
 
-	        // Crear un SwingWorker para realizar el ping
-	        SwingWorker<Void, Void> worker = new SwingWorker<>() {
-	            @Override
-	            protected Void doInBackground() {
-	                calculo.ping(direccionIp, cantPings, textArea, detener);
-	                return null;
-	            }
+		// Acción del botón "Detener"
+		detenerButton.addActionListener(e -> detener[0] = true);
 
-	            @Override
-	            protected void done() {
-	                if (!detener[0]) {
-	                    textArea.append("Ping completado.\n");
-	                }
-	            }
-	        };
+		// Crear un SwingWorker para realizar el ping
+		SwingWorker<Void, Void> worker = new SwingWorker<>() {
+			@Override
+			protected Void doInBackground() {
+				calculo.ping(direccionIp, cantPings, textArea, detener, progressBar);
+				return null;
+			}
 
-	        // Ejecutar el SwingWorker
-	        worker.execute();
+			@Override
+			protected void done() {
+				if (!detener[0]) {
+					textArea.append("Ping completado.\n");
+					progressBar.setValue(progressBar.getMaximum()); // Asegurarse de que la barra esté al 100%
+				}
+			}
+		};
+
+		// Ejecutar el SwingWorker
+		worker.execute();
 	}
-
 
 	// Método para hacer ping a un solo equipo, si modo == true, realiza ping
 	// simulado, de otro modo ping real
 	private void pingAEquipo(String direccionIp, JDialog dialog, int cantPings) {
+
+		JProgressBar progressBar = new JProgressBar();
+		progressBar.setStringPainted(true);
 		try {
 			if (!direccionIp.isEmpty()) {
 				if (modo) {
@@ -335,79 +343,99 @@ public class VentanaConsultas extends JFrame {
 
 	// Método para hacer ping a un rango de IPs
 	private void pingARango(String inicioIp, String finIp, JDialog dialog, int cantPings) {
-	    if (!inicioIp.isEmpty() && !finIp.isEmpty()) {
-	        // Crear el JDialog para mostrar los resultados
-	        JDialog resultDialog = new JDialog(dialog, "Resultados del Ping", false); // false indica que no es modal
-	        JTextArea textArea = new JTextArea(20, 50);
-	        textArea.setEditable(false);
-	        JScrollPane scrollPane = new JScrollPane(textArea);
-	        JButton detenerButton = new JButton("Detener");
+		if (!inicioIp.isEmpty() && !finIp.isEmpty()) {
+			// Crear el JDialog para mostrar los resultados
+			JDialog resultDialog = new JDialog(dialog, "Resultados del Ping", false); // false indica que no es modal
+			JTextArea textArea = new JTextArea(20, 50);
+			textArea.setEditable(false);
+			JScrollPane scrollPane = new JScrollPane(textArea);
+			JButton detenerButton = new JButton("Detener");
 
-	        // Panel de control inferior para el botón
-	        JPanel panelControl = new JPanel();
-	        panelControl.add(detenerButton);
+			// Crear la barra de progreso
+			JProgressBar progressBar = new JProgressBar();
+			progressBar.setStringPainted(true);
 
-	        // Configurar el JDialog
-	        resultDialog.setLayout(new BorderLayout());
-	        resultDialog.add(scrollPane, BorderLayout.CENTER);
-	        resultDialog.add(panelControl, BorderLayout.SOUTH);
-	        resultDialog.pack();
-	        resultDialog.setLocationRelativeTo(null);
+			// Panel de control inferior para el botón y la barra de progreso
+			JPanel panelControl = new JPanel(new BorderLayout());
+			panelControl.add(detenerButton, BorderLayout.EAST);
+			panelControl.add(progressBar, BorderLayout.CENTER);
 
-	        // Asegurar que el JDialog esté siempre al frente
-	        resultDialog.setAlwaysOnTop(true);
-	        resultDialog.setVisible(true);
+			// Configurar el JDialog
+			resultDialog.setLayout(new BorderLayout());
+			resultDialog.add(scrollPane, BorderLayout.CENTER);
+			resultDialog.add(panelControl, BorderLayout.SOUTH);
+			resultDialog.pack();
+			resultDialog.setLocationRelativeTo(null);
 
-	        // Variable de control para detener el proceso
-	        final boolean[] detener = {false};
+			// Asegurar que el JDialog esté siempre al frente
+			resultDialog.setAlwaysOnTop(true);
+			resultDialog.setVisible(true);
 
-	        // Agregar acción al botón "Detener"
-	        detenerButton.addActionListener(e -> detener[0] = true);
+			// Variable de control para detener el proceso
+			final boolean[] detener = { false };
 
-	        // Crear el SwingWorker para realizar los pings en segundo plano
-	        SwingWorker<Void, String> worker = new SwingWorker<>() {
-	            @Override
-	            protected Void doInBackground() throws Exception {
-	                if (modo) {
-	                    // Modo simulación
-	                    List<String> pingResults = calculo.realizarPingARango(inicioIp, finIp);
-	                    for (String resultado : pingResults) {
-	                        if (detener[0]) {
-	                            publish("Ping detenido por el usuario.\n");
-	                            break;
-	                        }
-	                        publish(resultado); // Publicar el resultado
-	                        Thread.sleep(2000); // Simular la demora de 2 segundos
-	                    }
-	                } else {
-	                    // Modo real
-	                    calculo.pingRango(inicioIp, finIp, cantPings, textArea, detener);
-	                }
-	                return null;
-	            }
+			// Agregar acción al botón "Detener"
+			detenerButton.addActionListener(e -> detener[0] = true);
 
-	            @Override
-	            protected void process(List<String> chunks) {
-	                for (String resultado : chunks) {
-	                    textArea.append(resultado + "\n"); // Mostrar el resultado en el JTextArea
-	                }
-	            }
+			// Calcular el total de pings a realizar
+			int totalPings = calculo.calcularTotalIPsEnRango(inicioIp, finIp);
+			progressBar.setMaximum(totalPings);
 
-	            @Override
-	            protected void done() {
-	                if (!detener[0]) {
-	                    textArea.append("Ping a rango completado.\n");
-	                }
-	            }
-	        };
+			// Crear el SwingWorker para realizar los pings en segundo plano
+			SwingWorker<Void, String> worker = new SwingWorker<>() {
 
-	        worker.execute(); // Ejecutar la tarea
-	    } else {
-	        JOptionPane.showMessageDialog(dialog, "Por favor, ingresa un rango de IPs válido.", "Error",
-	                JOptionPane.ERROR_MESSAGE);
-	    }
+				@Override
+				protected Void doInBackground() throws Exception {
+					if (modo) {
+						List<String> pingResults = calculo.realizarPingARango(inicioIp, finIp);
+						int totalPings = pingResults.size(); // Total de IPs en el rango
+
+						for (int i = 0; i < totalPings; i++) {
+							if (detener[0]) {
+								publish("Ping detenido por el usuario.\n");
+								break;
+							}
+							progressBar.setValue(i);
+
+							publish(pingResults.get(i)); // Publicar resultado
+							Thread.sleep(2000); // Simulación de demora de 2 segundos
+						}
+					} else {
+						calculo.pingRango(inicioIp, finIp, cantPings, textArea, detener, progressBar);
+					}
+
+					return null;
+				}
+
+				@Override
+				protected void process(List<String> chunks) {
+					for (String resultado : chunks) {
+						textArea.append(resultado + "\n"); // Mostrar resultado en JTextArea
+					}
+				}
+
+				@Override
+				protected void done() {
+					if (!detener[0]) {
+						textArea.append("Ping a rango completado.\n");
+					}
+				}
+			};
+
+			// Agregar un listener para actualizar la barra de progreso
+			worker.addPropertyChangeListener(evt -> {
+				if ("progress".equals(evt.getPropertyName())) {
+					int progreso = (int) evt.getNewValue();
+					progressBar.setValue(progreso); // Actualizar la barra de progreso
+				}
+			});
+
+			worker.execute(); // Ejecutar la tarea
+		} else {
+			JOptionPane.showMessageDialog(dialog, "Por favor, ingresa un rango de IPs válido.", "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
 	}
-
 
 	private void detectarProblemasConectividad() {
 		JPanel panel = new JPanel(new GridBagLayout());

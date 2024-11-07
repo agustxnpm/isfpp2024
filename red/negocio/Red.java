@@ -170,10 +170,31 @@ public class Red {
      * 
      * @param equipo El equipo a borrar.
      */
-    public void borrarEquipo(Equipo equipo) {
-        equipoService.borrar(equipo);
-    	equipos.remove(equipo);
+
+   /**
+ * Borra un equipo de la red junto con sus conexiones asociadas.
+ *
+ * @param equipo El equipo a borrar.
+ */
+public void borrarEquipo(Equipo equipo) {
+    // Encontrar y eliminar conexiones asociadas al equipo.
+    List<Conexion> conexionesAEliminar = new ArrayList<>();
+    for (Conexion conexion : conexiones) {
+        if (conexion.getEquipo1().equals(equipo) || conexion.getEquipo2().equals(equipo)) {
+            conexionesAEliminar.add(conexion);
+        }
     }
+
+    // Eliminar las conexiones encontradas de la lista y del servicio de persistencia.
+    for (Conexion conexion : conexionesAEliminar) {
+        conexiones.remove(conexion);
+        conexionService.borrar(conexion);
+    }
+
+    // Eliminar el equipo de la lista de equipos y del servicio de persistencia.
+    equipos.remove(equipo);
+    equipoService.borrar(equipo);
+}
 
 
     public Equipo buscarEquipoPorCodigo(String codigo) {

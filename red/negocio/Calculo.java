@@ -7,7 +7,9 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JTextArea;
+import java.util.function.Consumer;
 
 import java.awt.BorderLayout;
 import java.io.BufferedReader;
@@ -354,14 +356,26 @@ public class Calculo {
 	 */
 	public boolean realizarPingAEquipo(String direccionIp) throws DireccionIpNoEncontradaException {
 		direccionIp = direccionIp.trim();
+		int totalChecks = 1; // Solo un ping, se puede ajustar si se necesita
+		int progresoActual = 0;
+	
 		for (Vertex<Equipo> equipo : vertices.values()) {
 			if (equipo.getElement().getDireccionesIp().contains(direccionIp)) {
-				return equipo.getElement().realizarPing();
+				for (int i = 0; i < totalChecks; i++) {
+					boolean resultadoPing = equipo.getElement().realizarPing();
+					progresoActual++;
+					try {
+						Thread.sleep(500); // Simulación de tiempo de espera, opcional
+					} catch (InterruptedException e) {
+						// Manejar la excepción si es necesario
+					}
+				}
+				return true;
 			}
 		}
 		throw new DireccionIpNoEncontradaException("La IP " + direccionIp + " no se encuentra en la red.");
 	}
-
+	
 	/**
 	 * Realiza ping a todos los equipos cuyas IPs estén dentro de un rango.
 	 * Funciona unicamente para el modo simulacion de la aplicacion
@@ -373,7 +387,11 @@ public class Calculo {
 	public List<String> realizarPingARango(String inicioIp, String finIp) {
 		List<String> resultados = new ArrayList<>();
 		boolean pingExitoso = false;
-
+		int totalIps = calcularTotalIPsEnRango(inicioIp, finIp);
+		int progresoActual = 0;
+	
+		// Inicializar la barra de progreso en 0
+	
 		for (Vertex<Equipo> equipo : vertices.values()) {
 			for (String ip : equipo.getElement().getDireccionesIp()) {
 				if (estaDentroDelRango(ip, inicioIp, finIp)) {
@@ -381,102 +399,174 @@ public class Calculo {
 					String mensaje = (respuesta ? "Ping exitoso" : "Ping fallido") + " al equipo con IP: " + ip;
 					resultados.add(mensaje);
 					pingExitoso = true;
+	
 				}
 			}
 		}
-
+	
 		if (!pingExitoso) {
 			String mensajeSinResultados = "No se encontraron equipos dentro del rango especificado.";
 			resultados.add(mensajeSinResultados);
 		}
-
+	
 		return resultados;
 	}
+	
+
 
 	/**
 	 * Realiza un ping a un rango de IP
 	 * Funciona para el modo real de la aplicacion
 	 * 
 	 * @param hostInicio direccion ip inicio
-	 * @param hostFinal	direccion ip final
-	 * @param cantPings	cantidad de pings
+	 * @param hostFinal  direccion ip final
+	 * @param cantPings  cantidad de pings
 	 */
-	public void pingRango(String hostInicio, String hostFinal, int cantPings, JTextArea textArea, boolean[] detener) {
-        try {
-            // Convertir hostInicio y hostFinal a enteros
-            long ipInicio = ipToLong(InetAddress.getByName(hostInicio));
-            long ipFinal = ipToLong(InetAddress.getByName(hostFinal));
 
-            // Validar que hostInicio sea menor o igual a hostFinal
-            if (ipInicio > ipFinal) {
-            	throw new IllegalArgumentException("El host inicio debe ser mayor que el host final");
-            }
+	public void pingRango(String hostInicio, String hostFinal, int cantPings, JTextArea textArea, boolean[] detener,
+			JProgressBar progressBar) {
+		try {
+			// Convertir hostInicio y hostFinal a enteros
+			long ipInicio = ipToLong(InetAddress.getByName(hostInicio));
+			long ipFinal = ipToLong(InetAddress.getByName(hostFinal));
 
-            // Recorrer el rango de direcciones IP y hacer ping
-            for (long i = ipInicio; i <= ipFinal; i++) {
-                String ipActual = longToIp(i);
-                ping(ipActual, cantPings, textArea, detener);
-                if (detener[0])
-                	break;
-            }
+			// Validar que hostInicio sea menor o igual a hostFinal
+			if (ipInicio > ipFinal) {
+				throw new IllegalArgumentException("El host inicio debe ser menor o igual al host final");
+			}
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+			// Calcular el total de IPs en el rango
+			int totalPings = (int) (ipFinal - ipInicio + 1);
+			progressBar.setMaximum(totalPings);
 
-    // Método para convertir una IP en formato InetAddress a un número long
-    private long ipToLong(InetAddress ip) {
-        byte[] bytes = ip.getAddress();
-        long result = 0;
-        for (byte b : bytes) {
-            result = (result << 8) | (b & 0xFF);
-        }
-        return result;
-    }
 
-    // Método para convertir un número long a formato de dirección IP
-    private String longToIp(long ip) {
-        return String.format("%d.%d.%d.%d",
-                (ip >> 24) & 0xFF,
-                (ip >> 16) & 0xFF,
-                (ip >> 8) & 0xFF,
-                ip & 0xFF);
-    }
+			// Recorrer el rango de direcciones IP y hacer ping
+			for (long i = ipInicio; i <= ipFinal; i++) {
+				if (detener[0]) {
+					textArea.append("Ping detenido por el usuario.\n");
+					break;
+				}
 
-    /** Método para hacer ping a un host real usando el comando de cmd **/
-    public void ping(String host, int cantPings, JTextArea textArea, boolean[] detener) {
-        ProcessBuilder processBuilder = new ProcessBuilder();
+				String ipActual = longToIp(i);
+				ping(ipActual, cantPings, textArea, detener, progressBar);
+				// Actualizar el progreso en la barra
+				int progresoActual = (int) (i - ipInicio + 1);
+				progressBar.setValue(progresoActual);
+			}
 
-        // Construir el comando de ping. Este ejemplo es para Windows.
-        if (cantPings == 0) {
-            processBuilder.command("ping", host);
-        } else {
-            processBuilder.command("ping", "-n", Integer.toString(cantPings), host);
-        }
+		} catch (IOException e) {
+			textArea.append("Error: " + e.getMessage() + "\n");
+			e.printStackTrace();
+		}
+	}
 
-        try {
-            Process process = processBuilder.start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (detener[0]) {
-                    textArea.append("Ping detenido por el usuario.\n");
-                    process.destroy(); // Detener el proceso de ping
-                    break;
-                }
-                textArea.append(line + "\n");
-            }
-            int exitCode = process.waitFor();
-            if (!detener[0]) {
-                textArea.append("\nExited with error code: " + exitCode + "\n");
-            }
-        } catch (IOException e) {
-            textArea.append("Error: " + e.getMessage() + "\n");
-        } catch (InterruptedException e) {
-            textArea.append("Proceso interrumpido.\n");
-        }
-    }
+	// Método para convertir una IP en formato InetAddress a un número long
+	private static long ipToLong(InetAddress ip) {
+		byte[] bytes = ip.getAddress();
+		long result = 0;
+		for (byte b : bytes) {
+			result = (result << 8) | (b & 0xFF);
+		}
+		return result;
+	}
+
+	// Método para convertir un número long a formato de dirección IP
+	private static String longToIp(long ip) {
+		return String.format("%d.%d.%d.%d",
+				(ip >> 24) & 0xFF,
+				(ip >> 16) & 0xFF,
+				(ip >> 8) & 0xFF,
+				ip & 0xFF);
+	}
+
+	public void ping(String host, int cantPings, JTextArea textArea, boolean[] detener, JProgressBar progressBar) {
+		ProcessBuilder processBuilder = new ProcessBuilder();
+		String os = System.getProperty("os.name").toLowerCase(); // Verifica el sistema operativo
+
+		// Construir el comando de ping según el sistema operativo
+		if (os.contains("win")) {
+			// Comando de ping para Windows
+			if (cantPings == 0) {
+				processBuilder.command("ping", host);
+			} else {
+				processBuilder.command("ping", "-n", Integer.toString(cantPings), host);
+			}
+		} else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
+			// Comando de ping para Linux/Unix/Mac
+			if (cantPings == 0) {
+				processBuilder.command("ping", host);
+			} else {
+				processBuilder.command("ping", "-c", Integer.toString(cantPings), host);
+			}
+		} else {
+			textArea.append("Sistema operativo no soportado.\n");
+			return;
+		}
+
+		try {
+			Process process = processBuilder.start();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String line;
+			int progresoActual = 0;
+			int totalPings = cantPings > 0 ? cantPings : 1; // Usar 1 como mínimo si no se especifica cantidad
+
+			// Configurar la barra de progreso
+			progressBar.setMaximum(totalPings);
+			progressBar.setValue(0);
+
+			while ((line = reader.readLine()) != null) {
+				if (detener[0]) {
+					textArea.append("Ping detenido por el usuario.\n");
+					process.destroy(); // Detener el proceso de ping
+					break;
+				}
+				textArea.append(line + "\n");
+
+				// Incrementar y actualizar el progreso
+				progresoActual++;
+				if (progresoActual <= totalPings) {
+					progressBar.setValue(progresoActual);
+					textArea.append("Progreso actual: " + progresoActual + " de " + totalPings + "\n");
+				}
+			}
+
+			int exitCode = process.waitFor();
+			if (!detener[0]) {
+				textArea.append("\nProceso finalizado con código de salida: " + exitCode + "\n");
+				if (progresoActual >= totalPings) {
+					progressBar.setValue(totalPings); // Asegurarse de que el progreso esté al 100%
+				}
+			}
+		} catch (IOException e) {
+			textArea.append("Error: " + e.getMessage() + "\n");
+		} catch (InterruptedException e) {
+			textArea.append("Proceso interrumpido.\n");
+		}
+	}
+
+	/**
+	 * Calcula el total de IPs dentro de un rango especificado.
+	 * 
+	 * @param inicioIp IP de inicio del rango.
+	 * @param finIp    IP de fin del rango.
+	 * @return La cantidad total de IPs en el rango.
+	 */
+	public int calcularTotalIPsEnRango(String inicioIp, String finIp) {
+		try {
+			long ipInicio = ipToLong(InetAddress.getByName(inicioIp));
+			long ipFin = ipToLong(InetAddress.getByName(finIp));
+
+			// Verifica que la IP de inicio sea menor o igual a la de fin
+			if (ipInicio > ipFin) {
+				throw new IllegalArgumentException("La IP de inicio debe ser menor o igual a la IP de fin");
+			}
+
+			return (int) (ipFin - ipInicio + 1); // Devuelve la cantidad total de IPs en el rango
+		} catch (IOException e) {
+			e.printStackTrace();
+			return 0; // Retorna 0 en caso de error
+		}
+	}
 
 	/**
 	 * Verifica si una dirección IP está dentro de un rango de IPs.
