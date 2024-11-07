@@ -171,8 +171,8 @@ public class Red {
      * @param equipo El equipo a borrar.
      */
     public void borrarEquipo(Equipo equipo) {
-        equipos.remove(equipo);
         equipoService.borrar(equipo);
+    	equipos.remove(equipo);
     }
 
 
@@ -187,8 +187,8 @@ public class Red {
     }
     
     public void borrarConexion(Conexion conexion) {
-        conexiones.remove(conexion);
         conexionService.borrar(conexion);
+    	conexiones.remove(conexion);
     }
     
     public Conexion buscarConexionPorCodigo(String equipo1Codigo, String equipo2Codigo) {

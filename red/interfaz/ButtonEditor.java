@@ -157,7 +157,7 @@ class ButtonEditor extends DefaultCellEditor {
 	        panel.add(new JLabel("Ubicación:"));
 	        panel.add(ubicacionComboBox);
 	        panel.add(new JLabel("Estado:"));
-	        estadoField.setEditable(false);
+	        estadoField.setEditable(true);
 	        panel.add(estadoField);
 	        panel.add(new JLabel("Cantidad de Puertos:"));
 	        panel.add(cantPuertosField);

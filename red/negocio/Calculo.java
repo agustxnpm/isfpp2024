@@ -34,10 +34,10 @@ import red.excepciones.EquipoNoConectadoException;
 import red.excepciones.EquipoRepetidoException;
 import red.excepciones.DireccionIpNoEncontradaException;
 import red.modelo.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.ArrayList;
 
 public class Calculo {
 
@@ -426,7 +426,7 @@ public class Calculo {
     }
 
     // Método para convertir una IP en formato InetAddress a un número long
-    private static long ipToLong(InetAddress ip) {
+    private long ipToLong(InetAddress ip) {
         byte[] bytes = ip.getAddress();
         long result = 0;
         for (byte b : bytes) {
@@ -436,7 +436,7 @@ public class Calculo {
     }
 
     // Método para convertir un número long a formato de dirección IP
-    private static String longToIp(long ip) {
+    private String longToIp(long ip) {
         return String.format("%d.%d.%d.%d",
                 (ip >> 24) & 0xFF,
                 (ip >> 16) & 0xFF,

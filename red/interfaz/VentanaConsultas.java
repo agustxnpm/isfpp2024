@@ -162,17 +162,23 @@ public class VentanaConsultas extends JFrame {
 		Equipo equipo2 = red.getEquipos().stream().filter(e -> e.getCodigo().equals(equipo2Codigo)).findFirst()
 				.orElse(null);
 
-		if (equipo1 != null && equipo2 != null) {
-			// Obtener la ruta entre los equipos y calcular la velocidad
-			List<Equipo> ruta = calculo.buscarRuta(equipo1, equipo2);
-			int velocidadMaxima = calculo.calcularVelocidadMaxima(ruta);
+		try {
+			if (equipo1 != null && equipo2 != null) {
+				// Obtener la ruta entre los equipos y calcular la velocidad
+				List<Equipo> ruta = calculo.buscarRuta(equipo1, equipo2);
+				int velocidadMaxima = calculo.calcularVelocidadMaxima(ruta);
 
-			JOptionPane.showMessageDialog(this, "La velocidad máxima entre " + equipo1Codigo + " y " + equipo2Codigo
-					+ " es: " + velocidadMaxima + " Mbps");
-		} else {
-			JOptionPane.showMessageDialog(this, "No se pudo encontrar uno de los equipos.", "Error",
+				JOptionPane.showMessageDialog(this, "La velocidad máxima entre " + equipo1Codigo + " y " + equipo2Codigo
+						+ " es: " + velocidadMaxima + " Mbps");
+			} else {
+				JOptionPane.showMessageDialog(this, "No se pudo encontrar uno de los equipos.", "Error",
+						JOptionPane.ERROR_MESSAGE);
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(this, e.getMessage(), "Error",
 					JOptionPane.ERROR_MESSAGE);
 		}
+		
 	}
 
 	private void realizarPingAEquipo() {
