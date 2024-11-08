@@ -187,8 +187,7 @@ public void borrarEquipo(Equipo equipo) {
 
     // Eliminar las conexiones encontradas de la lista y del servicio de persistencia.
     for (Conexion conexion : conexionesAEliminar) {
-        conexiones.remove(conexion);
-        conexionService.borrar(conexion);
+        borrarConexion(conexion);
     }
 
     // Eliminar el equipo de la lista de equipos y del servicio de persistencia.

@@ -378,7 +378,7 @@ public class VentanaConsultas extends JFrame {
 			detenerButton.addActionListener(e -> detener[0] = true);
 
 			// Calcular el total de pings a realizar
-			int totalPings = calculo.calcularTotalIPsEnRango(inicioIp, finIp);
+			int totalPings = calculo.calcularTotalIPsEnRango(inicioIp, finIp); //total de ips en el rango (no simulacion)
 			progressBar.setMaximum(totalPings);
 
 			// Crear el SwingWorker para realizar los pings en segundo plano
@@ -388,8 +388,8 @@ public class VentanaConsultas extends JFrame {
 				protected Void doInBackground() throws Exception {
 					if (modo) {
 						List<String> pingResults = calculo.realizarPingARango(inicioIp, finIp);
-						int totalPings = pingResults.size(); // Total de IPs en el rango
-
+						int totalPings = pingResults.size(); // Total de IPs en el rango (simulacion)
+						progressBar.setMaximum(totalPings - 1);
 						for (int i = 0; i < totalPings; i++) {
 							if (detener[0]) {
 								publish("Ping detenido por el usuario.\n");

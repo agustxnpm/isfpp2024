@@ -355,22 +355,10 @@ public class Calculo {
 	 * @return true si el ping fue exitoso, false en caso contrario.
 	 */
 	public boolean realizarPingAEquipo(String direccionIp) throws DireccionIpNoEncontradaException {
-		direccionIp = direccionIp.trim();
-		int totalChecks = 1; // Solo un ping, se puede ajustar si se necesita
-		int progresoActual = 0;
-	
+		direccionIp = direccionIp.trim();	
 		for (Vertex<Equipo> equipo : vertices.values()) {
-			if (equipo.getElement().getDireccionesIp().contains(direccionIp)) {
-				for (int i = 0; i < totalChecks; i++) {
-					boolean resultadoPing = equipo.getElement().realizarPing();
-					progresoActual++;
-					try {
-						Thread.sleep(500); // Simulación de tiempo de espera, opcional
-					} catch (InterruptedException e) {
-						// Manejar la excepción si es necesario
-					}
-				}
-				return true;
+			if (equipo.getElement().getDireccionesIp().contains(direccionIp)) {					
+					return equipo.getElement().realizarPing();
 			}
 		}
 		throw new DireccionIpNoEncontradaException("La IP " + direccionIp + " no se encuentra en la red.");
@@ -387,10 +375,6 @@ public class Calculo {
 	public List<String> realizarPingARango(String inicioIp, String finIp) {
 		List<String> resultados = new ArrayList<>();
 		boolean pingExitoso = false;
-		int totalIps = calcularTotalIPsEnRango(inicioIp, finIp);
-		int progresoActual = 0;
-	
-		// Inicializar la barra de progreso en 0
 	
 		for (Vertex<Equipo> equipo : vertices.values()) {
 			for (String ip : equipo.getElement().getDireccionesIp()) {
@@ -448,7 +432,7 @@ public class Calculo {
 				}
 
 				String ipActual = longToIp(i);
-				ping(ipActual, cantPings, textArea, detener, progressBar);
+				ping(ipActual, cantPings, textArea, detener);
 				// Actualizar el progreso en la barra
 				int progresoActual = (int) (i - ipInicio + 1);
 				progressBar.setValue(progresoActual);
@@ -479,6 +463,62 @@ public class Calculo {
 				ip & 0xFF);
 	}
 
+	public void ping(String host, int cantPings, JTextArea textArea, boolean[] detener) {
+		ProcessBuilder processBuilder = new ProcessBuilder();
+		String os = System.getProperty("os.name").toLowerCase(); // Verifica el sistema operativo
+
+		// Construir el comando de ping según el sistema operativo
+		if (os.contains("win")) {
+			// Comando de ping para Windows
+			if (cantPings == 0) {
+				processBuilder.command("ping", host);
+			} else {
+				processBuilder.command("ping", "-n", Integer.toString(cantPings), host);
+			}
+		} else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
+			// Comando de ping para Linux/Unix/Mac
+			if (cantPings == 0) {
+				processBuilder.command("ping", host);
+			} else {
+				processBuilder.command("ping", "-c", Integer.toString(cantPings), host);
+			}
+		} else {
+			textArea.append("Sistema operativo no soportado.\n");
+			return;
+		}
+
+		try {
+			Process process = processBuilder.start();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String line;
+			// Configurar la barra de progreso
+		
+
+			while ((line = reader.readLine()) != null) {
+				if (detener[0]) {
+					textArea.append("Ping detenido por el usuario.\n");
+					process.destroy(); // Detener el proceso de ping
+					break;
+				}
+				textArea.append(line + "\n");
+	            textArea.setCaretPosition(textArea.getDocument().getLength());
+
+			
+			}
+
+			int exitCode = process.waitFor();
+			if (!detener[0]) {
+				textArea.append("\nProceso finalizado con código de salida: " + exitCode + "\n");
+	            textArea.setCaretPosition(textArea.getDocument().getLength());
+			
+			}
+		} catch (IOException e) {
+			textArea.append("Error: " + e.getMessage() + "\n");
+		} catch (InterruptedException e) {
+			textArea.append("Proceso interrumpido.\n");
+		}
+	}
+	
 	public void ping(String host, int cantPings, JTextArea textArea, boolean[] detener, JProgressBar progressBar) {
 		ProcessBuilder processBuilder = new ProcessBuilder();
 		String os = System.getProperty("os.name").toLowerCase(); // Verifica el sistema operativo
@@ -515,27 +555,27 @@ public class Calculo {
 			progressBar.setValue(0);
 
 			while ((line = reader.readLine()) != null) {
+				progressBar.setValue(progresoActual++);
 				if (detener[0]) {
 					textArea.append("Ping detenido por el usuario.\n");
 					process.destroy(); // Detener el proceso de ping
 					break;
 				}
 				textArea.append(line + "\n");
+	            textArea.setCaretPosition(textArea.getDocument().getLength());
+
 
 				// Incrementar y actualizar el progreso
-				progresoActual++;
-				if (progresoActual <= totalPings) {
-					progressBar.setValue(progresoActual);
-					textArea.append("Progreso actual: " + progresoActual + " de " + totalPings + "\n");
-				}
+				
+				
+				
 			}
 
 			int exitCode = process.waitFor();
 			if (!detener[0]) {
 				textArea.append("\nProceso finalizado con código de salida: " + exitCode + "\n");
-				if (progresoActual >= totalPings) {
-					progressBar.setValue(totalPings); // Asegurarse de que el progreso esté al 100%
-				}
+	            textArea.setCaretPosition(textArea.getDocument().getLength());
+
 			}
 		} catch (IOException e) {
 			textArea.append("Error: " + e.getMessage() + "\n");

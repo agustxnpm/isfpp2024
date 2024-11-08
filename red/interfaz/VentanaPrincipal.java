@@ -26,7 +26,6 @@ import java.util.List;
 
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ImageIcon;
-import java.awt.Color;
 
 public class VentanaPrincipal extends JFrame {
 
