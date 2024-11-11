@@ -14,20 +14,19 @@ public class TipoEquipoServiceImp implements TipoEquipoService {
 
 	private TipoEquipoDAO tipoEquipoDAO;
 	
-	public TipoEquipoServiceImp() {
-		tipoEquipoDAO = (TipoEquipoDAO) Factory.getInstancia("TIPOEQUIPO");
-		
-	}
-	@Override
-	public void insertar(TipoEquipo tipoEquipo) {
-		tipoEquipoDAO.insertar(tipoEquipo);
-	}
-
-    /**
+	/**
      * Constructor que inicializa el DAO para interactuar con los datos de tipos de equipo.
      * 
      * @throws FileNotFoundException Si no se encuentra el archivo de configuración o datos.
      */
+	public TipoEquipoServiceImp() {
+		tipoEquipoDAO = (TipoEquipoDAO) Factory.getInstancia("TIPOEQUIPO");
+	}
+
+	@Override
+	public void insertar(TipoEquipo tipoEquipo) {
+		tipoEquipoDAO.insertar(tipoEquipo);
+	}
 
     @Override
     public void actualizar(TipoEquipo tipoEquipo) {

@@ -71,6 +71,6 @@ public class TipoCable {
     // Método para representar el TipoCable como una cadena de texto.
     @Override
     public String toString() {
-        return "TipoCable [codigo=" + codigo + ", descripcion=" + descripcion + ", velocidad=" + velocidad + "]";
+        return String.format("TipoCable [codigo=%s, descripcion=%s, velocidad=%s]", codigo, descripcion, velocidad);
     }
 }

@@ -5,14 +5,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.Set;
 
-import red.excepciones.DireccionIpNoEncontradaException;
 import red.modelo.Equipo;
 import red.negocio.Calculo;
 import red.negocio.Red;
-import java.util.List;
 
 public class VentanaConsultas extends JFrame {
 
@@ -135,14 +132,12 @@ public class VentanaConsultas extends JFrame {
 			Set<Equipo> equiposConectados = calculo.obtenerEquiposConectadosTransitivamente(equipo1);
 			equiposConectados.remove(equipo1); // Remover el equipo1 de la lista de opciones del ComboBox
 
-			if (equiposConectados.isEmpty()) {
-				JOptionPane.showMessageDialog(this, "No se encontraron equipos conectados a " + equipo1Codigo,
+			if (equiposConectados.isEmpty())
+				JOptionPane.showMessageDialog(this, String.format("No se encontraron equipos conectados a %s", equipo1Codigo),
 						"Sin Conexiones", JOptionPane.WARNING_MESSAGE);
-			} else {
-				for (Equipo equipo : equiposConectados) {
+			else
+				for (Equipo equipo : equiposConectados)
 					equipo2ComboBox.addItem(equipo.getCodigo());
-				}
-			}
 		}
 	}
 
@@ -168,8 +163,8 @@ public class VentanaConsultas extends JFrame {
 				List<Equipo> ruta = calculo.buscarRuta(equipo1, equipo2);
 				int velocidadMaxima = calculo.calcularVelocidadMaxima(ruta);
 
-				JOptionPane.showMessageDialog(this, "La velocidad máxima entre " + equipo1Codigo + " y " + equipo2Codigo
-						+ " es: " + velocidadMaxima + " Mbps");
+				JOptionPane.showMessageDialog(this, String.format("La velocidad máxima entre %s y %s es: %d Mbps", equipo1Codigo, equipo2Codigo, velocidadMaxima),
+						"Velocidad Máxima", JOptionPane.INFORMATION_MESSAGE);
 			} else {
 				JOptionPane.showMessageDialog(this, "No se pudo encontrar uno de los equipos.", "Error",
 						JOptionPane.ERROR_MESSAGE);
@@ -199,7 +194,7 @@ public class VentanaConsultas extends JFrame {
 		dialog.add(rangoCheckBox, gbc);
 
 		gbc.gridy++;
-		JLabel equipoLabel = new JLabel("Ingresa la IP del equipo:");
+		JLabel equipoLabel = new JLabel("Ingresá la IP del equipo:");
 		dialog.add(equipoLabel, gbc);
 
 		gbc.gridx++;
@@ -321,20 +316,16 @@ public class VentanaConsultas extends JFrame {
 		JProgressBar progressBar = new JProgressBar();
 		progressBar.setStringPainted(true);
 		try {
-			if (!direccionIp.isEmpty()) {
+			if (!direccionIp.isEmpty())
 				if (modo) {
 					boolean respuestaPing = calculo.realizarPingAEquipo(direccionIp);
 					String mensaje = respuestaPing ? "Ping exitoso" : "Ping fallido";
-					JOptionPane.showMessageDialog(dialog, mensaje + " al equipo con IP: " + direccionIp,
+					JOptionPane.showMessageDialog(dialog, String.format("%s al equipo con IP: %s",  mensaje, direccionIp),
 							"Resultado del Ping", JOptionPane.INFORMATION_MESSAGE);
-				} else {
-					pingReal(direccionIp, dialog, cantPings);
-				}
+				} else pingReal(direccionIp, dialog, cantPings);
 
-			} else {
-				JOptionPane.showMessageDialog(dialog, "Por favor, ingresa una IP válida.", "Error",
+			else JOptionPane.showMessageDialog(dialog, "Por favor, ingresá una IP válida.", "Error",
 						JOptionPane.ERROR_MESSAGE);
-			}
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(dialog, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 		}
@@ -400,25 +391,21 @@ public class VentanaConsultas extends JFrame {
 							publish(pingResults.get(i)); // Publicar resultado
 							Thread.sleep(2000); // Simulación de demora de 2 segundos
 						}
-					} else {
-						calculo.pingRango(inicioIp, finIp, cantPings, textArea, detener, progressBar);
-					}
+					} else calculo.pingRango(inicioIp, finIp, cantPings, textArea, detener, progressBar);
 
 					return null;
 				}
 
 				@Override
 				protected void process(List<String> chunks) {
-					for (String resultado : chunks) {
+					for (String resultado : chunks)
 						textArea.append(resultado + "\n"); // Mostrar resultado en JTextArea
-					}
 				}
 
 				@Override
 				protected void done() {
-					if (!detener[0]) {
+					if (!detener[0])
 						textArea.append("Ping a rango completado.\n");
-					}
 				}
 			};
 
@@ -431,10 +418,8 @@ public class VentanaConsultas extends JFrame {
 			});
 
 			worker.execute(); // Ejecutar la tarea
-		} else {
-			JOptionPane.showMessageDialog(dialog, "Por favor, ingresa un rango de IPs válido.", "Error",
+		} else JOptionPane.showMessageDialog(dialog, "Por favor, ingresá un rango de IPs válido.", "Error",
 					JOptionPane.ERROR_MESSAGE);
-		}
 	}
 
 	private void detectarProblemasConectividad() {
@@ -537,13 +522,12 @@ public class VentanaConsultas extends JFrame {
 					cantPings = 0;
 				}
 
-				if (rangoCheckBox.isSelected()) {
+				if (rangoCheckBox.isSelected())
 					// Obtener datos de los campos de texto y realizar ping al rango
 					pingARango(ipInicioTextField.getText().trim(), ipFinTextField.getText().trim(), dialog, cantPings);
-				} else {
+				else
 					// Obtener la IP y realizar ping a un solo equipo
 					pingAEquipo(equipoTextField.getText().trim(), dialog, cantPings);
-				}
 			}
 
 		}

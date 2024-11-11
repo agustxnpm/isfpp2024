@@ -43,9 +43,8 @@ public class Red {
 
 	
 	public static Red getRed() throws FileNotFoundException {
-		if (red == null) {
+		if (red == null)
 			red = new Red();
-		}
 		return red;
 	}
 	
@@ -166,43 +165,32 @@ public class Red {
     }
 
     /**
-     * Borra un equipo de la red.
-     * 
-     * @param equipo El equipo a borrar.
-     */
-
-   /**
- * Borra un equipo de la red junto con sus conexiones asociadas.
- *
- * @param equipo El equipo a borrar.
- */
-public void borrarEquipo(Equipo equipo) {
-    // Encontrar y eliminar conexiones asociadas al equipo.
-    List<Conexion> conexionesAEliminar = new ArrayList<>();
-    for (Conexion conexion : conexiones) {
-        if (conexion.getEquipo1().equals(equipo) || conexion.getEquipo2().equals(equipo)) {
-            conexionesAEliminar.add(conexion);
-        }
-    }
-
-    // Eliminar las conexiones encontradas de la lista y del servicio de persistencia.
-    for (Conexion conexion : conexionesAEliminar) {
-        borrarConexion(conexion);
-    }
-
-    // Eliminar el equipo de la lista de equipos y del servicio de persistencia.
-    equipos.remove(equipo);
-    equipoService.borrar(equipo);
-}
+	 * Borra un equipo de la red junto con sus conexiones asociadas.
+	 *
+	 * @param equipo El equipo a borrar.
+	 */
+	public void borrarEquipo(Equipo equipo) {
+	    // Encontrar y eliminar conexiones asociadas al equipo.
+	    List<Conexion> conexionesAEliminar = new ArrayList<>();
+	    for (Conexion conexion : conexiones)
+	        if (conexion.getEquipo1().equals(equipo) || conexion.getEquipo2().equals(equipo))
+	            conexionesAEliminar.add(conexion);
+	
+	    // Eliminar las conexiones encontradas de la lista y del servicio de persistencia.
+	    for (Conexion conexion : conexionesAEliminar)
+	        borrarConexion(conexion);
+	
+	    // Eliminar el equipo de la lista de equipos y del servicio de persistencia.
+	    equipos.remove(equipo);
+	    equipoService.borrar(equipo);
+	}
 
 
     public Equipo buscarEquipoPorCodigo(String codigo) {
         List<Equipo> equipos = getEquipos();  // Buscar todos los equipos
-        for (Equipo equipo : equipos) {
-            if (equipo.getCodigo().equals(codigo)) {
+        for (Equipo equipo : equipos)
+            if (equipo.getCodigo().equals(codigo))
                 return equipo;  // Retornar el equipo que coincida con el código
-            }
-        }
         return null;  // Retornar null si no se encuentra
     }
     
@@ -213,13 +201,11 @@ public void borrarEquipo(Equipo equipo) {
     
     public Conexion buscarConexionPorCodigo(String equipo1Codigo, String equipo2Codigo) {
         // Buscar la conexión dentro de la lista de conexiones.
-        for (Conexion conexion : conexiones) {
+        for (Conexion conexion : conexiones)
             if (conexion.getEquipo1().getCodigo().equals(equipo1Codigo) && 
-                conexion.getEquipo2().getCodigo().equals(equipo2Codigo)) {
+                conexion.getEquipo2().getCodigo().equals(equipo2Codigo))
                 // Si encuentra la conexión, devolverla.
                 return conexion;
-            }
-        }
         // Si no encuentra ninguna conexión, devolver null.
         return null;
     }

@@ -14,20 +14,19 @@ public class TipoPuertoServiceImp implements TipoPuertoService {
 
 	private TipoPuertoDAO tipoPuertoDAO;
 	
-	public TipoPuertoServiceImp() {
-		tipoPuertoDAO = (TipoPuertoDAO) Factory.getInstancia("TIPOPUERTO");
-	}
-	@Override
-	public void insertar(TipoPuerto tipoPuerto) {
-		tipoPuertoDAO.insertar(tipoPuerto);
-	}
-
-    /**
+	/**
      * Constructor que inicializa el DAO para interactuar con los datos de tipos de puerto.
      * 
      * @throws FileNotFoundException Si no se encuentra el archivo de configuración o datos.
      */
+	public TipoPuertoServiceImp() {
+		tipoPuertoDAO = (TipoPuertoDAO) Factory.getInstancia("TIPOPUERTO");
+	}
 
+	@Override
+	public void insertar(TipoPuerto tipoPuerto) {
+		tipoPuertoDAO.insertar(tipoPuerto);
+	}
 
     @Override
     public void actualizar(TipoPuerto tipoPuerto) {

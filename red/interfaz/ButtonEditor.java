@@ -3,8 +3,6 @@
 	import javax.swing.*;
 	import javax.swing.table.DefaultTableModel;
 	import java.awt.*;
-	import java.awt.event.ActionEvent;
-	import java.awt.event.ActionListener;
 	import java.io.FileNotFoundException;
 	import java.util.List;
 
@@ -41,12 +39,7 @@
 
 			button = new JButton();
 			button.setOpaque(true);
-			button.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					fireEditingStopped();
-				}
-			});
+			button.addActionListener(e -> fireEditingStopped());
 		}
 
 		@Override
@@ -108,7 +101,7 @@
 							JOptionPane.INFORMATION_MESSAGE);
 				} catch (Exception e) {
 					e.printStackTrace();
-					JOptionPane.showMessageDialog(null, "Error al eliminar el equipo: " + e.getMessage(), "Error",
+					JOptionPane.showMessageDialog(null, String.format("Error al eliminar el equipo: %s", e.getMessage()), "Error",
 							JOptionPane.ERROR_MESSAGE);
 				}
 			}
@@ -184,18 +177,14 @@
 					String ubicacionSeleccionada = (String) ubicacionComboBox.getSelectedItem();
 					String tipoPuertoSeleccionado = (String) tipoPuertoComboBox.getSelectedItem();
 		
-					for (Ubicacion ub : listUbicaciones) {
-						if (ub.getDescripcion().equals(ubicacionSeleccionada)) {
+					for (Ubicacion ub : listUbicaciones)
+						if (ub.getDescripcion().equals(ubicacionSeleccionada))
 							equipoAModificar.setUbicacion(ub);
-						}
-					}
-					if (!cantPuertosField.getText().isBlank()) {
-						for (TipoPuerto p : listTipoPuerto) {
-							if (p.getCodigo().equals(tipoPuertoSeleccionado)) {
+
+					if (!cantPuertosField.getText().isBlank())
+						for (TipoPuerto p : listTipoPuerto)
+							if (p.getCodigo().equals(tipoPuertoSeleccionado))
 								equipoAModificar.agregarPuerto(Integer.parseInt(cantPuertosField.getText()), p);
-							}
-						}
-					}
 		
 					// Actualizar el equipo en el servicio
 					red.modificarEquipo(equipoAModificar);
@@ -211,7 +200,7 @@
 				}
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
-				JOptionPane.showMessageDialog(null, "Error al modificar el equipo: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, String.format("Error al modificar el equipo: %s", e.getMessage()), "Error", JOptionPane.ERROR_MESSAGE);
 			}
 		}
 		
@@ -237,7 +226,7 @@
 							JOptionPane.INFORMATION_MESSAGE);
 				} catch (Exception e) {
 					e.printStackTrace();
-					JOptionPane.showMessageDialog(null, "Error al eliminar la conexión: " + e.getMessage(), "Error",
+					JOptionPane.showMessageDialog(null, String.format("Error al eliminar la conexión: %s", e.getMessage()), "Error",
 							JOptionPane.ERROR_MESSAGE);
 				}
 			}
@@ -255,7 +244,7 @@
 			try {
 				super.fireEditingStopped();
 			} catch (Exception e) {
-				// solo atrapar la excepcion (no afecta al funcionamiento)
+				JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}

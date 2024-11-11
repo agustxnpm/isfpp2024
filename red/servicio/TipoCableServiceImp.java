@@ -14,21 +14,19 @@ public class TipoCableServiceImp implements TipoCableService {
 
 	private TipoCableDAO tipoCableDAO;
 	
-	public TipoCableServiceImp() {
-		tipoCableDAO = (TipoCableDAO) Factory.getInstancia("TIPOCABLE");
-		
-	}
-	@Override
-	public void insertar(TipoCable tipoCable) {
-		tipoCableDAO.insertar(tipoCable);
-	}
-
-    /**
+	/**
      * Constructor que inicializa el DAO para interactuar con los datos de tipos de cable.
      * 
      * @throws FileNotFoundException Si no se encuentra el archivo de configuración o datos.
      */
-  
+	public TipoCableServiceImp() {
+		tipoCableDAO = (TipoCableDAO) Factory.getInstancia("TIPOCABLE");
+	}
+
+	@Override
+	public void insertar(TipoCable tipoCable) {
+		tipoCableDAO.insertar(tipoCable);
+	}
 
     @Override
     public void actualizar(TipoCable tipoCable) {

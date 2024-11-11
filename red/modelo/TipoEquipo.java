@@ -60,6 +60,6 @@ public class TipoEquipo {
     // Método para representar el TipoEquipo como una cadena de texto.
     @Override
     public String toString() {
-        return "TipoEquipo [codigo=" + codigo + ", descripcion=" + descripcion + "]";
+        return String.format("TipoEquipo [codigo=%s, descripcion=%s]", codigo, descripcion);
     }
 }

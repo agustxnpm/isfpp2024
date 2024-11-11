@@ -7,3 +7,13 @@
 .classpath
 .proyect
 .vscode/
+/.gitignore
+/conexion.txt
+/equipo.txt
+/lib/
+/tipoCable.txt
+/tipoEquipo.txt
+/tipoPuerto.txt
+/ubicacion.txt
+/red/
+/labels_es_ES.properties

@@ -155,7 +155,7 @@ public class Equipo {
 
         // Verificar si la IP ya existe en el equipo.
         if (direccionesIp.contains(ip))
-            throw new DireccionIpRepetidaException("La direccion ip ya existe");
+            throw new DireccionIpRepetidaException("La direccion IP ya existe");
 
         direccionesIp.add(ip);
     }
@@ -166,16 +166,17 @@ public class Equipo {
      * 
      * @param cantPuertos Cantidad de puertos.
      * @param tipoPuerto Tipo de puerto.
+     * @throws IllegalArgumentException si la cantidad de puertos no es positiva o el tipo de puerto es nulo
      */
     public void agregarPuerto(int cantPuertos, TipoPuerto tipoPuerto) throws IllegalArgumentException {
         if (cantPuertos <= 0)
             throw new IllegalArgumentException("El equipo debe tener al menos un puerto");
         if (tipoPuerto == null)
-        	throw new IllegalArgumentException("El puerto ingresado a " + codigo + " no puede ser nulo.");
+        	throw new IllegalArgumentException(String.format("El puerto ingresado a %s no puede ser nulo.", codigo));
 
         Puerto puerto = new Puerto(cantPuertos, tipoPuerto);
         if (puertos.contains(puerto)) {
-        	// Incrementa a la cantidad de puertos con el tipo de puerto en cuestión, la cantidad ingresada al método
+        	// Incrementa a la cantidad de puertos con el tipo de puerto en cuestión, la cantidad ingresada al método, y luego sale del método
             int index = puertos.indexOf(puerto);
             Puerto puertoExistente = puertos.get(index);
             puertoExistente.setCantidadPuertos(puertoExistente.getCantidadPuertos() + puerto.getCantidadPuertos());
@@ -183,7 +184,7 @@ public class Equipo {
             return;
         }
 
-        puertos.add(puerto);
+        puertos.add(puerto); // Siendo que el equipo no contaba con el tipo de puerto ingresado, éste se agrega
     }
 
     /**
@@ -193,18 +194,11 @@ public class Equipo {
      */
     public String getPuertosInfo() {
         StringBuilder puertosInfo = new StringBuilder();
-        for (Puerto p : puertos) {
-        	/*  No es necesario porque el método agregarPuerto (ya invocado en el mismo constructor) verifica que
-			*	no se ingrese un puerto nulo
-
-            if (p.getTipoPuerto() == null)  // Verificar que el tipo de puerto no sea null
-                throw new IllegalArgumentException(); */
-
-            puertosInfo.append(p.getTipoPuerto().getCodigo())   // Código del tipo de puerto
+        for (Puerto p : puertos)
+        	puertosInfo.append(p.getTipoPuerto().getCodigo())   // Código del tipo de puerto
                             .append(",")
                             .append(p.getCantidadPuertos())               // Cantidad de puertos
                             .append(";");
-        }
     
         // Eliminar el último punto y coma para que no haya un separador extra
         if (puertosInfo.length() > 0)
@@ -231,7 +225,7 @@ public class Equipo {
 
     @Override
     public String toString() {
-        return "Equipo [codigo=" + codigo + ", descripcion=" + descripcion + "]";
+        return String.format("Equipo [codigo=%s, descripcion=%s]", codigo, descripcion);
     }
 
     // Clase interna que representa un puerto.

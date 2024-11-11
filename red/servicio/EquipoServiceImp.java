@@ -14,20 +14,19 @@ public class EquipoServiceImp implements EquipoService {
 
 	private EquipoDAO equipoDAO;
 	
-	public EquipoServiceImp() throws FileNotFoundException {
-		equipoDAO = (EquipoDAO) Factory.getInstancia("EQUIPO");
-		
-	}
-	@Override
-	public void insertar(Equipo equipo) {
-		equipoDAO.insertar(equipo);
-	}
-
-    /**
+	/**
      * Constructor que inicializa el DAO para interactuar con los datos de equipos.
      * 
      * @throws FileNotFoundException Si no se encuentra el archivo de configuración o datos.
      */
+	public EquipoServiceImp() throws FileNotFoundException {
+		equipoDAO = (EquipoDAO) Factory.getInstancia("EQUIPO");
+	}
+
+	@Override
+	public void insertar(Equipo equipo) {
+		equipoDAO.insertar(equipo);
+	}
 
     @Override
     public void actualizar(Equipo equipo) {
@@ -42,16 +41,5 @@ public class EquipoServiceImp implements EquipoService {
     @Override
     public List<Equipo> buscarTodos() throws FileNotFoundException {
         return equipoDAO.buscarTodos();
-    }
-    // Implementación del método buscarPorCodigo
-    @Override
-    public Equipo buscarPorCodigo(String codigo) throws FileNotFoundException {
-        List<Equipo> equipos = equipoDAO.buscarTodos();  // Buscar todos los equipos
-        for (Equipo equipo : equipos) {
-            if (equipo.getCodigo().equals(codigo)) {
-                return equipo;  // Retornar el equipo que coincida con el código
-            }
-        }
-        return null;  // Retornar null si no se encuentra
     }
 }

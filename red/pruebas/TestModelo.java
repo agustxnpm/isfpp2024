@@ -2,15 +2,12 @@ package red.pruebas;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.FileNotFoundException;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import red.modelo.*;
 import red.negocio.Calculo;
-import red.servicio.TipoEquipoService;
-import red.servicio.TipoEquipoServiceImp;
 import red.excepciones.*;
 
 // Clase de JUnit5 para probar los métodos de las clases de red.modelo y las excepciones lanzadas por éstos

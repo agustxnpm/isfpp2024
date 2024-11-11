@@ -4,8 +4,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -69,12 +67,7 @@ public class VentanaConexiones extends JFrame {
 		add(scrollConexiones, BorderLayout.CENTER);
 
 		JButton agregarConexionButton = new JButton("Agregar Conexión");
-		agregarConexionButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				agregarConexion();
-			}
-		});
+		agregarConexionButton.addActionListener(e -> agregarConexion());
 
 		JPanel panelInferior = new JPanel();
 		panelInferior.add(agregarConexionButton);
@@ -165,7 +158,7 @@ public class VentanaConexiones extends JFrame {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				JOptionPane.showMessageDialog(this, "Error al agregar la conexión: " + e.getMessage(), "Error",
+				JOptionPane.showMessageDialog(this, String.format("Error al agregar la conexión: %s", e.getMessage()), "Error",
 						JOptionPane.ERROR_MESSAGE);
 			}
 		}
@@ -178,9 +171,8 @@ public class VentanaConexiones extends JFrame {
 
 		try {
 			List<TipoPuerto> puertos = red.getTipoPuertoService().buscarTodos();
-			for (TipoPuerto p : puertos) {
+			for (TipoPuerto p : puertos)
 				tipoPuertoComboBox.addItem(p.getCodigo());
-			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -191,12 +183,9 @@ public class VentanaConexiones extends JFrame {
 	private TipoPuerto obtenerTipoPuertoPorCodigo(String codigo) {
 		try {
 			List<TipoPuerto> puertos = red.getTipoPuertoService().buscarTodos();
-			for (TipoPuerto p : puertos) {
-				if (p.getCodigo().equals(codigo)) {
+			for (TipoPuerto p : puertos)
+				if (p.getCodigo().equals(codigo))
 					return p;
-				}
-			}
-
 			return null;
 
 		} catch (FileNotFoundException e) {

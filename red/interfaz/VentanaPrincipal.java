@@ -29,7 +29,7 @@ import javax.swing.ImageIcon;
 
 public class VentanaPrincipal extends JFrame {
 
-//	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 
 	private Calculo calculo;
@@ -111,8 +111,7 @@ public class VentanaPrincipal extends JFrame {
 		menuCreditos.addActionListener(
 				e -> JOptionPane.showMessageDialog(this, Constantes.CREDITOS, "Créditos", JOptionPane.PLAIN_MESSAGE));
 
-		// Acción para cerrar la ventana, enviar mensaje de despedida y finalizar el
-		// programa
+		// Acción para cerrar la ventana, enviar mensaje de despedida y finalizar el programa
 		menuSalir.addActionListener(e -> {
 			int salir = JOptionPane.showConfirmDialog(this, "¿Estás seguro de que querés salir?", "Salida",
 					JOptionPane.YES_NO_OPTION);
@@ -167,29 +166,49 @@ public class VentanaPrincipal extends JFrame {
 		lblUNPSJB.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/red/interfaz/unpsjb.png")));
 
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
-		gl_contentPane.setHorizontalGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPane.createSequentialGroup().addGap(35).addComponent(lblFotoRedes)
-						.addPreferredGap(ComponentPlacement.UNRELATED).addComponent(lblUNPSJB)
-						.addContainerGap(663, Short.MAX_VALUE))
-				.addGroup(gl_contentPane.createSequentialGroup().addContainerGap(734, Short.MAX_VALUE)
-						.addComponent(lblISFPP).addGap(60))
-				.addGroup(gl_contentPane.createSequentialGroup().addGap(180).addComponent(lblPOO).addContainerGap(821,
-						Short.MAX_VALUE))
-				.addGroup(gl_contentPane.createSequentialGroup().addGap(200).addComponent(lblGestion)
-						.addContainerGap(842, Short.MAX_VALUE))
-				.addGroup(gl_contentPane.createSequentialGroup().addGap(20).addComponent(lblModoActual)
-						.addContainerGap(900, Short.MAX_VALUE)));
-		
-		gl_contentPane.setVerticalGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPane.createSequentialGroup().addComponent(lblISFPP)
-						.addPreferredGap(ComponentPlacement.RELATED).addComponent(lblPOO)
-						.addPreferredGap(ComponentPlacement.RELATED).addComponent(lblGestion)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_contentPane.createSequentialGroup().addGap(38).addComponent(lblUNPSJB))
-								.addGroup(gl_contentPane.createSequentialGroup().addGap(65).addComponent(lblFotoRedes)))
-						.addPreferredGap(ComponentPlacement.RELATED, 20, Short.MAX_VALUE).addComponent(lblModoActual)
-						.addContainerGap()));
+		gl_contentPane.setHorizontalGroup(
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addGap(20)
+							.addComponent(lblModoActual))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addGap(35)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
+								.addComponent(lblISFPP)
+								.addGroup(gl_contentPane.createSequentialGroup()
+									.addComponent(lblFotoRedes)
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(lblUNPSJB))))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addGap(243)
+							.addComponent(lblGestion))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addGap(217)
+							.addComponent(lblPOO)))
+					.addContainerGap(109, Short.MAX_VALUE))
+		);
+		gl_contentPane.setVerticalGroup(
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addComponent(lblISFPP)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(lblPOO)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(lblGestion)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addGap(38)
+							.addComponent(lblUNPSJB))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addGap(65)
+							.addComponent(lblFotoRedes)))
+					.addPreferredGap(ComponentPlacement.RELATED, 101, Short.MAX_VALUE)
+					.addComponent(lblModoActual)
+					.addContainerGap())
+		);
 		contentPane.setLayout(gl_contentPane);
 		/**
 		 * ----------------- Componentes esteticos
@@ -200,13 +219,12 @@ public class VentanaPrincipal extends JFrame {
 
 	private void cambiarModo(boolean esSimulacion) {
 		this.modo = esSimulacion;
-		if (modo) {
+		if (modo)
 			lblModoActual.setText(
 					"<html><p style='white-space: nowrap;'><span style='color: black;'>Se encuentra en modo: </span><span style='color: red;'>SIMULACIÓN</span></p></html>");
-		} else {
+		else
 			lblModoActual.setText(
 					"<html><p style='white-space: nowrap;'><span style='color: black;'>Se encuentra en modo: </span><span style='color: green;'>REAL</span></p></html>");
-		}
 	}
 
 	private class Handler implements ActionListener {

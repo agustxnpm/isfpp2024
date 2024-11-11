@@ -14,21 +14,19 @@ public class UbicacionServiceImp implements UbicacionService {
 
 	private UbicacionDAO ubicacionDAO;
 	
-	public UbicacionServiceImp() {
-		ubicacionDAO = (UbicacionDAO) Factory.getInstancia("UBICACIONES");
-		
-	}
-	@Override
-	public void insertar(Ubicacion ubicacion) {
-		ubicacionDAO.insertar(ubicacion);
-	}
-
     /**
      * Constructor que inicializa el DAO para interactuar con los datos de ubicaciones.
      * 
      * @throws FileNotFoundException Si no se encuentra el archivo de configuración o datos.
      */
+	public UbicacionServiceImp() {
+		ubicacionDAO = (UbicacionDAO) Factory.getInstancia("UBICACIONES");
+	}
 
+	@Override
+	public void insertar(Ubicacion ubicacion) {
+		ubicacionDAO.insertar(ubicacion);
+	}
 
     @Override
     public void actualizar(Ubicacion ubicacion) {

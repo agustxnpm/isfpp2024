@@ -2,6 +2,8 @@ package red.modelo;
 
 import java.util.Objects;
 
+import red.excepciones.EquipoRepetidoException;
+
 /**
  * Clase que representa una conexión entre dos equipos en una red.
  * Cada conexión incluye dos equipos, un tipo de cable y dos tipos de puertos.
@@ -22,15 +24,14 @@ public class Conexion {
      * @param tipoCable El tipo de cable utilizado.
      * @param tipoPuerto1 El tipo de puerto en el primer equipo.
      * @param tipoPuerto2 El tipo de puerto en el segundo equipo.
-     * @throws IllegalArgumentException Si ambos equipos son iguales.
+     * @throws EquipoRepetidoException Si ambos equipos son iguales.
      */
     public Conexion(Equipo equipo1, Equipo equipo2, TipoCable tipoCable, TipoPuerto tipoPuerto1,
                     TipoPuerto tipoPuerto2) {
         super();
         // Verificar que los equipos sean diferentes.
-        if (equipo1.equals(equipo2)) {
-            throw new IllegalArgumentException("Los equipos en una conexión deben ser diferentes.");
-        }
+        if (equipo1.equals(equipo2))
+            throw new EquipoRepetidoException("Los equipos en una conexión deben ser diferentes.");
         this.equipo1 = equipo1;
         this.equipo2 = equipo2;
         this.tipoCable = tipoCable;
@@ -100,7 +101,6 @@ public class Conexion {
 
     @Override
     public String toString() {
-        return "Conexion: " + equipo1.getCodigo() + " <-> " + equipo2.getCodigo() + " (Cable: "
-                + tipoCable.getDescripcion() + ")";
+        return String.format("Conexion: %s <-> %s (Cable: %s)", equipo1.getCodigo(), equipo2.getCodigo(), tipoCable.getDescripcion());
     }
 }
