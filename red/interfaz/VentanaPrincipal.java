@@ -239,14 +239,4 @@ public class VentanaPrincipal extends JFrame {
 
 	}
 
-	// Método para lanzar la ventana principal
-	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				VentanaPrincipal ventana = new VentanaPrincipal();
-				ventana.setVisible(true);
-			}
-		});
-	}
 }
