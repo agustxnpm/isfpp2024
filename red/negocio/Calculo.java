@@ -548,24 +548,25 @@ public class Calculo {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String line;
 			int progresoActual = 0;
-			int totalPings = cantPings > 0 ? cantPings : 1; // Usar 1 como mínimo si no se especifica cantidad
+			int totalPings = cantPings > 0 ? cantPings : 4; // Usar 4 como mínimo si no se especifica cantidad
 
 			// Configurar la barra de progreso
 			progressBar.setMaximum(totalPings);
 			progressBar.setValue(0);
-
+			
+			line = reader.readLine();
+			textArea.append(line + "\n");
+			
 			while ((line = reader.readLine()) != null) {
-				progressBar.setValue(progresoActual++);
 				if (detener[0]) {
 					textArea.append("Ping detenido por el usuario.\n");
 					process.destroy(); // Detener el proceso de ping
 					break;
 				}
 				textArea.append(line + "\n");
+				progressBar.setValue(progresoActual++);
 	            textArea.setCaretPosition(textArea.getDocument().getLength());
 
-
-				// Incrementar y actualizar el progreso
 				
 				
 				

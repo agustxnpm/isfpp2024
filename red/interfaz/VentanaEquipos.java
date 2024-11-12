@@ -187,7 +187,6 @@ public class VentanaEquipos extends JFrame {
 				mostrarEquiposEnTabla(); // Refrescar la tabla después de la inserción
 				JOptionPane.showMessageDialog(this, "Equipo añadido correctamente");
 			} catch (Exception e) {
-				e.printStackTrace();
 				JOptionPane.showMessageDialog(this, "Error al agregar el equipo: " + e.getMessage(), "Error",
 						JOptionPane.ERROR_MESSAGE);
 			}

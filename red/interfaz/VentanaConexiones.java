@@ -164,7 +164,6 @@ public class VentanaConexiones extends JFrame {
 				mostrarConexionesEnTabla();
 
 			} catch (Exception e) {
-				e.printStackTrace();
 				JOptionPane.showMessageDialog(this, "Error al agregar la conexión: " + e.getMessage(), "Error",
 						JOptionPane.ERROR_MESSAGE);
 			}
@@ -183,7 +182,6 @@ public class VentanaConexiones extends JFrame {
 			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 
@@ -201,7 +199,6 @@ public class VentanaConexiones extends JFrame {
 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 			return null;
 		}
 

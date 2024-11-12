@@ -107,7 +107,6 @@
 					JOptionPane.showMessageDialog(null, "Equipo eliminado correctamente.", "Éxito",
 							JOptionPane.INFORMATION_MESSAGE);
 				} catch (Exception e) {
-					e.printStackTrace();
 					JOptionPane.showMessageDialog(null, "Error al eliminar el equipo: " + e.getMessage(), "Error",
 							JOptionPane.ERROR_MESSAGE);
 				}
@@ -210,7 +209,6 @@
 					((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.getPuertosInfo(), selectedRow, 7);
 				}
 			} catch (FileNotFoundException e) {
-				e.printStackTrace();
 				JOptionPane.showMessageDialog(null, "Error al modificar el equipo: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 			}
 		}
@@ -236,7 +234,6 @@
 					JOptionPane.showMessageDialog(null, "Conexión eliminada correctamente.", "Éxito",
 							JOptionPane.INFORMATION_MESSAGE);
 				} catch (Exception e) {
-					e.printStackTrace();
 					JOptionPane.showMessageDialog(null, "Error al eliminar la conexión: " + e.getMessage(), "Error",
 							JOptionPane.ERROR_MESSAGE);
 				}
