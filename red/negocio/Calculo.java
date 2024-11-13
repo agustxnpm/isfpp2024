@@ -38,11 +38,18 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.ArrayList;
 
+/**
+ * Clase que representa las operaciones y cálculos sobre la red de equipos y
+ * conexiones.
+ */
 public class Calculo {
 
 	private TreeMap<String, Vertex<Equipo>> vertices; // Mapa de equipos a sus vértices en el grafo.
 	private Graph<Equipo, Conexion> red; // Grafo que representa la red de equipos y sus conexiones.
 
+	/**
+	 * Constructor de la clase Calculo. Inicializa el objeto sin cargar datos.
+	 */
 	public Calculo() {
 		// Constructor vacío para inicializar la clase.
 	}
@@ -74,7 +81,10 @@ public class Calculo {
 	}
 
 	/**
-	 * Obtener equipos conectados transitivamente a partir de un equipo.
+	 * Obtiene los equipos conectados transitivamente a partir de un equipo.
+	 * 
+	 * @param equipoInicial El equipo de partida.
+	 * @return Un conjunto de equipos conectados transitivamente.
 	 */
 	public Set<Equipo> obtenerEquiposConectadosTransitivamente(Equipo equipoInicial) {
 		Set<Equipo> equiposConectados = new HashSet<>();
@@ -101,11 +111,17 @@ public class Calculo {
 		return equiposConectados;
 	}
 
+	/**
+	 * Obtiene todas las direcciones IP de los equipos en la red.
+	 * 
+	 * @return Una lista de todas las direcciones IP.
+	 */
 	public List<String> obtenerTodasLasIPs() {
 		List<String> ips = new ArrayList<>();
 		for (Vertex<Equipo> vertice : vertices.values()) {
 			Equipo equipo = vertice.getElement();
-			ips.addAll(equipo.getDireccionesIp()); // Suponiendo que el método getDireccionesIp() devuelve una lista de IPs.
+			ips.addAll(equipo.getDireccionesIp()); // Suponiendo que el método getDireccionesIp() devuelve una lista de
+													// IPs.
 		}
 		return ips;
 	}
@@ -121,7 +137,8 @@ public class Calculo {
 
 		for (Edge<Conexion> edge : red.edges())
 			if (edge.getElement().equals(conexion))
-				throw new ConexionRepetidaException(Configuracion.getConfiguracion().getRb().getString("Calculo_conexion_ya_existe"));
+				throw new ConexionRepetidaException(
+						Configuracion.getConfiguracion().getRb().getString("Calculo_conexion_ya_existe"));
 
 		Equipo equipo1 = conexion.getEquipo1();
 		Equipo equipo2 = conexion.getEquipo2();
@@ -140,12 +157,18 @@ public class Calculo {
 
 		for (Vertex<Equipo> vertex : vertices.values())
 			if (vertex.getElement().equals(equipo))
-				throw new EquipoRepetidoException(Configuracion.getConfiguracion().getRb().getString("Calculo_equipo_ya_existe"));
+				throw new EquipoRepetidoException(
+						Configuracion.getConfiguracion().getRb().getString("Calculo_equipo_ya_existe"));
 
 		red.insertVertex(equipo);
 
 	}
 
+	/**
+	 * Modifica un equipo existente en el grafo.
+	 * 
+	 * @param equipo El equipo modificado.
+	 */
 	public void modificarEquipoEnElGrafo(Equipo equipo) {
 
 		Iterable<Edge<Conexion>> edges = red.outgoingEdges(vertices.get(equipo.getCodigo()));
@@ -189,7 +212,7 @@ public class Calculo {
 				return reconstruirRuta(predecesores, equipoInicio, equipoFin);
 
 			// Recorrer todas las conexiones del equipo actual con los vecinos.
-			for (Equipo vecino: vecinos(actual))
+			for (Equipo vecino : vecinos(actual))
 
 				// Si el vecino no ha sido visitado, lo agregamos a la cola.
 				if (!visitados.contains(vecino)) {
@@ -200,19 +223,24 @@ public class Calculo {
 		} // Fin while
 		return null; // No se encontró una ruta.
 	}
-	
+
 	/**
-     *  Método auxiliar para obtener a todos los vecinos de un equipo dado
-     *  @param equipo Equipo cuyos vecinos buscamos
-     *  @returns Conjunto de vecinos de dicho equipo
-     */
-    private Set<Equipo> vecinos(Equipo eq){
-    	Set<Equipo> vecinos = new HashSet<>(); // conjunto de equipos vecinos de nuestro equipo
-    	for(Edge<Conexion> conexion : red.edges())
-    		if (conexion.getElement().getEquipo1().equals(eq)) vecinos.add(conexion.getElement().getEquipo2()); // si eq es el equipo 1 de la conexión, agrega al equipo 2
-    		else if (conexion.getElement().getEquipo2().equals(eq)) vecinos.add(conexion.getElement().getEquipo1()); // si eq es el equipo 2 de la conexión, agrega al equipo 1
-    	return vecinos;
-    }
+	 * Método auxiliar para obtener a todos los vecinos de un equipo dado
+	 * 
+	 * @param eq Equipo cuyos vecinos buscamos
+	 * @returns Conjunto de vecinos de dicho equipo
+	 */
+	private Set<Equipo> vecinos(Equipo eq) {
+		Set<Equipo> vecinos = new HashSet<>(); // conjunto de equipos vecinos de nuestro equipo
+		for (Edge<Conexion> conexion : red.edges())
+			if (conexion.getElement().getEquipo1().equals(eq))
+				vecinos.add(conexion.getElement().getEquipo2()); // si eq es el equipo 1 de la conexión, agrega al
+																	// equipo 2
+			else if (conexion.getElement().getEquipo2().equals(eq))
+				vecinos.add(conexion.getElement().getEquipo1()); // si eq es el equipo 2 de la conexión, agrega al
+																	// equipo 1
+		return vecinos;
+	}
 
 	/**
 	 * Método auxiliar para reconstruir la ruta desde el equipo de inicio hasta el
@@ -256,7 +284,8 @@ public class Calculo {
 			Conexion conexion = buscarConexion(equipo1, equipo2);
 			if (conexion == null)
 				throw new ConexionNoConectadaException(String.format(
-						Configuracion.getConfiguracion().getRb().getString("Calculo_no_existe_conexion_entre"), equipo1.getCodigo(),
+						Configuracion.getConfiguracion().getRb().getString("Calculo_no_existe_conexion_entre"),
+						equipo1.getCodigo(),
 						equipo2.getCodigo()));
 
 			int velocidadCable = conexion.getTipoCable().getVelocidad();
@@ -297,7 +326,9 @@ public class Calculo {
 	public String verificarConectividad(Equipo equipoOrigen, Equipo internetGateway)
 			throws EquipoNoConectadoException, ConexionNoConectadaException {
 
-		/* Encuentra la ruta entre equipos. La propia existencia de la ruta implica la existencia de conexiones entre cada 
+		/*
+		 * Encuentra la ruta entre equipos. La propia existencia de la ruta implica la
+		 * existencia de conexiones entre cada
 		 * par de equipos consecutivos en la misma.
 		 */
 		List<Equipo> ruta = buscarRuta(equipoOrigen, internetGateway);
@@ -305,7 +336,8 @@ public class Calculo {
 		// Verificar si no existe una ruta
 		if (ruta == null || ruta.isEmpty())
 			throw new ConexionNoConectadaException(String.format(
-					Configuracion.getConfiguracion().getRb().getString("Calculo_no_se_encontro_conexion_desde_equipo_hasta_gateway"),
+					Configuracion.getConfiguracion().getRb()
+							.getString("Calculo_no_se_encontro_conexion_desde_equipo_hasta_gateway"),
 					equipoOrigen.getCodigo()));
 
 		// Verificar cada equipo y conexión en la ruta
@@ -321,18 +353,21 @@ public class Calculo {
 			// Lanzar excepción si algún equipo está inactivo
 			if (!equipo1Activo)
 				throw new EquipoNoConectadoException(String.format(
-						Configuracion.getConfiguracion().getRb().getString("Calculo_equipo_inactivo_se_pierde_conectividad_aqui"),
+						Configuracion.getConfiguracion().getRb()
+								.getString("Calculo_equipo_inactivo_se_pierde_conectividad_aqui"),
 						equipo1.getCodigo()));
 
 			if (!equipo2Activo)
 				throw new EquipoNoConectadoException(String.format(
-						Configuracion.getConfiguracion().getRb().getString("Calculo_equipo_inactivo_se_pierde_conectividad_aqui"),
+						Configuracion.getConfiguracion().getRb()
+								.getString("Calculo_equipo_inactivo_se_pierde_conectividad_aqui"),
 						equipo2.getCodigo()));
 
 			// Lanzar excepción si el cable está defectuoso
 			if (!conexionFuncionando)
 				throw new ConexionNoConectadaException(
-						String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_problema_cable"), equipo1.getCodigo(),
+						String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_problema_cable"),
+								equipo1.getCodigo(),
 								equipo2.getCodigo()));
 
 		}
@@ -346,15 +381,16 @@ public class Calculo {
 	 * @return true si el ping fue exitoso, false en caso contrario.
 	 */
 	public boolean realizarPingAEquipo(String direccionIp) throws DireccionIpNoEncontradaException {
-		direccionIp = direccionIp.trim();	
+		direccionIp = direccionIp.trim();
 		for (Vertex<Equipo> equipo : vertices.values())
-			if (equipo.getElement().getDireccionesIp().contains(direccionIp))			
-					return equipo.getElement().realizarPing();
+			if (equipo.getElement().getDireccionesIp().contains(direccionIp))
+				return equipo.getElement().realizarPing();
 
-		throw new DireccionIpNoEncontradaException(String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_ip_no_se_encuentra_en_red"),
-				direccionIp));
+		throw new DireccionIpNoEncontradaException(
+				String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_ip_no_se_encuentra_en_red"),
+						direccionIp));
 	}
-	
+
 	/**
 	 * Realiza ping a todos los equipos cuyas IPs estén dentro de un rango.
 	 * Funciona unicamente para el modo simulacion de la aplicacion
@@ -366,27 +402,29 @@ public class Calculo {
 	public List<String> realizarPingARango(String inicioIp, String finIp) {
 		List<String> resultados = new ArrayList<>();
 		boolean pingExitoso = false;
-	
+
 		for (Vertex<Equipo> equipo : vertices.values())
 			for (String ip : equipo.getElement().getDireccionesIp())
 				if (estaDentroDelRango(ip, inicioIp, finIp)) {
 					boolean respuesta = realizarPingAEquipo(ip);
-					String resultado = respuesta ? Configuracion.getConfiguracion().getRb().getString("Calculo_ping_exitoso")
+					String resultado = respuesta
+							? Configuracion.getConfiguracion().getRb().getString("Calculo_ping_exitoso")
 							: Configuracion.getConfiguracion().getRb().getString("Calculo_ping fallido");
-					String mensaje = String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_al_equipo_con_ip"), resultado, ip);
+					String mensaje = String.format(
+							Configuracion.getConfiguracion().getRb().getString("Calculo_al_equipo_con_ip"), resultado,
+							ip);
 					resultados.add(mensaje);
 					pingExitoso = true;
 				}
-	
+
 		if (!pingExitoso) {
-			String mensajeSinResultados = Configuracion.getConfiguracion().getRb().getString("Calculo_no_resultados_dentro_rango_especificado");
+			String mensajeSinResultados = Configuracion.getConfiguracion().getRb()
+					.getString("Calculo_no_resultados_dentro_rango_especificado");
 			resultados.add(mensajeSinResultados);
 		}
-	
+
 		return resultados;
 	}
-	
-
 
 	/**
 	 * Realiza un ping a un rango de IP
@@ -398,27 +436,34 @@ public class Calculo {
 	 */
 
 	public void pingRango(String hostInicio, String hostFinal, int cantPings, JTextArea textArea, boolean[] detener,
-			JProgressBar progressBar) throws IllegalArgumentException, UnknownHostException{
+			JProgressBar progressBar) throws IllegalArgumentException, UnknownHostException {
 		long ipInicio, ipFinal;
 		try {
 			// Convertir hostInicio a entero
 			ipInicio = ipToLong(InetAddress.getByName(hostInicio));
 		} catch (UnknownHostException e) {
-			textArea.append(String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_error"), e.getMessage()));
-			throw new UnknownHostException(String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_ip_no_se_encuentra_en_red"), hostInicio));
+			textArea.append(
+					String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_error"), e.getMessage()));
+			throw new UnknownHostException(String.format(
+					Configuracion.getConfiguracion().getRb().getString("Calculo_ip_no_se_encuentra_en_red"),
+					hostInicio));
 		}
-		
+
 		try {
 			// Convertir hostFinal a entero
 			ipFinal = ipToLong(InetAddress.getByName(hostFinal));
 		} catch (UnknownHostException e) {
-			textArea.append(String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_error"), e.getMessage()));
-			throw new UnknownHostException(String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_ip_no_se_encuentra_en_red"), hostFinal));
+			textArea.append(
+					String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_error"), e.getMessage()));
+			throw new UnknownHostException(String.format(
+					Configuracion.getConfiguracion().getRb().getString("Calculo_ip_no_se_encuentra_en_red"),
+					hostFinal));
 		}
 
 		// Validar que hostInicio sea menor o igual a hostFinal
 		if (ipInicio > ipFinal)
-			throw new IllegalArgumentException(Configuracion.getConfiguracion().getRb().getString("Calculo_host_inicial_menor_igual_host_final"));
+			throw new IllegalArgumentException(
+					Configuracion.getConfiguracion().getRb().getString("Calculo_host_inicial_menor_igual_host_final"));
 
 		// Calcular el total de IPs en el rango
 		int totalPings = (int) (ipFinal - ipInicio + 1);
@@ -427,7 +472,8 @@ public class Calculo {
 		// Recorrer el rango de direcciones IP y hacer ping
 		for (long i = ipInicio; i <= ipFinal; i++) {
 			if (detener[0]) {
-				textArea.append(Configuracion.getConfiguracion().getRb().getString("Calculo_ping_detenido_por_usuario"));
+				textArea.append(
+						Configuracion.getConfiguracion().getRb().getString("Calculo_ping_detenido_por_usuario"));
 				break;
 			}
 
@@ -439,7 +485,12 @@ public class Calculo {
 		}
 	}
 
-	// Método para convertir una IP en formato InetAddress a un número long
+	/**
+	 * Convierte una dirección IP en formato InetAddress a un número long.
+	 *
+	 * @param ip Dirección IP en formato InetAddress.
+	 * @return La representación de la dirección IP como un número long.
+	 */
 	private static long ipToLong(InetAddress ip) {
 		byte[] bytes = ip.getAddress();
 		long result = 0;
@@ -448,7 +499,13 @@ public class Calculo {
 		return result;
 	}
 
-	// Método para convertir un número long a formato de dirección IP
+	/**
+	 * Convierte un número long a una dirección IP en formato String.
+	 *
+	 * @param ip Dirección IP en formato long.
+	 * @return La representación de la dirección IP en formato String (e.g.,
+	 *         "192.168.1.1").
+	 */
 	private static String longToIp(long ip) {
 		return String.format("%d.%d.%d.%d",
 				(ip >> 24) & 0xFF,
@@ -457,6 +514,16 @@ public class Calculo {
 				ip & 0xFF);
 	}
 
+	/**
+	 * Realiza un comando de ping al host especificado.
+	 *
+	 * @param host      Dirección IP o nombre de host al que se realizará el ping.
+	 * @param cantPings Número de veces que se realizará el ping. Si es 0, se usará
+	 *                  el valor por defecto.
+	 * @param textArea  Área de texto donde se mostrarán los resultados del ping.
+	 * @param detener   Arreglo booleano para controlar si se debe detener el
+	 *                  proceso de ping.
+	 */
 	public void ping(String host, int cantPings, JTextArea textArea, boolean[] detener) {
 		ProcessBuilder processBuilder = new ProcessBuilder();
 		String os = System.getProperty("os.name").toLowerCase(); // Verifica el sistema operativo
@@ -466,14 +533,17 @@ public class Calculo {
 			// Comando de ping para Windows
 			if (cantPings == 0)
 				processBuilder.command("ping", host);
-			else processBuilder.command("ping", "-n", Integer.toString(cantPings), host);
+			else
+				processBuilder.command("ping", "-n", Integer.toString(cantPings), host);
 		else if (os.contains("nix") || os.contains("nux") || os.contains("mac"))
 			// Comando de ping para Linux/Unix/Mac
 			if (cantPings == 0)
 				processBuilder.command("ping", host);
-			else processBuilder.command("ping", "-c", Integer.toString(cantPings), host);
+			else
+				processBuilder.command("ping", "-c", Integer.toString(cantPings), host);
 		else {
-			textArea.append(Configuracion.getConfiguracion().getRb().getString("Calculo_sistema_operativo_no_soportado"));
+			textArea.append(
+					Configuracion.getConfiguracion().getRb().getString("Calculo_sistema_operativo_no_soportado"));
 			return;
 		}
 
@@ -482,31 +552,45 @@ public class Calculo {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String line;
 			// Configurar la barra de progreso
-		
 
 			while ((line = reader.readLine()) != null) {
 				if (detener[0]) {
-					textArea.append(Configuracion.getConfiguracion().getRb().getString("Calculo_ping_detenido_por_usuario"));
+					textArea.append(
+							Configuracion.getConfiguracion().getRb().getString("Calculo_ping_detenido_por_usuario"));
 					process.destroy(); // Detener el proceso de ping
 					break;
 				}
 				textArea.append(line + "\n");
-	            textArea.setCaretPosition(textArea.getDocument().getLength());
+				textArea.setCaretPosition(textArea.getDocument().getLength());
 			}
 
 			int exitCode = process.waitFor();
 			if (!detener[0]) {
-				textArea.append(String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_proceso_finalizado_con_codigo_salida"),
+				textArea.append(String.format(
+						Configuracion.getConfiguracion().getRb()
+								.getString("Calculo_proceso_finalizado_con_codigo_salida"),
 						exitCode));
-	            textArea.setCaretPosition(textArea.getDocument().getLength());
+				textArea.setCaretPosition(textArea.getDocument().getLength());
 			}
 		} catch (IOException e) {
-			textArea.append(String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_error"), e.getMessage()));
+			textArea.append(
+					String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_error"), e.getMessage()));
 		} catch (InterruptedException e) {
 			textArea.append(Configuracion.getConfiguracion().getRb().getString("Calculo_proceso_interrumpido"));
 		}
 	}
-	
+
+	/**
+	 * Realiza un comando de ping al host especificado con una barra de progreso.
+	 *
+	 * @param host        Dirección IP o nombre de host al que se realizará el ping.
+	 * @param cantPings   Número de veces que se realizará el ping. Si es 0, se
+	 *                    usará el valor por defecto.
+	 * @param textArea    Área de texto donde se mostrarán los resultados del ping.
+	 * @param detener     Arreglo booleano para controlar si se debe detener el
+	 *                    proceso de ping.
+	 * @param progressBar Barra de progreso para mostrar el avance del ping.
+	 */
 	public void ping(String host, int cantPings, JTextArea textArea, boolean[] detener, JProgressBar progressBar) {
 		ProcessBuilder processBuilder = new ProcessBuilder();
 		String os = System.getProperty("os.name").toLowerCase(); // Verifica el sistema operativo
@@ -516,14 +600,17 @@ public class Calculo {
 			// Comando de ping para Windows
 			if (cantPings == 0)
 				processBuilder.command("ping", host);
-			else processBuilder.command("ping", "-n", Integer.toString(cantPings), host);
+			else
+				processBuilder.command("ping", "-n", Integer.toString(cantPings), host);
 		else if (os.contains("nix") || os.contains("nux") || os.contains("mac"))
 			// Comando de ping para Linux/Unix/Mac
 			if (cantPings == 0)
 				processBuilder.command("ping", host);
-			else processBuilder.command("ping", "-c", Integer.toString(cantPings), host);
+			else
+				processBuilder.command("ping", "-c", Integer.toString(cantPings), host);
 		else {
-			textArea.append(Configuracion.getConfiguracion().getRb().getString("Calculo_sistema_operativo_no_soportado"));
+			textArea.append(
+					Configuracion.getConfiguracion().getRb().getString("Calculo_sistema_operativo_no_soportado"));
 			return;
 		}
 
@@ -539,26 +626,30 @@ public class Calculo {
 			progressBar.setValue(0);
 			line = reader.readLine();
 			textArea.append(line + "\n");
-			
+
 			while ((line = reader.readLine()) != null) {
 				if (detener[0]) {
-					textArea.append(Configuracion.getConfiguracion().getRb().getString("Calculo_ping_detenido_por_usuario"));
+					textArea.append(
+							Configuracion.getConfiguracion().getRb().getString("Calculo_ping_detenido_por_usuario"));
 					process.destroy(); // Detener el proceso de ping
 					break;
 				}
 				textArea.append(line + "\n");
 				progressBar.setValue(progresoActual++);
-	            textArea.setCaretPosition(textArea.getDocument().getLength());
+				textArea.setCaretPosition(textArea.getDocument().getLength());
 			}
 
 			int exitCode = process.waitFor();
 			if (!detener[0]) {
-				textArea.append(String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_proceso_finalizado_con_codigo_salida"),
+				textArea.append(String.format(
+						Configuracion.getConfiguracion().getRb()
+								.getString("Calculo_proceso_finalizado_con_codigo_salida"),
 						exitCode));
-	            textArea.setCaretPosition(textArea.getDocument().getLength());
+				textArea.setCaretPosition(textArea.getDocument().getLength());
 			}
 		} catch (IOException e) {
-			textArea.append(String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_error"), e.getMessage()));
+			textArea.append(
+					String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_error"), e.getMessage()));
 		} catch (InterruptedException e) {
 			textArea.append(Configuracion.getConfiguracion().getRb().getString("Calculo_proceso_interrumpido"));
 		}
@@ -578,7 +669,8 @@ public class Calculo {
 
 			// Verifica que la IP de inicio sea menor o igual a la de fin
 			if (ipInicio > ipFin)
-				throw new IllegalArgumentException(Configuracion.getConfiguracion().getRb().getString("Calculo_ip_inicio_menor_igual_ip_fin"));
+				throw new IllegalArgumentException(
+						Configuracion.getConfiguracion().getRb().getString("Calculo_ip_inicio_menor_igual_ip_fin"));
 
 			return (int) (ipFin - ipInicio + 1); // Devuelve la cantidad total de IPs en el rango
 		} catch (IOException e) {
@@ -618,6 +710,11 @@ public class Calculo {
 		return 0;
 	}
 
+	/**
+	 * Metodo que crea el panel con una disposicion organizada
+	 * 
+	 * @return panel
+	 */
 	// Método para crear el panel con disposición organizada
 	public JPanel crearMapaDeEstado() {
 		mxGraph graph = new mxGraph();
