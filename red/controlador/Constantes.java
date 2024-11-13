@@ -16,11 +16,6 @@ public class Constantes {
 	public static final String ESTADOS_UNIDOS = "US";
 	
 	// Constantes referidas a los componentes de la ventana inicial
-	public static final int INICIAL_BORDER = 5;
-	public static final int INICIAL_X = 100;
-	public static final int INICIAL_Y = 100;
-	public static final int INICIAL_ANCHO = 450;
-	public static final int INICIAL_ALTO = 240;
 	public static final String TITULO_INICIAL = "Select the language";
 	public static final String INICIAL_ESPANOL_ES = "Español (España)";
 	public static final String INICIAL_ESPANOL_AR = "Español (Argentina)";

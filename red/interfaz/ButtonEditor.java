@@ -77,7 +77,7 @@
 					eliminarEquipo(selectedRow);
 				else if (Configuracion.getConfiguracion().getRb().getString("Modelo_conexion").equals(actionType))
 					eliminarConexion(selectedRow);
-				else if (Configuracion.getConfiguracion().getRb().getString("Interfaz_eliminar_minuscula").equals(actionType))
+				else if (Configuracion.getConfiguracion().getRb().getString("Interfaz_modificar_minuscula").equals(actionType))
 					modificarEquipo(selectedRow); // Método para modificar
 			}
 			isPushed = false;

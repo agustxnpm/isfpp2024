@@ -26,7 +26,6 @@ import net.datastructures.Edge;
 import net.datastructures.Entry;
 import net.datastructures.AdjacencyMapGraph;
 import net.datastructures.TreeMap;
-import red.controlador.Coordinador;
 import red.excepciones.ConexionNoConectadaException;
 import red.excepciones.ConexionRepetidaException;
 import red.excepciones.EquipoNoConectadoException;
@@ -43,7 +42,6 @@ public class Calculo {
 
 	private TreeMap<String, Vertex<Equipo>> vertices; // Mapa de equipos a sus vértices en el grafo.
 	private Graph<Equipo, Conexion> red; // Grafo que representa la red de equipos y sus conexiones.
-	private Coordinador coordinador; // Referencia al Coordinador para interactuar con otras partes del sistema.
 
 	public Calculo() {
 		// Constructor vacío para inicializar la clase.
@@ -101,10 +99,6 @@ public class Calculo {
 			}
 		}
 		return equiposConectados;
-	}
-
-	public void setCoordinador(Coordinador coordinador) {
-		this.coordinador = coordinador;
 	}
 
 	public List<String> obtenerTodasLasIPs() {

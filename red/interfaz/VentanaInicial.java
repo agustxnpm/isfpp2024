@@ -22,9 +22,9 @@ public class VentanaInicial extends JFrame {
 	public VentanaInicial() {
 		setTitle(Constantes.TITULO_INICIAL);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(Constantes.INICIAL_X, Constantes.INICIAL_Y, Constantes.INICIAL_ANCHO, Constantes.INICIAL_ALTO);
+		setBounds(100, 100, 450, 240);
 		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(Constantes.INICIAL_BORDER, Constantes.INICIAL_BORDER, Constantes.INICIAL_BORDER, Constantes.INICIAL_BORDER));
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
