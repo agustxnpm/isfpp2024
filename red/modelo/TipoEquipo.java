@@ -2,6 +2,8 @@ package red.modelo;
 
 import java.util.Objects;
 
+import red.controlador.Configuracion;
+
 /**
  * Clase que representa un tipo de equipo en una red.
  * Incluye atributos para el código y la descripción.
@@ -60,6 +62,6 @@ public class TipoEquipo {
     // Método para representar el TipoEquipo como una cadena de texto.
     @Override
     public String toString() {
-        return String.format("TipoEquipo [codigo=%s, descripcion=%s]", codigo, descripcion);
+        return String.format(Configuracion.getConfiguracion().getRb().getString("TipoEquipo_to_string"), codigo, descripcion);
     }
 }

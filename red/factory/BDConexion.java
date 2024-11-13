@@ -11,7 +11,7 @@ public class BDConexion {
 	// Nos conectamos a la base de datos (con los datos de conexión del archivo jdbc.properties)
 	public static Connection getConnection() {
 		try {
-			if (con == null) {
+			if (con == null) {				
 				// con esto determinamos cuando finalize el programa
 				Runtime.getRuntime().addShutdownHook(new MiShDwnHook());
 				ResourceBundle rb = ResourceBundle.getBundle("jdbc");

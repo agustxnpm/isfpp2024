@@ -3,7 +3,6 @@ package red.interfaz;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import java.util.Locale;
 
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
@@ -47,9 +46,9 @@ public class VentanaInicial extends JFrame {
 		contentPane.add(btnSalir);
 		
 		// Listeners para configurar el idioma y país de la aplicación
-		btnEspanolES.addActionListener(e -> seleccion(Locale.of(Constantes.ESPANOL, Constantes.ESPANA)));
-		btnEspanolAR.addActionListener(e -> seleccion(Locale.of(Constantes.ESPANOL, Constantes.ARGENTINA)));
-		btnInglesEU.addActionListener(e -> seleccion(Locale.of(Constantes.INGLES, Constantes.ESTADOS_UNIDOS)));
+		btnEspanolES.addActionListener(e -> seleccion(Constantes.ESPANOL, Constantes.ESPANA));
+		btnEspanolAR.addActionListener(e -> seleccion(Constantes.ESPANOL, Constantes.ARGENTINA));
+		btnInglesEU.addActionListener(e -> seleccion(Constantes.INGLES, Constantes.ESTADOS_UNIDOS));
 		
 		// Salir del programa
 		btnSalir.addActionListener(e -> {
@@ -58,11 +57,21 @@ public class VentanaInicial extends JFrame {
 		});
 	}
 	
-	private void seleccion(Locale locale) {
-		Locale.setDefault(locale);
-		SwingUtilities.invokeLater(() -> {
+	/** Verifica que la configuración pueda instanciarse correctamente, establece el idioma y país configurados, abre la ventana principal, y
+	 * cierra esta ventana. En caso de que se capture una excepción al crear la instancia de Configuración, la excepción queda indicada en la
+	 * consola, y la configuración permanece nula. Por lo tanto, el método, tras la comparación, cierra el programa
+	 * @param idioma: Idioma que asumirá el programa en principio
+	 * @param pais: País indicado por el usuario
+	 */
+	private void seleccion(String idioma, String pais) {
+		if (Configuracion.getConfiguracion() == null){
 			dispose();
+			System.exit(ERROR);
+		}
+		Configuracion.getConfiguracion().establecerIdiomaYPais(idioma, pais);
+		SwingUtilities.invokeLater(() -> {
             new VentanaPrincipal().setVisible(true);
+			dispose();
         });
 	}
 }

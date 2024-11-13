@@ -14,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 
@@ -193,11 +194,8 @@ public class Calculo {
 			if (actual.equals(equipoFin))
 				return reconstruirRuta(predecesores, equipoInicio, equipoFin);
 
-			// Recorrer todas las conexiones del equipo actual.
-			for (Edge<Conexion> conexion : red.edges()) {
-				// Obtener el equipo vecino a través de la conexión.
-				Equipo vecino = conexion.getElement().getEquipo1().equals(actual) ? conexion.getElement().getEquipo2()
-						: conexion.getElement().getEquipo1();
+			// Recorrer todas las conexiones del equipo actual con los vecinos.
+			for (Equipo vecino: vecinos(actual))
 
 				// Si el vecino no ha sido visitado, lo agregamos a la cola.
 				if (!visitados.contains(vecino)) {
@@ -205,10 +203,22 @@ public class Calculo {
 					visitados.add(vecino);
 					cola.add(vecino);
 				}
-			}
-		}
+		} // Fin while
 		return null; // No se encontró una ruta.
 	}
+	
+	/**
+     *  Método auxiliar para obtener a todos los vecinos de un equipo dado
+     *  @param equipo Equipo cuyos vecinos buscamos
+     *  @returns Conjunto de vecinos de dicho equipo
+     */
+    private Set<Equipo> vecinos(Equipo eq){
+    	Set<Equipo> vecinos = new HashSet<>(); // conjunto de equipos vecinos de nuestro equipo
+    	for(Edge<Conexion> conexion : red.edges())
+    		if (conexion.getElement().getEquipo1().equals(eq)) vecinos.add(conexion.getElement().getEquipo2()); // si eq es el equipo 1 de la conexión, agrega al equipo 2
+    		else if (conexion.getElement().getEquipo2().equals(eq)) vecinos.add(conexion.getElement().getEquipo1()); // si eq es el equipo 2 de la conexión, agrega al equipo 1
+    	return vecinos;
+    }
 
 	/**
 	 * Método auxiliar para reconstruir la ruta desde el equipo de inicio hasta el
@@ -394,38 +404,44 @@ public class Calculo {
 	 */
 
 	public void pingRango(String hostInicio, String hostFinal, int cantPings, JTextArea textArea, boolean[] detener,
-			JProgressBar progressBar) {
+			JProgressBar progressBar) throws IllegalArgumentException, UnknownHostException{
+		long ipInicio, ipFinal;
 		try {
-			// Convertir hostInicio y hostFinal a enteros
-			long ipInicio = ipToLong(InetAddress.getByName(hostInicio));
-			long ipFinal = ipToLong(InetAddress.getByName(hostFinal));
+			// Convertir hostInicio a entero
+			ipInicio = ipToLong(InetAddress.getByName(hostInicio));
+		} catch (UnknownHostException e) {
+			textArea.append(String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_error"), e.getMessage()));
+			throw new UnknownHostException(String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_ip_no_se_encuentra_en_red"), hostInicio));
+		}
+		
+		try {
+			// Convertir hostFinal a entero
+			ipFinal = ipToLong(InetAddress.getByName(hostFinal));
+		} catch (UnknownHostException e) {
+			textArea.append(String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_error"), e.getMessage()));
+			throw new UnknownHostException(String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_ip_no_se_encuentra_en_red"), hostFinal));
+		}
 
-			// Validar que hostInicio sea menor o igual a hostFinal
-			if (ipInicio > ipFinal)
-				throw new IllegalArgumentException(Configuracion.getConfiguracion().getRb().getString("Calculo_host_inicial_menor_igual_host_final"));
+		// Validar que hostInicio sea menor o igual a hostFinal
+		if (ipInicio > ipFinal)
+			throw new IllegalArgumentException(Configuracion.getConfiguracion().getRb().getString("Calculo_host_inicial_menor_igual_host_final"));
 
-			// Calcular el total de IPs en el rango
-			int totalPings = (int) (ipFinal - ipInicio + 1);
-			progressBar.setMaximum(totalPings);
+		// Calcular el total de IPs en el rango
+		int totalPings = (int) (ipFinal - ipInicio + 1);
+		progressBar.setMaximum(totalPings);
 
-
-			// Recorrer el rango de direcciones IP y hacer ping
-			for (long i = ipInicio; i <= ipFinal; i++) {
-				if (detener[0]) {
-					textArea.append(Configuracion.getConfiguracion().getRb().getString("Calculo_ping_detenido_por_usuario"));
-					break;
-				}
-
-				String ipActual = longToIp(i);
-				ping(ipActual, cantPings, textArea, detener);
-				// Actualizar el progreso en la barra
-				int progresoActual = (int) (i - ipInicio + 1);
-				progressBar.setValue(progresoActual);
+		// Recorrer el rango de direcciones IP y hacer ping
+		for (long i = ipInicio; i <= ipFinal; i++) {
+			if (detener[0]) {
+				textArea.append(Configuracion.getConfiguracion().getRb().getString("Calculo_ping_detenido_por_usuario"));
+				break;
 			}
 
-		} catch (IOException e) {
-			textArea.append(String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_error"), e.getMessage()));
-			e.printStackTrace();
+			String ipActual = longToIp(i);
+			ping(ipActual, cantPings, textArea, detener);
+			// Actualizar el progreso en la barra
+			int progresoActual = (int) (i - ipInicio + 1);
+			progressBar.setValue(progresoActual);
 		}
 	}
 
@@ -522,14 +538,14 @@ public class Calculo {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String line;
 			int progresoActual = 0;
-			int totalPings = cantPings > 0 ? cantPings : 4; // Usar 1 como mínimo si no se especifica cantidad
+			int totalPings = cantPings > 0 ? cantPings : 4; // Usar 4 como mínimo si no se especifica cantidad
 
 			// Configurar la barra de progreso
 			progressBar.setMaximum(totalPings);
 			progressBar.setValue(0);
 			line = reader.readLine();
 			textArea.append(line + "\n");
-
+			
 			while ((line = reader.readLine()) != null) {
 				if (detener[0]) {
 					textArea.append(Configuracion.getConfiguracion().getRb().getString("Calculo_ping_detenido_por_usuario"));

@@ -2,6 +2,8 @@ package red.modelo;
 
 import java.util.Objects;
 
+import red.controlador.Configuracion;
+
 /**
  * Clase que representa un tipo de cable de red.
  * Incluye atributos para el código, descripción y velocidad de transmisión.
@@ -71,6 +73,6 @@ public class TipoCable {
     // Método para representar el TipoCable como una cadena de texto.
     @Override
     public String toString() {
-        return String.format("TipoCable [codigo=%s, descripcion=%s, velocidad=%s]", codigo, descripcion, velocidad);
+        return String.format(Configuracion.getConfiguracion().getRb().getString("TipoCable_to_string"), codigo, descripcion, velocidad);
     }
 }

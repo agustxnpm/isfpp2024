@@ -73,11 +73,11 @@
 				}
 
 				// Dependiendo del tipo de acción, se llama al método correspondiente
-				if ("equipo".equals(actionType))
+				if (Configuracion.getConfiguracion().getRb().getString("Modelo_equipo").equals(actionType))
 					eliminarEquipo(selectedRow);
-				else if ("conexion".equals(actionType))
+				else if (Configuracion.getConfiguracion().getRb().getString("Modelo_conexion").equals(actionType))
 					eliminarConexion(selectedRow);
-				else if ("modificar".equals(actionType))
+				else if (Configuracion.getConfiguracion().getRb().getString("Interfaz_eliminar_minuscula").equals(actionType))
 					modificarEquipo(selectedRow); // Método para modificar
 			}
 			isPushed = false;
@@ -87,7 +87,7 @@
 		// Método para eliminar un equipo
 		private void eliminarEquipo(int selectedRow) {
 			String equipoCodigo = (String) table.getValueAt(selectedRow, 0); // Código del equipo
-			int confirmacion = JOptionPane.showConfirmDialog(null, Configuracion.getConfiguracion().getRb().getString("ButtonEditor_seguro_eliminar"),
+			int confirmacion = JOptionPane.showConfirmDialog(null, Configuracion.getConfiguracion().getRb().getString("ButtonEditor_seguro_eliminar_equipo"),
 					Configuracion.getConfiguracion().getRb().getString("ButtonEditor_confirmar_eliminacion"), JOptionPane.YES_NO_OPTION);
 			if (confirmacion == JOptionPane.YES_OPTION) {
 				try {
@@ -103,7 +103,6 @@
 							Configuracion.getConfiguracion().getRb().getString("ButtonEditor_exito"),
 							JOptionPane.INFORMATION_MESSAGE);
 				} catch (Exception e) {
-					e.printStackTrace();
 					JOptionPane.showMessageDialog(null, String.format(Configuracion.getConfiguracion().getRb()
 																				.getString("ButtonEditor_error_eliminar_equipo"), e.getMessage()),
 							Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
@@ -207,7 +206,6 @@
 					((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.getPuertosInfo(), selectedRow, 7);
 				}
 			} catch (FileNotFoundException e) {
-				e.printStackTrace();
 				JOptionPane.showMessageDialog(null, String.format(Configuracion.getConfiguracion().getRb().getString("ButtonEditor_error_modificar_equipo"),
 						e.getMessage()), Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
 			}
@@ -234,7 +232,6 @@
 					JOptionPane.showMessageDialog(null, Configuracion.getConfiguracion().getRb().getString("ButtonEditor_conexion_eliminada_correctamente"), 
 							Configuracion.getConfiguracion().getRb().getString("ButtonEditor_exito"), JOptionPane.INFORMATION_MESSAGE);
 				} catch (Exception e) {
-					e.printStackTrace();
 					JOptionPane.showMessageDialog(null, String.format(Configuracion.getConfiguracion().getRb().getString("ButtonEditor_error_eliminar_conexion"),
 							e.getMessage()), Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
 				}

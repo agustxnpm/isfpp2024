@@ -2,6 +2,8 @@ package red.modelo;
 
 import java.util.Objects;
 
+import red.controlador.Configuracion;
+
 /**
  * Clase que representa un tipo de puerto de red.
  * Incluye atributos para el código, la descripción y la velocidad de transmisión.
@@ -71,6 +73,6 @@ public class TipoPuerto {
     // Método para representar el TipoPuerto como una cadena de texto.
     @Override
     public String toString() {
-        return "TipoPuerto [codigo=" + codigo + ", descripcion=" + descripcion + ", velocidad=" + velocidad + "]";
+        return String.format(Configuracion.getConfiguracion().getRb().getString("TipoPuerto_to_string"), codigo, descripcion, velocidad);
     }
 }

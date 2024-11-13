@@ -1,15 +1,13 @@
 package red.controlador;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-import red.modelo.Conexion;
-import red.modelo.Equipo;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
 // Clase que gestiona el idioma de la aplicación. Aplica el patrón Singleton.
 public class Configuracion {
@@ -19,8 +17,6 @@ public class Configuracion {
 	//private Coordinador coordinador;
 	private Properties prop;
 	private ResourceBundle rb;
-	private String idioma;
-	private String pais;
 	private final boolean modoInicial; // Indica si la aplicación inicialmente está en modo simulación o no.
 
 	/**  Método de acceso para la única instancia de la clase. La instanciación de la clase ocurre sólo una vez y por
@@ -43,31 +39,21 @@ public class Configuracion {
 		prop = new Properties();
 		prop.load(new FileInputStream("config.properties"));
 		modoInicial = Boolean.parseBoolean(prop.getProperty("simulacion"));
-		//Locale.setDefault(Locale.of(prop.getProperty("language"), prop.getProperty("country")));
 		rb = ResourceBundle.getBundle(prop.getProperty("labels"));
 	}
 
 	public void establecerIdiomaYPais(String idioma, String pais) {
-		Locale.setDefault(Locale.of(idioma, pais));
-		rb = ResourceBundle.getBundle(prop.getProperty("labels"));
+		Locale loc = Locale.of(idioma, pais);
+		Locale.setDefault(loc);
+		JOptionPane.setDefaultLocale(loc);
+		UIManager.getDefaults().setDefaultLocale(loc);
+		rb = ResourceBundle.getBundle(prop.getProperty("labels"), loc);
 	}
 
 	// Métodos de acceso (getters y setters)
 	public ResourceBundle getRb() {
 		return rb;
 	}
-	
-	public String getIdioma() {
-		return idioma;
-	}
-	
-	public String getPais() {
-		return pais;
-	}
-
-	/*public void setCoordinador(Coordinador coordinador) {
-		this.coordinador = coordinador;
-	}*/
 	
 	public boolean isSimulacion() {
 		return modoInicial;

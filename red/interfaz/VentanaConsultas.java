@@ -11,6 +11,7 @@ import red.modelo.Equipo;
 import red.negocio.Calculo;
 import red.negocio.Red;
 import red.controlador.Configuracion;
+import java.net.UnknownHostException;
 
 public class VentanaConsultas extends JFrame {
 
@@ -399,7 +400,12 @@ public class VentanaConsultas extends JFrame {
 							publish(pingResults.get(i)); // Publicar resultado
 							Thread.sleep(2000); // Simulación de demora de 2 segundos
 						}
-					} else calculo.pingRango(inicioIp, finIp, cantPings, textArea, detener, progressBar);
+					} else try {
+						calculo.pingRango(inicioIp, finIp, cantPings, textArea, detener, progressBar);
+					} catch(IllegalArgumentException | UnknownHostException e) {
+						JOptionPane.showMessageDialog(VentanaConsultas.this, e.getMessage(),
+								Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
+					}
 
 					return null;
 				}
@@ -427,7 +433,7 @@ public class VentanaConsultas extends JFrame {
 
 			worker.execute(); // Ejecutar la tarea
 		} else JOptionPane.showMessageDialog(dialog, Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_ingresa_rango_ips_valido"),
-				Configuracion.getConfiguracion().getRb().getString("Interfaz.error"), JOptionPane.ERROR_MESSAGE);
+				Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
 	}
 
 	private void detectarProblemasConectividad() {

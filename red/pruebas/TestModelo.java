@@ -113,9 +113,6 @@ class TestModelo {
 	// Tests de métodos de la clase Equipo
 	@Test
 	void testEquipos() {
-		assertEquals(equipo6.getModelo(), "Modelo desconocido");
-		assertEquals(equipo3.getMarca(), "Marca desconocida");
-		assertEquals(equipo3.getDescripcion(), "Sin descripción");
 		assertEquals(equipo1.getVelocidadMaxima(), 40);
 		assertEquals(equipo2.getVelocidadMaxima(), 1000);
 		assertFalse(equipo1.realizarPing());

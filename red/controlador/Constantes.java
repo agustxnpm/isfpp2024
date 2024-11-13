@@ -6,8 +6,6 @@ package red.controlador;
 */
 public class Constantes {
 	
-	public static final String ERROR_DATOS = "Error al cargar los datos.";
-	
 	// Constantes referidas a idiomas, por siglas oficiales (dos letras en minúscula).
 	public static final String ESPANOL = "es";
 	public static final String INGLES = "en";

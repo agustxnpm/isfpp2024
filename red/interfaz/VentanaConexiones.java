@@ -165,7 +165,6 @@ public class VentanaConexiones extends JFrame {
 				mostrarConexionesEnTabla();
 
 			} catch (Exception e) {
-				e.printStackTrace();
 				JOptionPane.showMessageDialog(this,
 						String.format(Configuracion.getConfiguracion().getRb().getString("VentanaConexiones_error_agregar_conexion"), e.getMessage()),
 						Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
@@ -184,7 +183,6 @@ public class VentanaConexiones extends JFrame {
 				tipoPuertoComboBox.addItem(p.getCodigo());
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 
@@ -199,7 +197,6 @@ public class VentanaConexiones extends JFrame {
 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 			return null;
 		}
 

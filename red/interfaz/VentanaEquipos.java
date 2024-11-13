@@ -202,7 +202,6 @@ public class VentanaEquipos extends JFrame {
 				mostrarEquiposEnTabla(); // Refrescar la tabla después de la inserción
 				JOptionPane.showMessageDialog(this, Configuracion.getConfiguracion().getRb().getString("VentanaEquipos_equipo_anadido_correctamente"));
 			} catch (Exception e) {
-				e.printStackTrace();
 				JOptionPane.showMessageDialog(this,
 						String.format(Configuracion.getConfiguracion().getRb().getString("VentanaEquipos_error_agregar_equipo"), e.getMessage()),
 						Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);

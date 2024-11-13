@@ -102,6 +102,6 @@ public class Conexion {
 
     @Override
     public String toString() {
-        return String.format("Conexion: %s <-> %s (Cable: %s)", equipo1.getCodigo(), equipo2.getCodigo(), tipoCable.getDescripcion());
+        return String.format(Configuracion.getConfiguracion().getRb().getString("Conexion_to_string"), equipo1.getCodigo(), equipo2.getCodigo(), tipoCable.getDescripcion());
     }
 }

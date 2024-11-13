@@ -2,6 +2,8 @@ package red.modelo;
 
 import java.util.Objects;
 
+import red.controlador.Configuracion;
+
 /**
  * Clase que representa una ubicación física en una red.
  * Incluye atributos para el código y la descripción.
@@ -60,6 +62,6 @@ public class Ubicacion {
     // Método para representar la Ubicacion como una cadena de texto.
     @Override
     public String toString() {
-        return "Ubicacion [codigo=" + codigo + ", descripcion=" + descripcion + "]";
+        return Configuracion.getConfiguracion().getRb().getString("Ubicacion_to_string");
     }
 }

@@ -10,8 +10,6 @@ import javax.swing.border.EmptyBorder;
 
 import red.controlador.Constantes;
 import red.controlador.Configuracion;
-import red.modelo.Conexion;
-import red.modelo.Equipo;
 import red.negocio.Calculo;
 import red.negocio.Red;
 
@@ -22,10 +20,10 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
-import java.util.List;
 
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ImageIcon;
+import javax.swing.SwingConstants;
 
 public class VentanaPrincipal extends JFrame {
 
@@ -35,7 +33,6 @@ public class VentanaPrincipal extends JFrame {
 	private Calculo calculo;
 	private Red red;
 	private Handler manejador;
-	private Configuracion c;
 
 	private JMenuBar menuBar;
 	private JMenu mnPrograma;
@@ -54,26 +51,24 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuItem mntmInglesEU;
 	private boolean modo; // true = modo simulacion, false = modo real
 	private JLabel lblModoActual; // Etiqueta para mostrar el modo actual
+	private JLabel lblISFPP;
+	private JLabel lblPOO;
+	private JLabel lblGestion;
 
 	public VentanaPrincipal() {
-		/* cargar servicios, calculo y configuración */
+		/* cargar servicios y calculo */
 		try {
 			calculo = new Calculo();
 			red = Red.getRed();
-			List<Equipo> equipos = red.getEquipos();
-			List<Conexion> conexiones = red.getConexiones();
-			calculo.cargarDatos(equipos, conexiones);
+			calculo.cargarDatos(red.getEquipos(), red.getConexiones());
 		} catch (FileNotFoundException e) {
-			System.err.println(Constantes.ERROR_DATOS);
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(this, e.getMessage(),
+					Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
 			System.exit(ERROR);
 		}
 		
-		if ((c = Configuracion.getConfiguracion()) == null)
-			System.exit(ERROR);
-		
 		setTitle(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_titulo"));
-		setSize(700, 500);
+		setSize(628, 500);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 
@@ -174,13 +169,16 @@ public class VentanaPrincipal extends JFrame {
 		 * ----------------- Componentes esteticos
 		 * ------------------------------------------
 		 **/
-		JLabel lblISFPP = new JLabel(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_isfpp"));
-		lblISFPP.setFont(new Font("Dialog", Font.BOLD, 16));
+		lblISFPP = new JLabel(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_isfpp"));
+		lblISFPP.setHorizontalAlignment(SwingConstants.CENTER);
+		lblISFPP.setFont(new Font("Dialog", Font.BOLD, 18));
 
-		JLabel lblPOO = new JLabel(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_poo"));
-		lblPOO.setFont(new Font("Dialog", Font.BOLD, 14));
+		lblPOO = new JLabel(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_poo"));
+		lblPOO.setHorizontalAlignment(SwingConstants.CENTER);
+		lblPOO.setFont(new Font("Dialog", Font.BOLD, 15));
 
-		JLabel lblGestion = new JLabel(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_gestion"));
+		lblGestion = new JLabel(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_gestion"));
+		lblGestion.setHorizontalAlignment(SwingConstants.CENTER);
 		lblGestion.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
 
 		JLabel lblFotoRedes = new JLabel("");
@@ -191,7 +189,7 @@ public class VentanaPrincipal extends JFrame {
 
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
+			gl_contentPane.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPane.createSequentialGroup()
@@ -199,44 +197,39 @@ public class VentanaPrincipal extends JFrame {
 							.addComponent(lblModoActual))
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addGap(35)
-							.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
-								.addComponent(lblISFPP)
-								.addGroup(gl_contentPane.createSequentialGroup()
-									.addComponent(lblFotoRedes)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(lblUNPSJB)))
-							.addPreferredGap(ComponentPlacement.RELATED)))
+							.addComponent(lblFotoRedes)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(lblUNPSJB))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addGap(47)
+							.addComponent(lblISFPP))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addGap(179)
+							.addComponent(lblPOO))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addGap(209)
+							.addComponent(lblGestion)))
 					.addContainerGap(109, Short.MAX_VALUE))
-				.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
-					.addContainerGap(247, Short.MAX_VALUE)
-					.addComponent(lblGestion)
-					.addGap(245))
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addGap(216)
-					.addComponent(lblPOO)
-					.addContainerGap(233, Short.MAX_VALUE))
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addGap(26)
+					.addGap(27)
 					.addComponent(lblISFPP)
-					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGap(5)
 					.addComponent(lblPOO)
 					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(lblGestion)
+					.addGap(6)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPane.createSequentialGroup()
-							.addGap(11)
-							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_contentPane.createSequentialGroup()
-									.addGap(99)
-									.addComponent(lblFotoRedes))
-								.addGroup(gl_contentPane.createSequentialGroup()
-									.addGap(69)
-									.addComponent(lblUNPSJB)))
-							.addPreferredGap(ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
-							.addComponent(lblModoActual))
-						.addComponent(lblGestion))
+							.addGap(99)
+							.addComponent(lblFotoRedes))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addGap(69)
+							.addComponent(lblUNPSJB)))
+					.addPreferredGap(ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+					.addComponent(lblModoActual)
 					.addContainerGap())
 		);
 		contentPane.setLayout(gl_contentPane);
@@ -283,17 +276,42 @@ public class VentanaPrincipal extends JFrame {
 
 			if (e.getSource().equals(mntmEspanolES)) {
 				Configuracion.getConfiguracion().establecerIdiomaYPais(Constantes.ESPANOL, Constantes.ESPANA);
+				restablecer();
 			}
 			
 			if (e.getSource().equals(mntmEspanolAR)) {
 				Configuracion.getConfiguracion().establecerIdiomaYPais(Constantes.ESPANOL, Constantes.ARGENTINA);
+				restablecer();
 			}
 			
 			if (e.getSource().equals(mntmInglesEU)) {
 				Configuracion.getConfiguracion().establecerIdiomaYPais(Constantes.INGLES, Constantes.ESTADOS_UNIDOS);
+				restablecer();
 			}
 		}
-
+	}
+	
+	// Inmediatamente después de realizado el cambio de idioma, restablece los títulos de las etiquetas al idioma elegido.
+	private void restablecer() {
+		setTitle(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_titulo"));
+		mnPrograma.setText(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_programa"));
+		mnOpciones.setText(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_opciones"));
+		mnModo.setText(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_modo"));
+		mnIdiomas.setText(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_idiomas"));
+		mntmCreditos.setText(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_programa_creditos"));
+		mntmSalir.setText(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_programa_salir"));
+		mntmEquipos.setText(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_opciones_gestionar_equipos"));
+		mntmConexiones.setText(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_opciones_gestionar_conexiones"));
+		mntmConsultas.setText(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_opciones_consultas_red"));
+		modoSimulacion.setText(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_modo_simulacion"));
+		modoReal.setText(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_modo_real"));
+		mntmEspanolAR.setText(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_idiomas_espanol_ar"));
+		mntmEspanolES.setText(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_idiomas_espanol_es"));
+		mntmInglesEU.setText(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_idiomas_ingles_eu"));
+		cambiarModo(modo); // Modifica el label lblModoActual de acuerdo al idioma elegido, sin modificar el modo actual del sistema
+		lblISFPP.setText(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_isfpp"));
+		lblPOO.setText(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_poo"));
+		lblGestion.setText(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_gestion"));
 	}
 
 }
