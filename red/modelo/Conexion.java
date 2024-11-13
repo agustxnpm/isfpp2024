@@ -1,6 +1,7 @@
 package red.modelo;
 
 import java.util.Objects;
+import red.controlador.Configuracion;
 
 import red.excepciones.EquipoRepetidoException;
 
@@ -31,7 +32,7 @@ public class Conexion {
         super();
         // Verificar que los equipos sean diferentes.
         if (equipo1.equals(equipo2))
-            throw new EquipoRepetidoException("Los equipos en una conexión deben ser diferentes.");
+            throw new EquipoRepetidoException(Configuracion.getConfiguracion().getRb().getString("Conexion_equipos_deben_ser_diferentes"));
         this.equipo1 = equipo1;
         this.equipo2 = equipo2;
         this.tipoCable = tipoCable;

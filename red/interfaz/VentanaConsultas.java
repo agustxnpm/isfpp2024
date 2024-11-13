@@ -10,6 +10,7 @@ import java.util.Set;
 import red.modelo.Equipo;
 import red.negocio.Calculo;
 import red.negocio.Red;
+import red.controlador.Configuracion;
 
 public class VentanaConsultas extends JFrame {
 
@@ -36,7 +37,7 @@ public class VentanaConsultas extends JFrame {
 	private boolean modo; // true = modo simulacion, false = modo real;
 
 	public VentanaConsultas(Calculo calculo, Red red, boolean modo) {
-		setTitle("Consultas de la Red");
+		setTitle(Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_titulo"));
 		setSize(650, 400);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -50,19 +51,19 @@ public class VentanaConsultas extends JFrame {
 	private void inicializarComponentes() {
 		handler = new Handler();
 
-		calcularVelocidadButton = new JButton("Calcular Velocidad Máxima");
+		calcularVelocidadButton = new JButton(Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_calcular_velocidad_maxima"));
 		calcularVelocidadButton.setBounds(20, 80, 180, 50);
 		calcularVelocidadButton.addActionListener(handler);
 
-		pingEquipoButton = new JButton("Realizar Ping a Equipo");
+		pingEquipoButton = new JButton(Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_realizar_ping_equipo"));
 		pingEquipoButton.setBounds(220, 80, 180, 50);
 		pingEquipoButton.addActionListener(handler);
 
-		detectarProblemasButton = new JButton("Detectar Problemas");
+		detectarProblemasButton = new JButton(Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_detectar_problemas"));
 		detectarProblemasButton.setBounds(420, 80, 180, 50);
 		detectarProblemasButton.addActionListener(handler);
 
-		verMapaEstadoButton = new JButton("Ver Mapa de Estado");
+		verMapaEstadoButton = new JButton(Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_mapa_estado"));
 		verMapaEstadoButton.setBounds(20, 160, 180, 50);
 		verMapaEstadoButton.addActionListener(handler);
 
@@ -77,7 +78,7 @@ public class VentanaConsultas extends JFrame {
 	}
 
 	private void ventanaVelocidad() {
-		calcularButton = new JButton("Calcular");
+		calcularButton = new JButton(Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_calcular"));
 
 		JPanel panelCentral = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -105,7 +106,7 @@ public class VentanaConsultas extends JFrame {
 		gbc.gridx = 1;
 		panelCentral.add(equipo2ComboBox, gbc);
 
-		JDialog dialog = new JDialog(this, "Calcular Velocidad", true);
+		JDialog dialog = new JDialog(this, Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_calcular_velocidad"), true);
 
 		JPanel panelInferior = new JPanel();
 		panelInferior.add(calcularButton);
@@ -133,8 +134,9 @@ public class VentanaConsultas extends JFrame {
 			equiposConectados.remove(equipo1); // Remover el equipo1 de la lista de opciones del ComboBox
 
 			if (equiposConectados.isEmpty())
-				JOptionPane.showMessageDialog(this, String.format("No se encontraron equipos conectados a %s", equipo1Codigo),
-						"Sin Conexiones", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this,
+						String.format(Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_no_equipos_conectados_a"),equipo1Codigo),
+						Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_sin_conexiones"), JOptionPane.WARNING_MESSAGE);
 			else
 				for (Equipo equipo : equiposConectados)
 					equipo2ComboBox.addItem(equipo.getCodigo());
@@ -146,7 +148,8 @@ public class VentanaConsultas extends JFrame {
 		String equipo2Codigo = (String) equipo2ComboBox.getSelectedItem();
 
 		if (equipo1Codigo == null || equipo2Codigo == null) {
-			JOptionPane.showMessageDialog(this, "Seleccione ambos equipos.", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_seleccione_ambos_equipos"),
+					Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 
@@ -163,14 +166,16 @@ public class VentanaConsultas extends JFrame {
 				List<Equipo> ruta = calculo.buscarRuta(equipo1, equipo2);
 				int velocidadMaxima = calculo.calcularVelocidadMaxima(ruta);
 
-				JOptionPane.showMessageDialog(this, String.format("La velocidad máxima entre %s y %s es: %d Mbps", equipo1Codigo, equipo2Codigo, velocidadMaxima),
-						"Velocidad Máxima", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(this,
+						String.format(Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_velocidad_maxima_entre_y_es_mbps"),
+								equipo1Codigo, equipo2Codigo, velocidadMaxima),
+						Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_velocidad_maxima"), JOptionPane.INFORMATION_MESSAGE);
 			} else {
-				JOptionPane.showMessageDialog(this, "No se pudo encontrar uno de los equipos.", "Error",
-						JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_no_se_pudo_encontrar_uno_de_equipos"),
+						Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
 			}
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(this, e.getMessage(), "Error",
+			JOptionPane.showMessageDialog(this, e.getMessage(), Configuracion.getConfiguracion().getRb().getString("Interfaz_error"),
 					JOptionPane.ERROR_MESSAGE);
 		}
 		
@@ -178,7 +183,7 @@ public class VentanaConsultas extends JFrame {
 
 	private void realizarPingAEquipo() {
 		// Crear un diálogo personalizado
-		dialog = new JDialog(this, "Ping a Equipo o Rango de IPs", true);
+		dialog = new JDialog(this, Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_ping_equipo_o_rango_ips"), true);
 		dialog.setSize(500, 350);
 		dialog.setLayout(new GridBagLayout());
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -190,11 +195,11 @@ public class VentanaConsultas extends JFrame {
 		gbc.anchor = GridBagConstraints.WEST;
 
 		// Checkbox para seleccionar ping a un rango de equipos
-		rangoCheckBox = new JCheckBox("Ping a un rango de equipos");
+		rangoCheckBox = new JCheckBox(Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_ping_rango_equipos"));
 		dialog.add(rangoCheckBox, gbc);
 
 		gbc.gridy++;
-		JLabel equipoLabel = new JLabel("Ingresá la IP del equipo:");
+		JLabel equipoLabel = new JLabel(Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_ingresa_ip_equipo"));
 		dialog.add(equipoLabel, gbc);
 
 		gbc.gridx++;
@@ -203,9 +208,9 @@ public class VentanaConsultas extends JFrame {
 
 		gbc.gridy++;
 		gbc.gridx = 0;
-		JLabel ipInicioLabel = new JLabel("IP de inicio:");
+		JLabel ipInicioLabel = new JLabel(Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_ip_inicio"));
 		ipInicioTextField = new JTextField(15); // Campo de texto para la IP de inicio
-		JLabel ipFinLabel = new JLabel("IP de fin:");
+		JLabel ipFinLabel = new JLabel(Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_ip_fin"));
 		ipFinTextField = new JTextField(15); // Campo de texto para la IP de fin
 
 		dialog.add(ipInicioLabel, gbc);
@@ -236,7 +241,7 @@ public class VentanaConsultas extends JFrame {
 		// Campo de texto para la cantidad de pings
 		gbc.gridy++;
 		gbc.gridx = 0;
-		JLabel cantPingsLabel = new JLabel("Cantidad de pings:");
+		JLabel cantPingsLabel = new JLabel(Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_cantidad_pings"));
 		dialog.add(cantPingsLabel, gbc);
 
 		gbc.gridx++;
@@ -247,7 +252,7 @@ public class VentanaConsultas extends JFrame {
 		gbc.gridy++;
 		gbc.gridx = 0;
 		gbc.gridwidth = 2;
-		pingButton = new JButton("Ping");
+		pingButton = new JButton(Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_ping"));
 		pingButton.addActionListener(handler);
 		dialog.add(pingButton, gbc);
 
@@ -258,11 +263,11 @@ public class VentanaConsultas extends JFrame {
 
 	private void pingReal(String direccionIp, JDialog dialog, int cantPings) {
 		// Crear el JDialog para mostrar los resultados
-		JDialog resultDialog = new JDialog(dialog, "Resultados del Ping Real", false); // No modal
+		JDialog resultDialog = new JDialog(dialog, Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_resultados_ping_real"), false); // No modal
 		JTextArea textArea = new JTextArea(20, 50);
 		textArea.setEditable(false);
 		JScrollPane scrollPane = new JScrollPane(textArea);
-		JButton detenerButton = new JButton("Detener");
+		JButton detenerButton = new JButton(Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_detener"));
 
 		// Crear la barra de progreso
 		JProgressBar progressBar = new JProgressBar();
@@ -299,7 +304,7 @@ public class VentanaConsultas extends JFrame {
 			@Override
 			protected void done() {
 				if (!detener[0]) {
-					textArea.append("Ping completado.\n");
+					textArea.append(Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_ping_completado"));
 					progressBar.setValue(progressBar.getMaximum()); // Asegurarse de que la barra esté al 100%
 				}
 			}
@@ -319,15 +324,17 @@ public class VentanaConsultas extends JFrame {
 			if (!direccionIp.isEmpty())
 				if (modo) {
 					boolean respuestaPing = calculo.realizarPingAEquipo(direccionIp);
-					String mensaje = respuestaPing ? "Ping exitoso" : "Ping fallido";
-					JOptionPane.showMessageDialog(dialog, String.format("%s al equipo con IP: %s",  mensaje, direccionIp),
-							"Resultado del Ping", JOptionPane.INFORMATION_MESSAGE);
+					String mensaje = respuestaPing ? Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_ping_exitoso")
+							: Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_ping_fallido");
+					JOptionPane.showMessageDialog(dialog,
+							String.format(Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_al_equipo_con_ip"),  mensaje, direccionIp),
+							Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_resultado_ping"), JOptionPane.INFORMATION_MESSAGE);
 				} else pingReal(direccionIp, dialog, cantPings);
 
-			else JOptionPane.showMessageDialog(dialog, "Por favor, ingresá una IP válida.", "Error",
-						JOptionPane.ERROR_MESSAGE);
+			else JOptionPane.showMessageDialog(dialog, Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_ingresa_ip_valida"),
+					Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(dialog, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(dialog, e.getMessage(), Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
 		}
 
 	}
@@ -336,11 +343,12 @@ public class VentanaConsultas extends JFrame {
 	private void pingARango(String inicioIp, String finIp, JDialog dialog, int cantPings) {
 		if (!inicioIp.isEmpty() && !finIp.isEmpty()) {
 			// Crear el JDialog para mostrar los resultados
-			JDialog resultDialog = new JDialog(dialog, "Resultados del Ping", false); // false indica que no es modal
+			JDialog resultDialog = new JDialog(dialog, Configuracion.getConfiguracion().getRb()
+					.getString("VentanaConsultas_resultados_ping"), false); // false indica que no es modal
 			JTextArea textArea = new JTextArea(20, 50);
 			textArea.setEditable(false);
 			JScrollPane scrollPane = new JScrollPane(textArea);
-			JButton detenerButton = new JButton("Detener");
+			JButton detenerButton = new JButton(Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_detener"));
 
 			// Crear la barra de progreso
 			JProgressBar progressBar = new JProgressBar();
@@ -383,7 +391,7 @@ public class VentanaConsultas extends JFrame {
 						progressBar.setMaximum(totalPings - 1);
 						for (int i = 0; i < totalPings; i++) {
 							if (detener[0]) {
-								publish("Ping detenido por el usuario.\n");
+								publish(Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_ping_detenido_por_usuario"));
 								break;
 							}
 							progressBar.setValue(i);
@@ -405,7 +413,7 @@ public class VentanaConsultas extends JFrame {
 				@Override
 				protected void done() {
 					if (!detener[0])
-						textArea.append("Ping a rango completado.\n");
+						textArea.append(Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_ping_rango_completado"));
 				}
 			};
 
@@ -418,8 +426,8 @@ public class VentanaConsultas extends JFrame {
 			});
 
 			worker.execute(); // Ejecutar la tarea
-		} else JOptionPane.showMessageDialog(dialog, "Por favor, ingresá un rango de IPs válido.", "Error",
-					JOptionPane.ERROR_MESSAGE);
+		} else JOptionPane.showMessageDialog(dialog, Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_ingresa_rango_ips_valido"),
+				Configuracion.getConfiguracion().getRb().getString("Interfaz.error"), JOptionPane.ERROR_MESSAGE);
 	}
 
 	private void detectarProblemasConectividad() {
@@ -436,21 +444,21 @@ public class VentanaConsultas extends JFrame {
 
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		panel.add(new JLabel("Equipo 1:"), gbc);
+		panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Conexion_equipo_1_opcion")), gbc);
 		gbc.gridx = 1;
 		panel.add(equipo1ComboBox, gbc);
 
 		gbc.gridx = 0;
 		gbc.gridy = 1;
-		panel.add(new JLabel("Equipo gateway:"), gbc);
+		panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_equipo_gateway")), gbc);
 		gbc.gridx = 1;
 		panel.add(equipo2ComboBox, gbc);
 
-		JDialog dialog = new JDialog(this, "Verificar conectividad", true);
+		JDialog dialog = new JDialog(this, Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_verificar_conectividad"), true);
 
 		JPanel panelInferior = new JPanel();
 
-		verificarButton = new JButton("Verificar conectividad");
+		verificarButton = new JButton(Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_verificar_conectividad"));
 		panelInferior.add(verificarButton);
 
 		verificarButton.addActionListener(handler);
@@ -478,12 +486,12 @@ public class VentanaConsultas extends JFrame {
 	}
 
 	private void verMapaDeEstado() {
-		// Create a new dialog to show the network map
-		JDialog dialog = new JDialog(this, "Mapa de Estado de la Red", true);
+		// Crea un nuevo diálogo para mostrar el mapa de las redes
+		JDialog dialog = new JDialog(this, Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_mapa_estado_red"), true);
 		dialog.setSize(800, 600);
 		dialog.setLocationRelativeTo(this);
 
-		// Get the graph panel from Calculo
+		// Obtiene el panel del grafo de Calculo
 		JPanel graphPanel = calculo.crearMapaDeEstado();
 		dialog.add(graphPanel, BorderLayout.CENTER);
 

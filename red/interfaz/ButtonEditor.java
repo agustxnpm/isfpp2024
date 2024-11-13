@@ -12,6 +12,7 @@
 	import red.negocio.Calculo;
 	import red.negocio.Red;
 	import red.modelo.Conexion;
+	import red.controlador.Configuracion;
 
 	class ButtonEditor extends DefaultCellEditor {
 		
@@ -51,7 +52,9 @@
 				button.setForeground(table.getForeground());
 				button.setBackground(table.getBackground());
 			}
-			label = (value == null) ? actionType.equals("eliminar") ? "Eliminar" : "Modificar" : value.toString();
+			label = (value == null) ? actionType.equals(Configuracion.getConfiguracion().getRb().getString("Interfaz_eliminar_minuscula"))
+					? Configuracion.getConfiguracion().getRb().getString("Interfaz_eliminar")
+					: Configuracion.getConfiguracion().getRb().getString("Interfaz_modificar") : value.toString();
 			button.setText(label);
 			isPushed = true;
 			return button;
@@ -64,19 +67,18 @@
 
 				// Verificación para evitar el índice -1 (sin fila seleccionada)
 				if (selectedRow == -1) {
-					JOptionPane.showMessageDialog(null, "Por favor selecciona una fila válida antes de eliminar.", "Error",
-							JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, Configuracion.getConfiguracion().getRb().getString("ButtonEditor_selecciona_fila_valida"),
+							Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
 					return label;
 				}
 
 				// Dependiendo del tipo de acción, se llama al método correspondiente
-				if ("equipo".equals(actionType)) {
+				if ("equipo".equals(actionType))
 					eliminarEquipo(selectedRow);
-				} else if ("conexion".equals(actionType)) {
+				else if ("conexion".equals(actionType))
 					eliminarConexion(selectedRow);
-				} else if ("modificar".equals(actionType)) {
+				else if ("modificar".equals(actionType))
 					modificarEquipo(selectedRow); // Método para modificar
-				}
 			}
 			isPushed = false;
 			return label;
@@ -85,8 +87,8 @@
 		// Método para eliminar un equipo
 		private void eliminarEquipo(int selectedRow) {
 			String equipoCodigo = (String) table.getValueAt(selectedRow, 0); // Código del equipo
-			int confirmacion = JOptionPane.showConfirmDialog(null, "¿Estás seguro de que quieres eliminar este equipo?",
-					"Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+			int confirmacion = JOptionPane.showConfirmDialog(null, Configuracion.getConfiguracion().getRb().getString("ButtonEditor_seguro_eliminar"),
+					Configuracion.getConfiguracion().getRb().getString("ButtonEditor_confirmar_eliminacion"), JOptionPane.YES_NO_OPTION);
 			if (confirmacion == JOptionPane.YES_OPTION) {
 				try {
 					Equipo equipoAEliminar = red.buscarEquipoPorCodigo(equipoCodigo);
@@ -97,12 +99,14 @@
 					// Eliminar la fila del modelo de la tabla
 					((DefaultTableModel) table.getModel()).removeRow(selectedRow);
 
-					JOptionPane.showMessageDialog(null, "Equipo eliminado correctamente.", "Éxito",
+					JOptionPane.showMessageDialog(null, Configuracion.getConfiguracion().getRb().getString("ButtonEditor_equipo_eliminado_correctamente"),
+							Configuracion.getConfiguracion().getRb().getString("ButtonEditor_exito"),
 							JOptionPane.INFORMATION_MESSAGE);
 				} catch (Exception e) {
 					e.printStackTrace();
-					JOptionPane.showMessageDialog(null, String.format("Error al eliminar el equipo: %s", e.getMessage()), "Error",
-							JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, String.format(Configuracion.getConfiguracion().getRb()
+																				.getString("ButtonEditor_error_eliminar_equipo"), e.getMessage()),
+							Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		}
@@ -128,31 +132,31 @@
 				JTextField tipoEquipoField = new JTextField();
 				JTextField descripcionField = new JTextField();
 				JTextField cantPuertosField = new JTextField();
-				JCheckBox estadoCheckBox = new JCheckBox("Activo");
+				JCheckBox estadoCheckBox = new JCheckBox(Configuracion.getConfiguracion().getRb().getString("ButtonEditor_activo"));
 		
 				JComboBox<String> ubicacionComboBox = new JComboBox<>(ubicacionArray);
 				JComboBox<String> tipoPuertoComboBox = new JComboBox<>(tipoPuertoArray);
 		
 				// Agregar componentes al panel
-				panel.add(new JLabel("Codigo:"));
+				panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_codigo_opcion")));
 				codigoField.setEditable(false);
 				panel.add(codigoField);
-				panel.add(new JLabel("Descripción:"));
+				panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_descripcion_opcion")));
 				panel.add(descripcionField);
-				panel.add(new JLabel("Marca:"));
+				panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_marca_opcion")));
 				panel.add(marcaField);
-				panel.add(new JLabel("Modelo:"));
+				panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_modelo_opcion")));
 				panel.add(modeloField);
-				panel.add(new JLabel("Tipo Equipo:"));
+				panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_tipo_equipo_opcion")));
 				tipoEquipoField.setEditable(false);
 				panel.add(tipoEquipoField);
-				panel.add(new JLabel("Ubicación:"));
+				panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_ubicacion_opcion")));
 				panel.add(ubicacionComboBox);
-				panel.add(new JLabel("Estado:"));
+				panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_estado_opcion")));
 				panel.add(estadoCheckBox); // Añadir el checkbox de estado
-				panel.add(new JLabel("Cantidad de Puertos:"));
+				panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_cantidad_puertos_opcion")));
 				panel.add(cantPuertosField);
-				panel.add(new JLabel("Tipo de Puerto:"));
+				panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_tipo_puerto_opcion")));
 				panel.add(tipoPuertoComboBox);
 		
 				// Buscar el equipo y mostrar el diálogo de modificación
@@ -166,7 +170,8 @@
 				ubicacionComboBox.setSelectedItem(equipoAModificar.getUbicacion().getCodigo());
 		
 				// Mostrar el diálogo de entrada
-				int result = JOptionPane.showConfirmDialog(null, panel, "Modificar Equipo", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+				int result = JOptionPane.showConfirmDialog(null, panel, Configuracion.getConfiguracion().getRb().getString("ButtonEditor_modificar_equipo"),
+						JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 		
 				if (result == JOptionPane.OK_OPTION) {
 					// Obtener valores y asignar al equipo antes de actualizar
@@ -190,17 +195,21 @@
 					red.modificarEquipo(equipoAModificar);
 		
 					// Mensaje de confirmación y refrescar tabla
-					JOptionPane.showMessageDialog(null, "Equipo modificado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, Configuracion.getConfiguracion().getRb().getString("ButtonEditor_equipo_modificado_correctamente"),
+							Configuracion.getConfiguracion().getRb().getString("ButtonEditor_exito"), JOptionPane.INFORMATION_MESSAGE);
 					((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.getModelo(), selectedRow, 3);
 					((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.getMarca(), selectedRow, 2);
 					((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.getDescripcion(), selectedRow, 1);
 					((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.getUbicacion().getDescripcion(), selectedRow, 5);
-					((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.isEstado() ? "Activo" : "Inactivo", selectedRow, 6);
+					((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.isEstado()
+							? Configuracion.getConfiguracion().getRb().getString("ButtonEditor_activo")
+							: Configuracion.getConfiguracion().getRb().getString("ButtonEditor_inactivo"), selectedRow, 6);
 					((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.getPuertosInfo(), selectedRow, 7);
 				}
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
-				JOptionPane.showMessageDialog(null, String.format("Error al modificar el equipo: %s", e.getMessage()), "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, String.format(Configuracion.getConfiguracion().getRb().getString("ButtonEditor_error_modificar_equipo"),
+						e.getMessage()), Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
 			}
 		}
 		
@@ -208,8 +217,8 @@
 		private void eliminarConexion(int selectedRow) {
 			String equipo1Codigo = (String) table.getValueAt(selectedRow, 0); // Código del primer equipo
 			String equipo2Codigo = (String) table.getValueAt(selectedRow, 1); // Código del segundo equipo
-			int confirmacion = JOptionPane.showConfirmDialog(null, "¿Estás seguro de que quieres eliminar esta conexión?",
-					"Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+			int confirmacion = JOptionPane.showConfirmDialog(null, Configuracion.getConfiguracion().getRb().getString("ButtonEditor_seguro_eliminar_conexion"),
+					Configuracion.getConfiguracion().getRb().getString("ButtonEditor_confirmar_eliminacion"), JOptionPane.YES_NO_OPTION);
 			if (confirmacion == JOptionPane.YES_OPTION) {
 				try {
 					Conexion conexionAEliminar = red.buscarConexionPorCodigo(equipo1Codigo, equipo2Codigo);
@@ -222,12 +231,12 @@
 					// Eliminar la fila del modelo de la tabla
 					((DefaultTableModel) table.getModel()).removeRow(selectedRow);
 
-					JOptionPane.showMessageDialog(null, "Conexión eliminada correctamente.", "Éxito",
-							JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, Configuracion.getConfiguracion().getRb().getString("ButtonEditor_conexion_eliminada_correctamente"), 
+							Configuracion.getConfiguracion().getRb().getString("ButtonEditor_exito"), JOptionPane.INFORMATION_MESSAGE);
 				} catch (Exception e) {
 					e.printStackTrace();
-					JOptionPane.showMessageDialog(null, String.format("Error al eliminar la conexión: %s", e.getMessage()), "Error",
-							JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, String.format(Configuracion.getConfiguracion().getRb().getString("ButtonEditor_error_eliminar_conexion"),
+							e.getMessage()), Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		}
@@ -244,7 +253,8 @@
 			try {
 				super.fireEditingStopped();
 			} catch (Exception e) {
-				JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, e.getMessage(), Configuracion.getConfiguracion().getRb().getString("Interfaz_error"),
+						JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 package red.controlador;
 
 import java.util.List;
+import java.util.ResourceBundle;
 
 import red.excepciones.EquipoRepetidoException;
 import red.interfaz.Interfaz;
@@ -20,6 +21,7 @@ public class Coordinador {
     private Red red;
     private Interfaz interfaz;
     private Calculo calculo;
+    private Configuracion configuracion;
 
     /**
      * Obtiene la instancia de la red.
@@ -69,7 +71,28 @@ public class Coordinador {
         this.calculo = calculo;
     }
 
-    /**
+    /** Obtiene el objeto de configuración
+	 * @return configuracion La instancia de Configuración
+	 */
+	public Configuracion getConfiguracion() {
+		return configuracion;
+	}
+
+	/** Establece el objeto de configuración
+	 * @param configuracion El objeto de configuración a establecer
+	 */
+	public void setConfiguracion(Configuracion configuracion) {
+		this.configuracion = configuracion;
+	}
+	
+	/** Obtiene el atributo ResourceBundle de la configuración
+	 * @return el ResourceBundle de la configuración
+	 */
+	public ResourceBundle getRb() {
+		return configuracion.getRb();
+	}
+
+	/**
      * Busca un equipo en la red por su código.
      * @param codigo El código del equipo.
      * @return El equipo encontrado o null si no existe.

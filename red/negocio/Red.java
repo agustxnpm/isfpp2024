@@ -17,6 +17,7 @@ import red.servicio.TipoPuertoService;
 import red.servicio.TipoPuertoServiceImp;
 import red.servicio.UbicacionService;
 import red.servicio.UbicacionServiceImp;
+import red.controlador.Configuracion;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -119,7 +120,7 @@ public class Red {
 
         // Verificar que no se añadan equipos con un código ya existente.
         if (equipos.contains(nuevoEquipo))
-            throw new EquipoRepetidoException("El equipo ya existe en la red");
+            throw new EquipoRepetidoException(Configuracion.getConfiguracion().getRb().getString("Red_equipo_ya_existe"));
 
         // Agregar el nuevo equipo a la lista y persistir en el servicio.
         equipos.add(nuevoEquipo);
@@ -136,7 +137,7 @@ public class Red {
     public void agregarEquipo(Equipo equipo) throws EquipoRepetidoException {
         // Verificar que no se añadan equipos con un código ya existente.
         if (equipos.contains(equipo))
-            throw new EquipoRepetidoException("El equipo ya existe en la red");
+            throw new EquipoRepetidoException(Configuracion.getConfiguracion().getRb().getString("Red_equipo_ya_existe"));
 
         // Agregar el equipo a la lista y persistir en el servicio.
         equipos.add(equipo);
@@ -146,7 +147,7 @@ public class Red {
     public void agregarConexion(Conexion conexion) throws ConexionRepetidaException {
         // Verificar que no se añadan equipos con un código ya existente.
         if (conexiones.contains(conexion))
-            throw new ConexionRepetidaException("La conexion ya existe en la red");
+            throw new ConexionRepetidaException(Configuracion.getConfiguracion().getRb().getString("Red_conexion_ya_existe"));
 
         // Agregar el equipo a la lista y persistir en el servicio.
         conexiones.add(conexion);

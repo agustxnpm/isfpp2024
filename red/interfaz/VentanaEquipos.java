@@ -13,12 +13,12 @@ import red.modelo.TipoPuerto;
 import red.modelo.Ubicacion;
 import red.negocio.Calculo;
 import red.negocio.Red;
+import red.controlador.Configuracion;
 
 public class VentanaEquipos extends JFrame {
 
 	private Red red;
 	private Calculo calculo;
-
 	private JTable equiposTable;
 	private DefaultTableModel equipoTableModel;
 	private List<TipoEquipo> listTipoEquipo; // Lista de TipoEquipo
@@ -26,7 +26,7 @@ public class VentanaEquipos extends JFrame {
 	private List<Ubicacion> listUbicaciones; // Lista de Ubicaciones
 
 	public VentanaEquipos(Calculo calculo, Red red) {
-		setTitle("Gestión de Equipos");
+		setTitle(Configuracion.getConfiguracion().getRb().getString("VentanaEquipos_titulo"));
 		setSize(1200, 400); // Ajustar el tamaño para ver todas las columnas
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -39,8 +39,8 @@ public class VentanaEquipos extends JFrame {
 			listTipoPuerto = red.getTipoPuertoService().buscarTodos();
 			listUbicaciones = red.getUbicaciones();
 		} catch (FileNotFoundException e) {
-			JOptionPane.showMessageDialog(this, "Error al cargar los datos de los equipos.", "Error",
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, Configuracion.getConfiguracion().getRb().getString("VentanaEquipos_error_cargar_datos"),
+					Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
 		}
 
 		inicializarComponentes();
@@ -48,8 +48,17 @@ public class VentanaEquipos extends JFrame {
 
 	private void inicializarComponentes() {
 
-		String[] equipoColumnNames = { "Código", "Descripción", "Marca", "Modelo", "Tipo Equipo", "Ubicación", "Estado",
-				"Info Puertos", "Direccion IP", "Acciones", "Modificar" };
+		String[] equipoColumnNames = { Configuracion.getConfiguracion().getRb().getString("Equipo_codigo"),
+				Configuracion.getConfiguracion().getRb().getString("Equipo_descripcion"),
+				Configuracion.getConfiguracion().getRb().getString("Equipo_marca"),
+				Configuracion.getConfiguracion().getRb().getString("Equipo_modelo"),
+				Configuracion.getConfiguracion().getRb().getString("Equipo_tipo_equipo"),
+				Configuracion.getConfiguracion().getRb().getString("Equipo_ubicacion"),
+				Configuracion.getConfiguracion().getRb().getString("Equipo_estado"),
+				Configuracion.getConfiguracion().getRb().getString("VentanaEquipos_info_puertos"),
+				Configuracion.getConfiguracion().getRb().getString("VentanaEquipos_direccion_ip"),
+				Configuracion.getConfiguracion().getRb().getString("VentanaEquipos_acciones"),
+				Configuracion.getConfiguracion().getRb().getString("VentanaEquipos_modificar") };
 		equipoTableModel = new DefaultTableModel(equipoColumnNames, 0);
 		equiposTable = new JTable(equipoTableModel) {
 			@Override
@@ -61,7 +70,7 @@ public class VentanaEquipos extends JFrame {
 		JScrollPane scrollEquipos = new JScrollPane(equiposTable);
 		add(scrollEquipos, BorderLayout.CENTER);
 
-		JButton agregarEquipoButton = new JButton("Agregar Equipo");
+		JButton agregarEquipoButton = new JButton(Configuracion.getConfiguracion().getRb().getString("VentanaEquipos_agregar_equipo"));
 		agregarEquipoButton.addActionListener(e -> agregarEquipo());
 
 		JPanel panelInferior = new JPanel();
@@ -76,8 +85,9 @@ public class VentanaEquipos extends JFrame {
 		equipoTableModel.setRowCount(0); // Limpiar la tabla
 		// Añadir filas a la tabla con todos los datos del equipo
 		for (Equipo equipo : equipos) {
-			List<String> direccionesIp ;
-			String estadoTexto = equipo.isEstado() ? "Activo" : "Inactivo"; // Convertir booleano a texto legible
+			// Convertir booleano a texto legible
+			String estadoTexto = equipo.isEstado() ? Configuracion.getConfiguracion().getRb().getString("VentanaEquipos_activo")
+					: Configuracion.getConfiguracion().getRb().getString("VentanaEquipos_inactivo");
 			equipoTableModel.addRow(new Object[] { equipo.getCodigo(), equipo.getDescripcion(), equipo.getMarca(),
 					equipo.getModelo(), equipo.getTipoEquipo().getDescripcion(),
 
@@ -87,17 +97,22 @@ public class VentanaEquipos extends JFrame {
 					
 					equipo.getDireccionesIp().toString(),
 
-					"Eliminar", "Modificar" });
+					Configuracion.getConfiguracion().getRb().getString("Interfaz_eliminar"),
+					
+					Configuracion.getConfiguracion().getRb().getString("Interfaz_modificar") });
 		}
 
 		// Configurar los botones de "Eliminar"
-		equiposTable.getColumn("Acciones").setCellRenderer(new ButtonRenderer("eliminar"));
-		equiposTable.getColumn("Acciones")
-				.setCellEditor(new ButtonEditor(new JCheckBox(), equiposTable, "equipo", red, calculo));
+		equiposTable.getColumn(Configuracion.getConfiguracion().getRb().getString("VentanaEquipos_acciones"))
+				.setCellRenderer(new ButtonRenderer(Configuracion.getConfiguracion().getRb().getString("Interfaz_eliminar")));
+		equiposTable.getColumn(Configuracion.getConfiguracion().getRb().getString("VentanaEquipos_acciones"))
+				.setCellEditor(new ButtonEditor(new JCheckBox(), equiposTable, Configuracion.getConfiguracion().getRb().getString("Modelo_equipo"), red, calculo));
 
-		equiposTable.getColumn("Modificar").setCellRenderer(new ButtonRenderer("modificar"));
-		equiposTable.getColumn("Modificar")
-				.setCellEditor(new ButtonEditor(new JCheckBox(), equiposTable, "modificar", red, calculo));
+		equiposTable.getColumn(Configuracion.getConfiguracion().getRb().getString("Interfaz_modificar"))
+				.setCellRenderer(new ButtonRenderer(Configuracion.getConfiguracion().getRb().getString("Interfaz_modificar_minuscula")));
+		equiposTable.getColumn(Configuracion.getConfiguracion().getRb().getString("Interfaz_modificar"))
+				.setCellEditor(new ButtonEditor(new JCheckBox(), equiposTable,
+						Configuracion.getConfiguracion().getRb().getString("Interfaz_modificar_minuscula"), red, calculo));
 
 	}
 
@@ -142,24 +157,24 @@ public class VentanaEquipos extends JFrame {
 		JComboBox<String> ubicacionComboBox = new JComboBox<>(ubicacionArray);
 
 		// Agregar componentes al panel
-		panel.add(new JLabel("Código:"));
+		panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_codigo_opcion")));
 		panel.add(codigoField);
-		panel.add(new JLabel("Modelo:"));
+		panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_modelo_opcion")));
 		panel.add(modeloField);
-		panel.add(new JLabel("Marca:"));
+		panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_marca_opcion")));
 		panel.add(marcaField);
-		panel.add(new JLabel("Descripción:"));
+		panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_descripcion_opcion")));
 		panel.add(descripcionField);
-		panel.add(new JLabel("Cantidad de Puertos:"));
+		panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_cantidad_puertos_opcion")));
 		panel.add(cantPuertosField);
-		panel.add(new JLabel("Tipo de Equipo:"));
+		panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_tipo_equipo_opcion")));
 		panel.add(tipoEquipoComboBox);
-		panel.add(new JLabel("Tipo de Puerto:"));
+		panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_tipo_puerto_opcion")));
 		panel.add(tipoPuertoComboBox);
-		panel.add(new JLabel("Ubicacion:"));
+		panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_ubicacion_opcion")));
 		panel.add(ubicacionComboBox);
-		int result = JOptionPane.showConfirmDialog(this, panel, "Agregar Equipo", JOptionPane.OK_CANCEL_OPTION,
-				JOptionPane.PLAIN_MESSAGE);
+		int result = JOptionPane.showConfirmDialog(this, panel, Configuracion.getConfiguracion().getRb().getString("VentanaEquipos_agregar_equipo"),
+				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 		if (result == JOptionPane.OK_OPTION) {
 			try {
 				int cantPuertos = Integer.parseInt(cantPuertosField.getText());
@@ -185,11 +200,12 @@ public class VentanaEquipos extends JFrame {
 				calculo.agregarEquipoAlGrafo(equipo);
 				red.agregarEquipo(equipo);
 				mostrarEquiposEnTabla(); // Refrescar la tabla después de la inserción
-				JOptionPane.showMessageDialog(this, "Equipo añadido correctamente");
+				JOptionPane.showMessageDialog(this, Configuracion.getConfiguracion().getRb().getString("VentanaEquipos_equipo_anadido_correctamente"));
 			} catch (Exception e) {
 				e.printStackTrace();
-				JOptionPane.showMessageDialog(this, "Error al agregar el equipo: " + e.getMessage(), "Error",
-						JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this,
+						String.format(Configuracion.getConfiguracion().getRb().getString("VentanaEquipos_error_agregar_equipo"), e.getMessage()),
+						Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}

@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
 
+import red.controlador.Configuracion;
 import red.excepciones.DireccionIpRepetidaException;
 
 /**
@@ -41,9 +42,10 @@ public class Equipo {
                   TipoEquipo tipoEquipo, int cantPuertos, TipoPuerto tipoPuerto, boolean estado) {
         super();
         this.codigo = codigo;
-        this.modelo = (modelo == null || modelo.isEmpty()) ? "Modelo desconocido" : modelo;
-        this.marca = (marca == null || marca.isEmpty()) ? "Marca desconocida" : marca;
-        this.descripcion = (descripcion == null || descripcion.isEmpty()) ? "Sin descripción" : descripcion;
+        this.modelo = (modelo == null || modelo.isEmpty()) ? Configuracion.getConfiguracion().getRb().getString("Equipo_modelo_desconocido") : modelo;
+        this.marca = (marca == null || marca.isEmpty()) ? Configuracion.getConfiguracion().getRb().getString("Equipo_marca_desconocida") : marca;
+        this.descripcion = (descripcion == null || descripcion.isEmpty())
+        		? Configuracion.getConfiguracion().getRb().getString("Equipo_sin_descripcion") : descripcion;
         this.ubicacion = ubicacion;
         this.tipoEquipo = tipoEquipo;
         direccionesIp = new ArrayList<>();
@@ -137,7 +139,7 @@ public class Equipo {
         return direccionesIp;
     }
 
-    /**
+	/**
      * Agrega una dirección IP al equipo, verificando que sea válida y que no esté repetida.
      * @param ip La dirección IP a agregar.
      * @throws IllegalArgumentException si la IP no tiene el formato válido
@@ -151,11 +153,11 @@ public class Equipo {
 
         // Validar si la IP tiene formato válido.
         if (!matcher.matches())
-            throw new IllegalArgumentException("La direccion IP no es valida");
+            throw new IllegalArgumentException(Configuracion.getConfiguracion().getRb().getString("Equipo_direccion_ip_no_valida"));
 
         // Verificar si la IP ya existe en el equipo.
         if (direccionesIp.contains(ip))
-            throw new DireccionIpRepetidaException("La direccion IP ya existe");
+            throw new DireccionIpRepetidaException(Configuracion.getConfiguracion().getRb().getString("Equipo_direccion_ip_ya_existe"));
 
         direccionesIp.add(ip);
     }
@@ -170,9 +172,10 @@ public class Equipo {
      */
     public void agregarPuerto(int cantPuertos, TipoPuerto tipoPuerto) throws IllegalArgumentException {
         if (cantPuertos <= 0)
-            throw new IllegalArgumentException("El equipo debe tener al menos un puerto");
+            throw new IllegalArgumentException(Configuracion.getConfiguracion().getRb().getString("Equipo_debe_tener_al_menos_un_puerto"));
         if (tipoPuerto == null)
-        	throw new IllegalArgumentException(String.format("El puerto ingresado a %s no puede ser nulo.", codigo));
+        	throw new IllegalArgumentException(
+        			String.format(Configuracion.getConfiguracion().getRb().getString("Equipo_puerto_ingresado_no_puede_ser_nulo."), codigo));
 
         Puerto puerto = new Puerto(cantPuertos, tipoPuerto);
         if (puertos.contains(puerto)) {

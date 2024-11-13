@@ -5,11 +5,9 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextArea;
-import java.util.function.Consumer;
 
 import java.awt.BorderLayout;
 import java.io.BufferedReader;
@@ -17,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 
-import com.mxgraph.layout.mxCircleLayout;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 
 import com.mxgraph.swing.mxGraphComponent;
@@ -27,7 +24,6 @@ import net.datastructures.Vertex;
 import net.datastructures.Edge;
 import net.datastructures.Entry;
 import net.datastructures.AdjacencyMapGraph;
-import net.datastructures.GraphAlgorithms;
 import net.datastructures.TreeMap;
 import red.controlador.Coordinador;
 import red.excepciones.ConexionNoConectadaException;
@@ -36,6 +32,7 @@ import red.excepciones.EquipoNoConectadoException;
 import red.excepciones.EquipoRepetidoException;
 import red.excepciones.DireccionIpNoEncontradaException;
 import red.modelo.*;
+import red.controlador.Configuracion;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -129,7 +126,7 @@ public class Calculo {
 
 		for (Edge<Conexion> edge : red.edges())
 			if (edge.getElement().equals(conexion))
-				throw new ConexionRepetidaException("La conexion ya existe en el grafo");
+				throw new ConexionRepetidaException(Configuracion.getConfiguracion().getRb().getString("Calculo_conexion_ya_existe"));
 
 		Equipo equipo1 = conexion.getEquipo1();
 		Equipo equipo2 = conexion.getEquipo2();
@@ -148,7 +145,7 @@ public class Calculo {
 
 		for (Vertex<Equipo> vertex : vertices.values())
 			if (vertex.getElement().equals(equipo))
-				throw new EquipoRepetidoException("El equipo ya existe en el grafo");
+				throw new EquipoRepetidoException(Configuracion.getConfiguracion().getRb().getString("Calculo_equipo_ya_existe"));
 
 		red.insertVertex(equipo);
 
@@ -254,7 +251,9 @@ public class Calculo {
 
 			Conexion conexion = buscarConexion(equipo1, equipo2);
 			if (conexion == null)
-				throw new ConexionNoConectadaException(String.format("No existe conexión entre %s y %s", equipo1.getCodigo(), equipo2.getCodigo()));
+				throw new ConexionNoConectadaException(String.format(
+						Configuracion.getConfiguracion().getRb().getString("Calculo_no_existe_conexion_entre"), equipo1.getCodigo(),
+						equipo2.getCodigo()));
 
 			int velocidadCable = conexion.getTipoCable().getVelocidad();
 			int velocidadEquipo1 = equipo1.getVelocidadMaxima();
@@ -301,7 +300,9 @@ public class Calculo {
 
 		// Verificar si no existe una ruta
 		if (ruta == null || ruta.isEmpty())
-			throw new ConexionNoConectadaException(String.format("No se encontró una conexion desde el equipo %s hasta el Gateway.", equipoOrigen.getCodigo()));
+			throw new ConexionNoConectadaException(String.format(
+					Configuracion.getConfiguracion().getRb().getString("Calculo_no_se_encontro_conexion_desde_equipo_hasta_gateway"),
+					equipoOrigen.getCodigo()));
 
 		// Verificar cada equipo y conexión en la ruta
 		for (int i = 0; i < ruta.size() - 1; i++) {
@@ -315,18 +316,23 @@ public class Calculo {
 
 			// Lanzar excepción si algún equipo está inactivo
 			if (!equipo1Activo)
-				throw new EquipoNoConectadoException(String.format("El equipo %s está inactivo. Se pierde conectividad aquí.", equipo1.getCodigo()));
+				throw new EquipoNoConectadoException(String.format(
+						Configuracion.getConfiguracion().getRb().getString("Calculo_equipo_inactivo_se_pierde_conectividad_aqui"),
+						equipo1.getCodigo()));
 
 			if (!equipo2Activo)
-				throw new EquipoNoConectadoException(String.format("El equipo %s está inactivo. Se pierde conectividad aquí.", equipo2.getCodigo()));
+				throw new EquipoNoConectadoException(String.format(
+						Configuracion.getConfiguracion().getRb().getString("Calculo_equipo_inactivo_se_pierde_conectividad_aqui"),
+						equipo2.getCodigo()));
 
 			// Lanzar excepción si el cable está defectuoso
 			if (!conexionFuncionando)
-				throw new ConexionNoConectadaException(String.format("Problema con el cable entre %s y %s. Se pierde conectividad aquí.",
-						equipo1.getCodigo(), equipo2.getCodigo()));
+				throw new ConexionNoConectadaException(
+						String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_problema_cable"), equipo1.getCodigo(),
+								equipo2.getCodigo()));
 
 		}
-		return "El equipo posee conectividad";
+		return Configuracion.getConfiguracion().getRb().getString("Calculo_equipo_posee_conectividad");
 	}
 
 	/**
@@ -341,7 +347,8 @@ public class Calculo {
 			if (equipo.getElement().getDireccionesIp().contains(direccionIp))			
 					return equipo.getElement().realizarPing();
 
-		throw new DireccionIpNoEncontradaException(String.format("La IP %s no se encuentra en la red.", direccionIp));
+		throw new DireccionIpNoEncontradaException(String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_ip_no_se_encuentra_en_red"),
+				direccionIp));
 	}
 	
 	/**
@@ -360,14 +367,15 @@ public class Calculo {
 			for (String ip : equipo.getElement().getDireccionesIp())
 				if (estaDentroDelRango(ip, inicioIp, finIp)) {
 					boolean respuesta = realizarPingAEquipo(ip);
-					String resultado = respuesta ? "Ping exitoso" : "Ping fallido";
-					String mensaje = String.format("%s al equipo con IP: %s", resultado, ip);
+					String resultado = respuesta ? Configuracion.getConfiguracion().getRb().getString("Calculo_ping_exitoso")
+							: Configuracion.getConfiguracion().getRb().getString("Calculo_ping fallido");
+					String mensaje = String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_al_equipo_con_ip"), resultado, ip);
 					resultados.add(mensaje);
 					pingExitoso = true;
 				}
 	
 		if (!pingExitoso) {
-			String mensajeSinResultados = "No se encontraron equipos dentro del rango especificado.";
+			String mensajeSinResultados = Configuracion.getConfiguracion().getRb().getString("Calculo_no_resultados_dentro_rango_especificado");
 			resultados.add(mensajeSinResultados);
 		}
 	
@@ -394,7 +402,7 @@ public class Calculo {
 
 			// Validar que hostInicio sea menor o igual a hostFinal
 			if (ipInicio > ipFinal)
-				throw new IllegalArgumentException("El host inicio debe ser menor o igual al host final");
+				throw new IllegalArgumentException(Configuracion.getConfiguracion().getRb().getString("Calculo_host_inicial_menor_igual_host_final"));
 
 			// Calcular el total de IPs en el rango
 			int totalPings = (int) (ipFinal - ipInicio + 1);
@@ -404,7 +412,7 @@ public class Calculo {
 			// Recorrer el rango de direcciones IP y hacer ping
 			for (long i = ipInicio; i <= ipFinal; i++) {
 				if (detener[0]) {
-					textArea.append("Ping detenido por el usuario.\n");
+					textArea.append(Configuracion.getConfiguracion().getRb().getString("Calculo_ping_detenido_por_usuario"));
 					break;
 				}
 
@@ -416,7 +424,7 @@ public class Calculo {
 			}
 
 		} catch (IOException e) {
-			textArea.append(String.format("Error: %s\n", e.getMessage()));
+			textArea.append(String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_error"), e.getMessage()));
 			e.printStackTrace();
 		}
 	}
@@ -455,7 +463,7 @@ public class Calculo {
 				processBuilder.command("ping", host);
 			else processBuilder.command("ping", "-c", Integer.toString(cantPings), host);
 		else {
-			textArea.append("Sistema operativo no soportado.\n");
+			textArea.append(Configuracion.getConfiguracion().getRb().getString("Calculo_sistema_operativo_no_soportado"));
 			return;
 		}
 
@@ -468,7 +476,7 @@ public class Calculo {
 
 			while ((line = reader.readLine()) != null) {
 				if (detener[0]) {
-					textArea.append("Ping detenido por el usuario.\n");
+					textArea.append(Configuracion.getConfiguracion().getRb().getString("Calculo_ping_detenido_por_usuario"));
 					process.destroy(); // Detener el proceso de ping
 					break;
 				}
@@ -478,13 +486,14 @@ public class Calculo {
 
 			int exitCode = process.waitFor();
 			if (!detener[0]) {
-				textArea.append(String.format("\nProceso finalizado con código de salida: %s\n", exitCode));
+				textArea.append(String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_proceso_finalizado_con_codigo_salida"),
+						exitCode));
 	            textArea.setCaretPosition(textArea.getDocument().getLength());
 			}
 		} catch (IOException e) {
-			textArea.append(String.format("Error: %s\n", e.getMessage()));
+			textArea.append(String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_error"), e.getMessage()));
 		} catch (InterruptedException e) {
-			textArea.append("Proceso interrumpido.\n");
+			textArea.append(Configuracion.getConfiguracion().getRb().getString("Calculo_proceso_interrumpido"));
 		}
 	}
 	
@@ -504,7 +513,7 @@ public class Calculo {
 				processBuilder.command("ping", host);
 			else processBuilder.command("ping", "-c", Integer.toString(cantPings), host);
 		else {
-			textArea.append("Sistema operativo no soportado.\n");
+			textArea.append(Configuracion.getConfiguracion().getRb().getString("Calculo_sistema_operativo_no_soportado"));
 			return;
 		}
 
@@ -523,7 +532,7 @@ public class Calculo {
 
 			while ((line = reader.readLine()) != null) {
 				if (detener[0]) {
-					textArea.append("Ping detenido por el usuario.\n");
+					textArea.append(Configuracion.getConfiguracion().getRb().getString("Calculo_ping_detenido_por_usuario"));
 					process.destroy(); // Detener el proceso de ping
 					break;
 				}
@@ -534,13 +543,14 @@ public class Calculo {
 
 			int exitCode = process.waitFor();
 			if (!detener[0]) {
-				textArea.append(String.format("\nProceso finalizado con código de salida: %s\n", exitCode));
+				textArea.append(String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_proceso_finalizado_con_codigo_salida"),
+						exitCode));
 	            textArea.setCaretPosition(textArea.getDocument().getLength());
 			}
 		} catch (IOException e) {
-			textArea.append(String.format("Error: %s\n", e.getMessage()));
+			textArea.append(String.format(Configuracion.getConfiguracion().getRb().getString("Calculo_error"), e.getMessage()));
 		} catch (InterruptedException e) {
-			textArea.append("Proceso interrumpido.\n");
+			textArea.append(Configuracion.getConfiguracion().getRb().getString("Calculo_proceso_interrumpido"));
 		}
 	}
 
@@ -558,7 +568,7 @@ public class Calculo {
 
 			// Verifica que la IP de inicio sea menor o igual a la de fin
 			if (ipInicio > ipFin)
-				throw new IllegalArgumentException("La IP de inicio debe ser menor o igual a la IP de fin");
+				throw new IllegalArgumentException(Configuracion.getConfiguracion().getRb().getString("Calculo_ip_inicio_menor_igual_ip_fin"));
 
 			return (int) (ipFin - ipInicio + 1); // Devuelve la cantidad total de IPs en el rango
 		} catch (IOException e) {

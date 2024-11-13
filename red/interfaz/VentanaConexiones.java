@@ -8,6 +8,7 @@ import java.awt.*;
 import java.io.FileNotFoundException;
 import java.util.List;
 
+import red.controlador.Configuracion;
 import red.modelo.Conexion;
 import red.modelo.TipoCable;
 import red.modelo.TipoPuerto;
@@ -19,7 +20,7 @@ public class VentanaConexiones extends JFrame {
 
 	private Red red;
 	private Calculo calculo;
-	
+
 	private JTable conexionesTable;
 	private DefaultTableModel conexionTableModel;
 
@@ -28,7 +29,7 @@ public class VentanaConexiones extends JFrame {
 
 	public VentanaConexiones(Calculo calculo, Red red) {
 		
-		setTitle("Gestión de Conexiones");
+		setTitle(Configuracion.getConfiguracion().getRb().getString("VentanaConexiones_titulo"));
 		setSize(800, 400); // Ajustamos el tamaño para mostrar todas las columnas
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -43,8 +44,8 @@ public class VentanaConexiones extends JFrame {
 			listaCablesDisponibles = red.getTipoCableService().buscarTodos();
 
 		} catch (FileNotFoundException e) {
-			JOptionPane.showMessageDialog(this, "Error al cargar los datos de las conexiones.", "Error",
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, Configuracion.getConfiguracion().getRb().getString("VentanaConexiones_error_datos_conexiones"),
+					Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
 		}
 
 		inicializarComponentes();
@@ -53,8 +54,12 @@ public class VentanaConexiones extends JFrame {
 	private void inicializarComponentes() {
 		
 		// Definimos las columnas a mostrar en la tabla de conexiones
-		String[] conexionColumnNames = { "Equipo 1", "Equipo 2", "Tipo de Cable", "Tipo de Puerto 1",
-				"Tipo de Puerto 2", "Acciones" };
+		String[] conexionColumnNames = { Configuracion.getConfiguracion().getRb().getString("Conexion_equipo_1"),
+				Configuracion.getConfiguracion().getRb().getString("Conexion_equipo_2"),
+				Configuracion.getConfiguracion().getRb().getString("Conexion_tipo_cable"),
+				Configuracion.getConfiguracion().getRb().getString("Conexion_tipo_puerto_1"),
+				Configuracion.getConfiguracion().getRb().getString("Conexion_tipo_puerto_2"),
+				Configuracion.getConfiguracion().getRb().getString("VentanaConexiones_acciones") };
 		conexionTableModel = new DefaultTableModel(conexionColumnNames, 0);
 		conexionesTable = new JTable(conexionTableModel) {
 			@Override
@@ -66,7 +71,7 @@ public class VentanaConexiones extends JFrame {
 		JScrollPane scrollConexiones = new JScrollPane(conexionesTable);
 		add(scrollConexiones, BorderLayout.CENTER);
 
-		JButton agregarConexionButton = new JButton("Agregar Conexión");
+		JButton agregarConexionButton = new JButton(Configuracion.getConfiguracion().getRb().getString("VentanaConexiones_agregar_conexion"));
 		agregarConexionButton.addActionListener(e -> agregarConexion());
 
 		JPanel panelInferior = new JPanel();
@@ -82,12 +87,15 @@ public class VentanaConexiones extends JFrame {
 		for (Conexion conexion : conexiones) {
 			conexionTableModel.addRow(new Object[] { conexion.getEquipo1().getCodigo(),
 					conexion.getEquipo2().getCodigo(), conexion.getTipoCable().getDescripcion(),
-					conexion.getTipoPuerto1().getCodigo(), conexion.getTipoPuerto2().getCodigo(), "Eliminar" });
+					conexion.getTipoPuerto1().getCodigo(), conexion.getTipoPuerto2().getCodigo(),
+					Configuracion.getConfiguracion().getRb().getString("Interfaz_eliminar") });
 		}
 
-		conexionesTable.getColumn("Acciones").setCellRenderer(new ButtonRenderer("eliminar"));
-		conexionesTable.getColumn("Acciones")
-				.setCellEditor(new ButtonEditor(new JCheckBox(), conexionesTable, "conexion", red, calculo));
+		conexionesTable.getColumn(Configuracion.getConfiguracion().getRb().getString("VentanaConexiones_acciones"))
+			.setCellRenderer(new ButtonRenderer(Configuracion.getConfiguracion().getRb().getString("Interfaz_eliminar_minuscula")));
+		conexionesTable.getColumn(Configuracion.getConfiguracion().getRb().getString("VentanaConexiones_acciones"))
+				.setCellEditor(new ButtonEditor(new JCheckBox(), conexionesTable, Configuracion.getConfiguracion().getRb().getString("Modelo_conexion"),
+						red, calculo));
 
 	}
 
@@ -124,19 +132,19 @@ public class VentanaConexiones extends JFrame {
 		equipo2ComboBox.addActionListener(e -> actualizarTipoPuerto(equipo2ComboBox, tipoPuerto2ComboBox));
 
 		// Agregar componentes al panel
-		panel.add(new JLabel("Equipo 1:"));
+		panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Conexion_equipo_1")));
 		panel.add(equipo1ComboBox);
-		panel.add(new JLabel("Tipo de Puerto Equipo 1:"));
+		panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Conexion_tipo_puerto_1")));
 		panel.add(tipoPuerto1ComboBox);
-		panel.add(new JLabel("Equipo 2:"));
+		panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Conexion_equipo_2")));
 		panel.add(equipo2ComboBox);
-		panel.add(new JLabel("Tipo de Puerto Equipo 2:"));
+		panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Conexion_tipo_puerto_2")));
 		panel.add(tipoPuerto2ComboBox);
-		panel.add(new JLabel("Tipo de Cable:"));
+		panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Conexion_tipo_cable")));
 		panel.add(tipoCableComboBox);
 
-		int result = JOptionPane.showConfirmDialog(this, panel, "Agregar Conexión", JOptionPane.OK_CANCEL_OPTION,
-				JOptionPane.PLAIN_MESSAGE);
+		int result = JOptionPane.showConfirmDialog(this, panel, Configuracion.getConfiguracion().getRb().getString("VentanaConexiones_agregar_conexion"),
+				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 		if (result == JOptionPane.OK_OPTION) {
 			try {
 				String equipo1Codigo = (String) equipo1ComboBox.getSelectedItem();
@@ -158,8 +166,9 @@ public class VentanaConexiones extends JFrame {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				JOptionPane.showMessageDialog(this, String.format("Error al agregar la conexión: %s", e.getMessage()), "Error",
-						JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this,
+						String.format(Configuracion.getConfiguracion().getRb().getString("VentanaConexiones_error_agregar_conexion"), e.getMessage()),
+						Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}

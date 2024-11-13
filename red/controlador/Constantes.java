@@ -5,37 +5,31 @@ package red.controlador;
  * hardcodeo de números y Strings
 */
 public class Constantes {
-	/* Constante para que la clase red.controlador.AplicaciónConsultas escriba en
-	 * la consola las opciones que puede realizar el usuario
-	*/
-	public static final String OPCIONES = "Seleccione una opción:\n"
-			+ "1. Listar Equipos\n"
-			+ "2. Listar Conexiones\n"
-			+ "3. Listar Ubicaciones\n"
-			+ "4. Agregar Nuevo Equipo\n"
-			+ "5. Buscar Equipo por Código\n"
-			+ "6. Ruta entre dos equipos\n"
-			+ "7. Realizar ping a un rango de IP\n"
-			+ "8. Mostrar mapa de estado de la red\n"
-			+ "9. Verificar conectividad\n"
-			+ "10. Salir";
 	
-	/**
-	 * Constante para que la GUI escriba en un diálogo a los miembros del equipo de desarrollo,
-	 * los docentes de la materia y los detalles del trabajo
-	 */
-	public static final String CREDITOS = "Instancia Supervisada de Formación Práctica Profesional\n\n"
-			+ "Materia: Programación Orientada a Objetos\n"
-			+ "Carreras: Analista Programador Universitario, Licenciatura en Informática\n"
-			+ "Universidad Nacional de la Patagonia San Juan Bosco, sede Puerto Madryn\n"
-			+ "Miembros del grupo:\n"
-			+ " - Gabriel Sorrentino\n"
-			+ " - Agustín Palma\n"
-			+ " - Agustín Lohse\n\n"
-			+ "Profesores:\n"
-			+ " - Renato Mazzanti\n"
-			+ " - Gustavo Samec\n"
-			+ " - Débora Pollicelli\n"
-			+ " - Alejandro Solá Leiva (auxiliar alumno)\n\n"
-			+ "Fecha de entrega: 25 de octubre de 2024";
+	public static final String ERROR_DATOS = "Error al cargar los datos.";
+	
+	// Constantes referidas a idiomas, por siglas oficiales (dos letras en minúscula).
+	public static final String ESPANOL = "es";
+	public static final String INGLES = "en";
+	
+	//Constantes referidas a países, por siglas oficiales (dos letras en mayúscula)
+	public static final String ESPANA = "ES";
+	public static final String ARGENTINA = "AR";
+	public static final String ESTADOS_UNIDOS = "US";
+	
+	// Constantes referidas a los componentes de la ventana inicial
+	public static final int INICIAL_BORDER = 5;
+	public static final int INICIAL_X = 100;
+	public static final int INICIAL_Y = 100;
+	public static final int INICIAL_ANCHO = 450;
+	public static final int INICIAL_ALTO = 240;
+	public static final String TITULO_INICIAL = "Select the language";
+	public static final String INICIAL_ESPANOL_ES = "Español (España)";
+	public static final String INICIAL_ESPANOL_AR = "Español (Argentina)";
+	public static final String INICIAL_INGLES_EU = "Inglés (Estados Unidos)";
+	public static final String INICIAL_SALIR = "Exit/Salir";
+	
+	// Constante con la ruta para las fotos de la ventana inicial
+	public static final String RUTA_REDES = "/red/interfaz/red.jpeg";
+	public static final String RUTA_UNPSJB = "/red/interfaz/unpsjb.png";
 }
