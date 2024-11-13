@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
-
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
@@ -37,7 +36,7 @@ public class Configuracion {
 	// Constructor único privado de la clase
 	private Configuracion() throws IOException{
 		prop = new Properties();
-		prop.load(new FileInputStream("config.properties"));
+		prop.load(new FileInputStream("ISFPP2024\\config.properties"));
 		modoInicial = Boolean.parseBoolean(prop.getProperty("simulacion"));
 		rb = ResourceBundle.getBundle(prop.getProperty("labels"));
 	}
