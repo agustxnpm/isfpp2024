@@ -8,7 +8,7 @@ import red.interfaz.VentanaInicial;
  * Inicia la interfaz gráfica de la aplicación.
  */
 public class AplicacionConsultas {
-
+    
     /**
      * Método principal para lanzar la ventana principal de la aplicación.
      * Utiliza SwingUtilities para asegurar que la interfaz gráfica se ejecute
