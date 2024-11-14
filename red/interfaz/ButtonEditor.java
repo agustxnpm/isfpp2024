@@ -123,7 +123,103 @@ class ButtonEditor extends DefaultCellEditor {
      * @param selectedRow Índice de la fila seleccionada en la tabla.
      */
     private void modificarEquipo(int selectedRow) {
-        // Implementación del método de modificación.
+        String equipoCodigo = (String) table.getValueAt(selectedRow, 0);
+        Equipo equipoAModificar;
+    
+        List<Ubicacion> listUbicaciones;
+        List<TipoPuerto> listTipoPuerto;
+    
+        try {
+            listUbicaciones = red.getUbicaciones();
+            listTipoPuerto = red.getTipoPuertoService().buscarTodos();
+            String[] ubicacionArray = listUbicaciones.stream().map(Ubicacion::getDescripcion).toArray(String[]::new);
+            String[] tipoPuertoArray = listTipoPuerto.stream().map(TipoPuerto::getCodigo).toArray(String[]::new);
+    
+            // Crear un panel para el diálogo de modificación
+            JPanel panel = new JPanel(new GridLayout(0, 2));
+            JTextField modeloField = new JTextField();
+            JTextField marcaField = new JTextField();
+            JTextField codigoField = new JTextField();
+            JTextField tipoEquipoField = new JTextField();
+            JTextField descripcionField = new JTextField();
+            JTextField cantPuertosField = new JTextField();
+            JCheckBox estadoCheckBox = new JCheckBox(Configuracion.getConfiguracion().getRb().getString("ButtonEditor_activo"));
+    
+            JComboBox<String> ubicacionComboBox = new JComboBox<>(ubicacionArray);
+            JComboBox<String> tipoPuertoComboBox = new JComboBox<>(tipoPuertoArray);
+    
+            // Agregar componentes al panel
+            panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_codigo_opcion")));
+            codigoField.setEditable(false);
+            panel.add(codigoField);
+            panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_descripcion_opcion")));
+            panel.add(descripcionField);
+            panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_marca_opcion")));
+            panel.add(marcaField);
+            panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_modelo_opcion")));
+            panel.add(modeloField);
+            panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_tipo_equipo_opcion")));
+            tipoEquipoField.setEditable(false);
+            panel.add(tipoEquipoField);
+            panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_ubicacion_opcion")));
+            panel.add(ubicacionComboBox);
+            panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_estado_opcion")));
+            panel.add(estadoCheckBox); // Añadir el checkbox de estado
+            panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_cantidad_puertos_opcion")));
+            panel.add(cantPuertosField);
+            panel.add(new JLabel(Configuracion.getConfiguracion().getRb().getString("Equipo_tipo_puerto_opcion")));
+            panel.add(tipoPuertoComboBox);
+    
+            // Buscar el equipo y mostrar el diálogo de modificación
+            equipoAModificar = red.buscarEquipoPorCodigo(equipoCodigo);
+            codigoField.setText(equipoAModificar.getCodigo());
+            tipoEquipoField.setText(equipoAModificar.getTipoEquipo().getDescripcion());
+            estadoCheckBox.setSelected(equipoAModificar.isEstado()); // Inicializar el estado actual
+            modeloField.setText(equipoAModificar.getModelo());
+            marcaField.setText(equipoAModificar.getMarca());
+            descripcionField.setText(equipoAModificar.getDescripcion());
+            ubicacionComboBox.setSelectedItem(equipoAModificar.getUbicacion().getCodigo());
+    
+            // Mostrar el diálogo de entrada
+            int result = JOptionPane.showConfirmDialog(null, panel, Configuracion.getConfiguracion().getRb().getString("ButtonEditor_modificar_equipo"),
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+    
+            if (result == JOptionPane.OK_OPTION) {
+                // Obtener valores y asignar al equipo antes de actualizar
+                equipoAModificar.setModelo(modeloField.getText());
+                equipoAModificar.setMarca(marcaField.getText());
+                equipoAModificar.setDescripcion(descripcionField.getText());
+                equipoAModificar.setEstado(estadoCheckBox.isSelected()); // Asignar el estado del checkbox
+                String ubicacionSeleccionada = (String) ubicacionComboBox.getSelectedItem();
+                String tipoPuertoSeleccionado = (String) tipoPuertoComboBox.getSelectedItem();
+    
+                for (Ubicacion ub : listUbicaciones)
+                    if (ub.getDescripcion().equals(ubicacionSeleccionada))
+                        equipoAModificar.setUbicacion(ub);
+                if (!cantPuertosField.getText().isBlank())
+                    for (TipoPuerto p : listTipoPuerto)
+                        if (p.getCodigo().equals(tipoPuertoSeleccionado))
+                            equipoAModificar.agregarPuerto(Integer.parseInt(cantPuertosField.getText()), p);
+    
+                // Actualizar el equipo en el servicio
+                red.modificarEquipo(equipoAModificar);
+    
+                // Mensaje de confirmación y refrescar tabla
+                JOptionPane.showMessageDialog(null, Configuracion.getConfiguracion().getRb().getString("ButtonEditor_equipo_modificado_correctamente"),
+                        Configuracion.getConfiguracion().getRb().getString("ButtonEditor_exito"), JOptionPane.INFORMATION_MESSAGE);
+                ((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.getModelo(), selectedRow, 3);
+                ((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.getMarca(), selectedRow, 2);
+                ((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.getDescripcion(), selectedRow, 1);
+                ((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.getUbicacion().getDescripcion(), selectedRow, 5);
+                ((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.isEstado()
+                        ? Configuracion.getConfiguracion().getRb().getString("ButtonEditor_activo")
+                        : Configuracion.getConfiguracion().getRb().getString("ButtonEditor_inactivo"), selectedRow, 6);
+                ((DefaultTableModel) table.getModel()).setValueAt(equipoAModificar.getPuertosInfo(), selectedRow, 7);
+            }
+        } catch (FileNotFoundException e) {
+            JOptionPane.showMessageDialog(null, String.format(Configuracion.getConfiguracion().getRb().getString("ButtonEditor_error_modificar_equipo"),
+                    e.getMessage()), Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -158,12 +254,11 @@ class ButtonEditor extends DefaultCellEditor {
     }
 
     @Override
-    protected void fireEditingStopped() {
-        try {
-            super.fireEditingStopped();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e.getMessage(), Configuracion.getConfiguracion().getRb().getString("Interfaz_error"),
-                    JOptionPane.ERROR_MESSAGE);
-        }
-    }
+	protected void fireEditingStopped() {
+		try {
+			super.fireEditingStopped();
+		} catch (Exception e) {
+			// no hacer nada (no afecta en la funcionalidad)
+		}
+	}
 }
