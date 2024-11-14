@@ -73,6 +73,7 @@ public class TipoCable {
     // Método para representar el TipoCable como una cadena de texto.
     @Override
     public String toString() {
-        return String.format(Configuracion.getConfiguracion().getRb().getString("TipoCable_to_string"), codigo, descripcion, velocidad);
+        String s = Configuracion.getConfiguracion().getRb().getString("TipoCable_to_string");
+    	return String.format((s == null || s.isEmpty()) ? "TipoCable [código=%s, descripción=%s, velocidad=%d]" : s, codigo, descripcion, velocidad);
     }
 }

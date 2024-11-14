@@ -62,6 +62,7 @@ public class TipoEquipo {
     // Método para representar el TipoEquipo como una cadena de texto.
     @Override
     public String toString() {
-        return String.format(Configuracion.getConfiguracion().getRb().getString("TipoEquipo_to_string"), codigo, descripcion);
+    	String s = Configuracion.getConfiguracion().getRb().getString("TipoEquipo_to_string");
+        return String.format((s == null || s.isEmpty()) ? "TipoEquipo [código=%s, descripción=%s]" : s, codigo, descripcion);
     }
 }

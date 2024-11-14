@@ -31,8 +31,10 @@ public class Conexion {
                     TipoPuerto tipoPuerto2) {
         super();
         // Verificar que los equipos sean diferentes.
-        if (equipo1.equals(equipo2))
-            throw new EquipoRepetidoException(Configuracion.getConfiguracion().getRb().getString("Conexion_equipos_deben_ser_diferentes"));
+        if (equipo1.equals(equipo2)) {
+        	String e = Configuracion.getConfiguracion().getRb().getString("Conexion_equipos_deben_ser_diferentes");
+        	throw new EquipoRepetidoException((e == null) ? "Los equipos en una conexión deben ser diferentes." : e);
+        }
         this.equipo1 = equipo1;
         this.equipo2 = equipo2;
         this.tipoCable = tipoCable;
@@ -102,6 +104,7 @@ public class Conexion {
 
     @Override
     public String toString() {
-        return String.format(Configuracion.getConfiguracion().getRb().getString("Conexion_to_string"), equipo1.getCodigo(), equipo2.getCodigo(), tipoCable.getDescripcion());
+    	String s = Configuracion.getConfiguracion().getRb().getString("Conexion_to_string");
+        return String.format((s == null || s.isEmpty()) ? "Conexión: %s <-> %s (Cable: %s)" : s, equipo1.getCodigo(), equipo2.getCodigo(), tipoCable.getDescripcion());
     }
 }

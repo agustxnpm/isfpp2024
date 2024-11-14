@@ -73,6 +73,7 @@ public class TipoPuerto {
     // Método para representar el TipoPuerto como una cadena de texto.
     @Override
     public String toString() {
-        return String.format(Configuracion.getConfiguracion().getRb().getString("TipoPuerto_to_string"), codigo, descripcion, velocidad);
+    	String s = Configuracion.getConfiguracion().getRb().getString("TipoPuerto_to_string");
+        return String.format((s == null || s.isEmpty()) ? "TipoPuerto [código=%s, descripción=%s, velocidad=%d]" : s, codigo, descripcion, velocidad);
     }
 }

@@ -62,6 +62,7 @@ public class Ubicacion {
     // Método para representar la Ubicacion como una cadena de texto.
     @Override
     public String toString() {
-        return Configuracion.getConfiguracion().getRb().getString("Ubicacion_to_string");
+    	String s = Configuracion.getConfiguracion().getRb().getString("Ubicacion_to_string");
+        return String.format((s == null || s.isEmpty()) ? "Ubicacion [código=%s, descripción=%s]" : s, codigo, descripcion);
     }
 }

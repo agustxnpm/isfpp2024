@@ -71,19 +71,17 @@ public class UbicacionesSecuencialDAO implements UbicacionDAO {
         try {
             outFile = new Formatter(file);
             // Escribir cada ubicación en una línea del archivo.
-            for (Ubicacion e : list) {
+            for (Ubicacion e : list)
                 outFile.format("%s;%s;\n", 
                         e.getCodigo(),        // Código de la ubicación.
                         e.getDescripcion());  // Descripción de la ubicación.
-            }
         } catch (FileNotFoundException fileNotFoundException) {
             System.err.println("Error al crear el archivo.");
         } catch (FormatterClosedException formatterClosedException) {
             System.err.println("Error al escribir en el archivo.");
         } finally {
-            if (outFile != null) {
+            if (outFile != null)
                 outFile.close(); // Cerrar el archivo para liberar recursos.
-            }
         }
     }
 

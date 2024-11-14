@@ -228,7 +228,8 @@ public class Equipo {
 
     @Override
     public String toString() {
-        return String.format(Configuracion.getConfiguracion().getRb().getString("Equipo_to_string"), codigo, descripcion);
+    	String s = Configuracion.getConfiguracion().getRb().getString("Calculo_to_string");
+        return String.format((s == null || s.isEmpty()) ? "Equipo [código=%s, descripción=%s]" : s, codigo, descripcion);
     }
 
     // Clase interna que representa un puerto.

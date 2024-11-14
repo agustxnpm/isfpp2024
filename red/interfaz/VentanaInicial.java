@@ -1,6 +1,7 @@
 package red.interfaz;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
@@ -52,8 +53,12 @@ public class VentanaInicial extends JFrame {
 		
 		// Salir del programa
 		btnSalir.addActionListener(e -> {
-			dispose();
-			System.exit(NORMAL);
+			int confirmacion = JOptionPane.showConfirmDialog(this, "¿Seguro?/Sure?", "Exit", JOptionPane.YES_NO_OPTION);
+			if (confirmacion == JOptionPane.YES_OPTION) {
+				JOptionPane.showMessageDialog(this, "¡Adiós!", "Goodbye!", JOptionPane.PLAIN_MESSAGE);
+				dispose();
+				System.exit(NORMAL);
+			}
 		});
 	}
 	

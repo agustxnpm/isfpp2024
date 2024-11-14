@@ -60,21 +60,22 @@ public class VentanaPrincipal extends JFrame {
      * Constructor de la clase VentanaPrincipal.
      * Inicializa la ventana y carga los servicios necesarios.
      */
-    public VentanaPrincipal() {
-        try {
-            calculo = new Calculo();
-            red = Red.getRed();
-            calculo.cargarDatos(red.getEquipos(), red.getConexiones());
-        } catch (FileNotFoundException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(),
-                    Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
-            System.exit(ERROR);
-        }
-
-        setTitle(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_titulo"));
-        setSize(628, 500);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+	public VentanaPrincipal() {
+		/* cargar servicios y calculo */
+		try {
+			calculo = Calculo.getCalculo();
+			red = Red.getRed();
+			calculo.cargarDatos(red.getEquipos(), red.getConexiones());
+		} catch (FileNotFoundException e) {
+			JOptionPane.showMessageDialog(this, e.getMessage(),
+					Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
+			System.exit(ERROR);
+		}
+		
+		setTitle(Configuracion.getConfiguracion().getRb().getString("VentanaPrincipal_titulo"));
+		setSize(628, 500);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLocationRelativeTo(null);
         inicializarComponentes();
     }
 

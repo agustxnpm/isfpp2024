@@ -3,11 +3,14 @@ package red.pruebas;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import red.modelo.*;
 import red.negocio.Calculo;
+import red.controlador.Configuracion;
+import red.controlador.Constantes;
 import red.excepciones.*;
 
 // Clase de JUnit5 para probar los métodos de las clases de red.modelo y las excepciones lanzadas por éstos
@@ -16,9 +19,11 @@ class TestModelo {
 	
 	/**
 	 * Atributos de la clase que usaremos en el presente test. Las conexiones hacen de arcos entre los equipos del sistema,
-	 * y se usarán junto a éstos para armar un ejemplo de grafo para el test. 
+	 * y se usarán junto a éstos para armar un ejemplo de grafo para el test. Los métodos privados o los vinculados con la
+	 * GUI no serán testeados.
 	*/
 	private Calculo calculo;
+	private Configuracion c;
 	private TipoEquipo tipoEquipo1;
 	private TipoEquipo tipoEquipo2;
 	private TipoEquipo tipoEquipo3;
@@ -55,7 +60,9 @@ class TestModelo {
 	// El método que se invoca en la clase antes de cada test
 	@BeforeEach
 	void inicioTest() {
-		calculo = new Calculo();
+		calculo = Calculo.getCalculo();
+		c = Configuracion.getConfiguracion();
+		c.establecerIdiomaYPais(Constantes.ESPANOL, Constantes.ARGENTINA);
 		tipoEquipo1 = new TipoEquipo("TE1", "Computadora");
 		tipoEquipo2 = new TipoEquipo("TE2", "Router de banda ancha");
 		tipoEquipo3 = new TipoEquipo("TE3", "Antena satelital");
@@ -88,6 +95,7 @@ class TestModelo {
 		equipo1.agregarPuerto(2, puerto5);
 		equipo1.agregarPuerto(10, puerto6);
 		equipo1.agregarIp("200.10.240.251");
+		equipo1.agregarIp("166.82.1.13");
 		equipo5.agregarIp("166.82.1.10");
 		conex1 = new Conexion(equipo1, equipo2, cable1, puerto1, puerto2);
 		conex2 = new Conexion(equipo2, equipo3, cable2, puerto3, puerto4);
@@ -113,6 +121,9 @@ class TestModelo {
 	// Tests de métodos de la clase Equipo
 	@Test
 	void testEquipos() {
+		assertEquals(equipo6.getModelo(), c.getRb().getString("Equipo_modelo_desconocido"));
+		assertEquals(equipo3.getMarca(), c.getRb().getString("Equipo_marca_desconocida"));
+		assertEquals(equipo3.getDescripcion(), c.getRb().getString("Equipo_sin_descripcion"));
 		assertEquals(equipo1.getVelocidadMaxima(), 40);
 		assertEquals(equipo2.getVelocidadMaxima(), 1000);
 		assertFalse(equipo1.realizarPing());
@@ -141,9 +152,12 @@ class TestModelo {
 	// Test del grafo de Cálculo
 	@Test
 	void testCalculo() {
-		//assertEquals(equipo3, calculo.obtenerEquipo("eq3"));
-		//assertNotEquals(equipo2, calculo.obtenerEquipo("eq5"));
-		//assertNull(calculo.obtenerEquipo("Hola"));
+		Set<Equipo> conj1, conj2;
+		conj1 = Set.of(equipo1, equipo2, equipo3, equipo4, equipo5);
+		conj2 = Set.of(equipo6, equipo7, equipo8);
+		assertEquals(conj1, calculo.obtenerEquiposConectadosTransitivamente(equipo1));
+		assertEquals(conj2, calculo.obtenerEquiposConectadosTransitivamente(equipo6));
+		assertEquals(calculo.obtenerTodasLasIPs(), List.of("200.10.240.251", "166.82.1.13", "166.82.1.10"));
 		assertThrows(ConexionRepetidaException.class, () -> calculo.agregarConexionAlGrafo(conex1));
 		assertThrows(EquipoRepetidoException.class, () -> calculo.agregarEquipoAlGrafo(equipo1));
 		assertEquals(List.of(equipo5, equipo4, equipo1), calculo.buscarRuta(equipo5, equipo1));
@@ -159,11 +173,20 @@ class TestModelo {
 		assertThrows(ConexionNoConectadaException.class, () -> calculo.calcularVelocidadMaxima(List.of(equipo1, equipo5, equipo3)));
 		assertThrows(ConexionNoConectadaException.class, () -> calculo.verificarConectividad(equipo1, equipo6));
 		
+		assertEquals(c.getRb().getString("Calculo_equipo_posee_conectividad"), calculo.verificarConectividad(equipo2, equipo5));
 		assertFalse(calculo.realizarPingAEquipo("200.10.240.251"));
 		assertTrue(calculo.realizarPingAEquipo("166.82.1.10"));
 		assertThrows(DireccionIpNoEncontradaException.class, () -> calculo.realizarPingAEquipo("166.82.100.10"));
 		assertThrows(DireccionIpNoEncontradaException.class, () -> calculo.realizarPingAEquipo("Buen día."));
-		//assertThrows(DireccionIpNoEncontradaException.class, () -> calculo.realizarPingARango("200", "40"));
+		assertEquals(calculo.realizarPingARango("166.82.1.10", "200.10.240.251"), List.of(
+				String.format(c.getRb().getString("Calculo_al_equipo_con_ip"), c.getRb().getString("Calculo_ping_fallido"), "200.10.240.251"),
+				String.format(c.getRb().getString("Calculo_al_equipo_con_ip"), c.getRb().getString("Calculo_ping_fallido"), "166.82.1.13"),
+				String.format(c.getRb().getString("Calculo_al_equipo_con_ip"), c.getRb().getString("Calculo_ping_exitoso"), "166.82.1.10")
+				));
+		assertEquals(calculo.realizarPingARango("200.10.240.252", "200.10.140.253"),
+				List.of(c.getRb().getString("Calculo_no_resultados_dentro_rango_especificado")));
+		assertEquals(calculo.calcularTotalIPsEnRango("166.82.1.10", "200.10.240.251"), 565768178); // Hay 3 IPs
+		assertThrows(IllegalArgumentException.class, () -> calculo.calcularTotalIPsEnRango("200.10.240.251", "166.82.1.10"));
 	}
 
 }
