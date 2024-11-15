@@ -166,7 +166,7 @@ public class VentanaConexiones extends JFrame {
 
         int result = JOptionPane.showConfirmDialog(this, panel, Configuracion.getConfiguracion().getRb().getString("VentanaConexiones_agregar_conexion"),
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-        if (result == JOptionPane.OK_OPTION) {
+        if (result == JOptionPane.OK_OPTION)
             try {
                 String equipo1Codigo = (String) equipo1ComboBox.getSelectedItem();
                 String equipo2Codigo = (String) equipo2ComboBox.getSelectedItem();
@@ -190,7 +190,6 @@ public class VentanaConexiones extends JFrame {
                         String.format(Configuracion.getConfiguracion().getRb().getString("VentanaConexiones_error_agregar_conexion"), e.getMessage()),
                         Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
             }
-        }
     }
 
     /**

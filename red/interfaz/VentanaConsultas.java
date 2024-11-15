@@ -166,17 +166,14 @@ public class VentanaConsultas extends JFrame {
             Set<Equipo> equiposConectados = calculo.obtenerEquiposConectadosTransitivamente(equipo1);
             equiposConectados.remove(equipo1); // Remover el equipo1 de la lista de opciones del ComboBox
 
-            if (equiposConectados.isEmpty()) {
+            if (equiposConectados.isEmpty())
                 JOptionPane.showMessageDialog(this,
                         String.format(Configuracion.getConfiguracion().getRb()
                                 .getString("VentanaConsultas_no_equipos_conectados_a"), equipo1Codigo),
                         Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_sin_conexiones"),
                         JOptionPane.WARNING_MESSAGE);
-            } else {
-                for (Equipo equipo : equiposConectados) {
+            else for (Equipo equipo : equiposConectados)
                     equipo2ComboBox.addItem(equipo.getCodigo());
-                }
-            }
         }
     }
 
@@ -215,13 +212,12 @@ public class VentanaConsultas extends JFrame {
                                 equipo1Codigo, equipo2Codigo, velocidadMaxima),
                         Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_velocidad_maxima"),
                         JOptionPane.INFORMATION_MESSAGE);
-            } else {
+            } else
                 JOptionPane.showMessageDialog(this,
                         Configuracion.getConfiguracion().getRb()
                                 .getString("VentanaConsultas_no_se_pudo_encontrar_uno_de_equipos"),
                         Configuracion.getConfiguracion().getRb().getString("Interfaz_error"),
                         JOptionPane.ERROR_MESSAGE);
-            }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage(),
                     Configuracion.getConfiguracion().getRb().getString("Interfaz_error"),
@@ -395,7 +391,7 @@ public class VentanaConsultas extends JFrame {
         JProgressBar progressBar = new JProgressBar();
         progressBar.setStringPainted(true);
         try {
-            if (!direccionIp.isEmpty()) {
+            if (!direccionIp.isEmpty())
                 if (modo) {
                     boolean respuestaPing = calculo.realizarPingAEquipo(direccionIp);
                     String mensaje = respuestaPing
@@ -406,15 +402,11 @@ public class VentanaConsultas extends JFrame {
                                     .getString("VentanaConsultas_al_equipo_con_ip"), mensaje, direccionIp),
                             Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_resultado_ping"),
                             JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    pingReal(direccionIp, dialog, cantPings);
-                }
-            } else {
-                JOptionPane.showMessageDialog(dialog,
+                } else pingReal(direccionIp, dialog, cantPings);
+            else JOptionPane.showMessageDialog(dialog,
                         Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_ingresa_ip_valida"),
                         Configuracion.getConfiguracion().getRb().getString("Interfaz_error"),
                         JOptionPane.ERROR_MESSAGE);
-            }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(dialog, e.getMessage(),
                     Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
@@ -513,18 +505,15 @@ public class VentanaConsultas extends JFrame {
 
                 @Override
                 protected void process(List<String> chunks) {
-                    for (String resultado : chunks) {
+                    for (String resultado : chunks)
                         textArea.append(resultado + "\n"); // Mostrar resultado en JTextArea
-
-                    }
                 }
 
                 @Override
                 protected void done() {
-                    if (!detener[0]) {
+                    if (!detener[0])
                         textArea.append(Configuracion.getConfiguracion().getRb()
                                 .getString("VentanaConsultas_ping_rango_completado"));
-                    }
                 }
             };
 
@@ -537,11 +526,9 @@ public class VentanaConsultas extends JFrame {
             });
 
             worker.execute(); // Ejecutar la tarea
-        } else {
-            JOptionPane.showMessageDialog(dialog,
+        } else JOptionPane.showMessageDialog(dialog,
                     Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_ingresa_rango_ips_valido"),
                     Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
-        }
     }
 
     /**
@@ -601,7 +588,6 @@ public class VentanaConsultas extends JFrame {
             JOptionPane.showMessageDialog(this, resultado);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage());
-
         }
     }
 
@@ -682,13 +668,10 @@ public class VentanaConsultas extends JFrame {
                     rutaDialog.setLocationRelativeTo(this);
                     rutaDialog.add(graphPanel);
                     rutaDialog.setVisible(true);
-                } else {
-                    JOptionPane.showMessageDialog(this,
-                            Configuracion.getConfiguracion().getRb()
-                                    .getString("VentanaConsultas_no_se_encontro_ruta_entre_equipos"),
+                } else JOptionPane.showMessageDialog(this,
+                            Configuracion.getConfiguracion().getRb().getString("VentanaConsultas_no_se_encontro_ruta_entre_equipos"),
                             Configuracion.getConfiguracion().getRb().getString("Interfaz_error"),
                             JOptionPane.ERROR_MESSAGE);
-                }
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, e.getMessage(),
                         Configuracion.getConfiguracion().getRb().getString("Interfaz_error"),
@@ -707,36 +690,21 @@ public class VentanaConsultas extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (e.getSource().equals(calcularVelocidadButton)) {
+            if (e.getSource().equals(calcularVelocidadButton))
                 ventanaVelocidad();
-            }
-
-            if (e.getSource().equals(pingEquipoButton)) {
+            if (e.getSource().equals(pingEquipoButton))
                 realizarPingAEquipo();
-            }
-
-            if (e.getSource().equals(detectarProblemasButton)) {
+            if (e.getSource().equals(detectarProblemasButton))
                 detectarProblemasConectividad();
-            }
-
-            if (e.getSource().equals(calcularButton)) {
+            if (e.getSource().equals(calcularButton))
                 calcularVelocidad();
-            }
-
-            if (e.getSource().equals(verificarButton)) {
+            if (e.getSource().equals(verificarButton))
                 verificarConectividad();
-            }
-
-            if (e.getSource().equals(verMapaEstadoButton)) {
+            if (e.getSource().equals(verMapaEstadoButton))
                 verMapaDeEstado();
-            }
-
-            if (e.getSource().equals(equipo1ComboBox)) {
+            if (e.getSource().equals(equipo1ComboBox))
                 actualizarEquiposConectados();
-            }
-
             if (e.getSource().equals(pingButton)) {
-
                 try {
                     cantPings = Integer.parseInt(cantPingsTextField.getText().trim());
                 } catch (NumberFormatException ex) {
@@ -744,18 +712,11 @@ public class VentanaConsultas extends JFrame {
                 }
 
                 if (rangoCheckBox.isSelected()) // Obtener datos de los campos de texto y realizar ping al rango
-                {
-                    pingARango(ipInicioTextField.getText().trim(), ipFinTextField.getText().trim(), dialog, cantPings);
-                } else // Obtener la IP y realizar ping a un solo equipo
-                {
-                    pingAEquipo(equipoTextField.getText().trim(), dialog, cantPings);
-                }
+                	pingARango(ipInicioTextField.getText().trim(), ipFinTextField.getText().trim(), dialog, cantPings);
+                else pingAEquipo(equipoTextField.getText().trim(), dialog, cantPings); // Obtener la IP y realizar ping a un solo equipo
             }
-            if (e.getSource().equals(mostrarRutaButton)) {
+            if (e.getSource().equals(mostrarRutaButton))
                 mostrarRutaEntreEquipos();
-            }
-
         }
     } // fin clase Handler
-
 }

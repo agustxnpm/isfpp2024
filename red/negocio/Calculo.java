@@ -483,9 +483,8 @@ public class Calculo {
     private static long ipToLong(InetAddress ip) {
         byte[] bytes = ip.getAddress();
         long result = 0;
-        for (byte b : bytes) {
+        for (byte b : bytes)
             result = (result << 8) | (b & 0xFF);
-        }
         return result;
     }
 
@@ -586,20 +585,16 @@ public class Calculo {
 
         // Construir el comando de ping según el sistema operativo
         if (os.contains("win")) // Comando de ping para Windows
-        {
-            if (cantPings == 0) {
+            if (cantPings == 0)
                 processBuilder.command("ping", host);
-            } else {
+            else
                 processBuilder.command("ping", "-n", Integer.toString(cantPings), host);
-            }
-        } else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) // Comando de ping para Linux/Unix/Mac
-        {
-            if (cantPings == 0) {
+        else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) // Comando de ping para Linux/Unix/Mac
+            if (cantPings == 0)
                 processBuilder.command("ping", host);
-            } else {
+            else
                 processBuilder.command("ping", "-c", Integer.toString(cantPings), host);
-            }
-        } else {
+        else {
             textArea.append(
                     Configuracion.getConfiguracion().getRb().getString("Calculo_sistema_operativo_no_soportado"));
             return;
@@ -690,9 +685,8 @@ public class Calculo {
         String[] octetos2 = ip2.split("\\.");
         for (int i = 0; i < 4; i++) {
             int diferencia = Integer.parseInt(octetos1[i]) - Integer.parseInt(octetos2[i]);
-            if (diferencia != 0) {
+            if (diferencia != 0)
                 return diferencia;
-            }
         }
         return 0;
     }

@@ -21,8 +21,6 @@ import red.controlador.Configuracion;
 class ButtonEditor extends DefaultCellEditor {
     
     private Red red; // Objeto Red que gestiona los equipos y conexiones.
-    private Calculo calculo; // Objeto Calculo que realiza operaciones de análisis de red.
-
     protected JButton button; // Botón de la celda de la tabla.
 
     private String label; // Etiqueta del botón.
@@ -44,8 +42,6 @@ class ButtonEditor extends DefaultCellEditor {
         this.table = table;
         this.actionType = actionType;
         this.red = red;
-        this.calculo = calculo;
-
         button = new JButton();
         button.setOpaque(true);
         button.addActionListener(e -> fireEditingStopped());
@@ -101,7 +97,7 @@ class ButtonEditor extends DefaultCellEditor {
         String equipoCodigo = (String) table.getValueAt(selectedRow, 0); // Código del equipo.
         int confirmacion = JOptionPane.showConfirmDialog(null, Configuracion.getConfiguracion().getRb().getString("ButtonEditor_seguro_eliminar_equipo"),
                 Configuracion.getConfiguracion().getRb().getString("ButtonEditor_confirmar_eliminacion"), JOptionPane.YES_NO_OPTION);
-        if (confirmacion == JOptionPane.YES_OPTION) {
+        if (confirmacion == JOptionPane.YES_OPTION)
             try {
                 Equipo equipoAEliminar = red.buscarEquipoPorCodigo(equipoCodigo);
                 red.borrarEquipo(equipoAEliminar);
@@ -114,7 +110,6 @@ class ButtonEditor extends DefaultCellEditor {
                                 .getString("ButtonEditor_error_eliminar_equipo"), e.getMessage()),
                         Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
             }
-        }
     }
 
     /**
@@ -232,7 +227,7 @@ class ButtonEditor extends DefaultCellEditor {
         String equipo2Codigo = (String) table.getValueAt(selectedRow, 1); // Código del segundo equipo.
         int confirmacion = JOptionPane.showConfirmDialog(null, Configuracion.getConfiguracion().getRb().getString("ButtonEditor_seguro_eliminar_conexion"),
                 Configuracion.getConfiguracion().getRb().getString("ButtonEditor_confirmar_eliminacion"), JOptionPane.YES_NO_OPTION);
-        if (confirmacion == JOptionPane.YES_OPTION) {
+        if (confirmacion == JOptionPane.YES_OPTION)
             try {
                 Conexion conexionAEliminar = red.buscarConexionPorCodigo(equipo1Codigo, equipo2Codigo);
                 red.borrarConexion(conexionAEliminar);
@@ -244,7 +239,6 @@ class ButtonEditor extends DefaultCellEditor {
                 JOptionPane.showMessageDialog(null, String.format(Configuracion.getConfiguracion().getRb().getString("ButtonEditor_error_eliminar_conexion"),
                         e.getMessage()), Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
             }
-        }
     }
 
     @Override
@@ -258,7 +252,7 @@ class ButtonEditor extends DefaultCellEditor {
 		try {
 			super.fireEditingStopped();
 		} catch (Exception e) {
-			// no hacer nada (no afecta en la funcionalidad)
+			JOptionPane.showMessageDialog(null, e.getMessage());
 		}
 	}
 }

@@ -153,13 +153,10 @@ public class VentanaEquipos extends JFrame {
             cuartoOcteto = random.nextInt(256); // Genera un número entre 0 y 255
             String ipGenerada = "192.168." + tercerOcteto + "." + cuartoOcteto;
 
-            if (!ipsExistentes.contains(ipGenerada)) {
+            if (!ipsExistentes.contains(ipGenerada))
                 return ipGenerada; // Devuelve la IP si no está en uso
-            }
-
-            if (cuartoOcteto == 255 && !ipsExistentes.contains("192.168." + (tercerOcteto + 1) + ".0")) {
+            if (cuartoOcteto == 255 && !ipsExistentes.contains("192.168." + (tercerOcteto + 1) + ".0"))
                 tercerOcteto++;
-            }
         }
     }
 
@@ -202,7 +199,7 @@ public class VentanaEquipos extends JFrame {
 
         int result = JOptionPane.showConfirmDialog(this, panel, Configuracion.getConfiguracion().getRb().getString("VentanaEquipos_agregar_equipo"),
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-        if (result == JOptionPane.OK_OPTION) {
+        if (result == JOptionPane.OK_OPTION)
             try {
                 int cantPuertos = Integer.parseInt(cantPuertosField.getText());
                 String tipoEquipo = (String) tipoEquipoComboBox.getSelectedItem();
@@ -230,6 +227,5 @@ public class VentanaEquipos extends JFrame {
                         String.format(Configuracion.getConfiguracion().getRb().getString("VentanaEquipos_error_agregar_equipo"), e.getMessage()),
                         Configuracion.getConfiguracion().getRb().getString("Interfaz_error"), JOptionPane.ERROR_MESSAGE);
             }
-        }
     }
 }
