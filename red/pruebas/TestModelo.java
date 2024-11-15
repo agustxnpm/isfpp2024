@@ -2,6 +2,7 @@ package red.pruebas;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -151,7 +152,7 @@ class TestModelo {
 	
 	// Test del grafo de Cálculo
 	@Test
-	void testCalculo() {
+	void testCalculo() throws IllegalArgumentException, IOException {
 		Set<Equipo> conj1, conj2;
 		conj1 = Set.of(equipo1, equipo2, equipo3, equipo4, equipo5);
 		conj2 = Set.of(equipo6, equipo7, equipo8);

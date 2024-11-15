@@ -11,7 +11,6 @@ public class ConexionNoConectadaException  extends RuntimeException {
      */
     public ConexionNoConectadaException () {
         super();
-        //abdcd
     }
 
     /**

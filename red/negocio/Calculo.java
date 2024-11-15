@@ -40,7 +40,8 @@ import red.controlador.Configuracion;
 
 /**
  * Clase que representa las operaciones y cálculos sobre la red de equipos y
- * conexiones.
+ * conexiones. Aplica el patrón Singleton por simplicidad (lidiar con dos o más
+ * cálculos diferentes no ayuda mucho a la lógica de la aplicación).
  */
 public class Calculo {
 
@@ -48,7 +49,7 @@ public class Calculo {
 	private net.datastructures.Map<String, Vertex<Equipo>> vertices; // Mapa de equipos a sus vértices en el grafo.
 	private Graph<Equipo, Conexion> red; // Grafo que representa la red de equipos y sus conexiones.
 
-	/** Método que llama al constructor privado para inicializar la instancia única de la clase, y la retorna
+	/** Método estático que llama al constructor privado para inicializar la instancia única de la clase, y la retorna
 	 * @return instancia: la instancia única de Cálculo
 	 */
 	public static Calculo getCalculo() {
@@ -310,9 +311,13 @@ public class Calculo {
      * @param internetGateway Equipo que representa el Gateway.
      */
     public String verificarConectividad(Equipo equipoOrigen, Equipo internetGateway)
-            throws EquipoNoConectadoException, ConexionNoConectadaException {
+            throws EquipoRepetidoException, EquipoNoConectadoException, ConexionNoConectadaException {
 
-        /*
+        // Verifica que ambos equipos sean diferentes
+    	if (equipoOrigen.equals(internetGateway))
+    		throw new EquipoRepetidoException(Configuracion.getConfiguracion().getRb().getString("Calculo_seleccione_equipos_diferentes"));
+    	
+    	/*
 		 * Encuentra la ruta entre equipos. La propia existencia de la ruta implica la
 		 * existencia de conexiones entre cada
 		 * par de equipos consecutivos en la misma.
@@ -648,22 +653,16 @@ public class Calculo {
      * @param finIp IP de fin del rango.
      * @return La cantidad total de IPs en el rango.
      */
-    public int calcularTotalIPsEnRango(String inicioIp, String finIp) {
-        try {
-            long ipInicio = ipToLong(InetAddress.getByName(inicioIp));
-            long ipFin = ipToLong(InetAddress.getByName(finIp));
+    public int calcularTotalIPsEnRango(String inicioIp, String finIp) throws IOException, IllegalArgumentException{
+    	long ipInicio = ipToLong(InetAddress.getByName(inicioIp));
+        long ipFin = ipToLong(InetAddress.getByName(finIp));
 
-            // Verifica que la IP de inicio sea menor o igual a la de fin
-            if (ipInicio > ipFin) {
-                throw new IllegalArgumentException(
-                        Configuracion.getConfiguracion().getRb().getString("Calculo_ip_inicio_menor_igual_ip_fin"));
-            }
+        // Verifica que la IP de inicio sea menor o igual a la de fin
+        if (ipInicio > ipFin)
+            throw new IllegalArgumentException(
+                    Configuracion.getConfiguracion().getRb().getString("Calculo_ip_inicio_menor_igual_ip_fin"));
 
-            return (int) (ipFin - ipInicio + 1); // Devuelve la cantidad total de IPs en el rango
-        } catch (IOException e) {
-            e.printStackTrace();
-            return 0; // Retorna 0 en caso de error
-        }
+        return (int) (ipFin - ipInicio + 1); // Devuelve la cantidad total de IPs en el rango
     }
 
     /**

@@ -467,8 +467,15 @@ public class VentanaConsultas extends JFrame {
             // Agregar acción al botón "Detener"
             detenerButton.addActionListener(e -> detener[0] = true);
 
+            // Se setea el total de pings como 0 por defecto (en caso de excepción se mantiene así)
+            int totalPings = 0;
+
             // Calcular el total de pings a realizar
-            int totalPings = calculo.calcularTotalIPsEnRango(inicioIp, finIp); // total de ips en el rango (no
+            try {
+            	totalPings = calculo.calcularTotalIPsEnRango(inicioIp, finIp); // total de ips en el rango
+            } catch(Exception e) {
+            	JOptionPane.showMessageDialog(this, e.getMessage());
+            }
             // simulacion)
             progressBar.setMaximum(totalPings);
 

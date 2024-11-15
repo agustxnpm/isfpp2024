@@ -19,7 +19,7 @@ public class Constantes {
 	public static final String TITULO_INICIAL = "Select the language";
 	public static final String INICIAL_ESPANOL_ES = "Español (España)";
 	public static final String INICIAL_ESPANOL_AR = "Español (Argentina)";
-	public static final String INICIAL_INGLES_EU = "Inglés (Estados Unidos)";
+	public static final String INICIAL_INGLES_EU = "English (U.S.A.)";
 	public static final String INICIAL_SALIR = "Exit/Salir";
 	
 	// Constante con la ruta para las fotos de la ventana inicial

@@ -28,7 +28,7 @@ public class Factory {
             if (obj == null) {
                 ResourceBundle rb = ResourceBundle.getBundle("factory");
                 String sClassname = rb.getString(objName);
-                obj = Class.forName(sClassname).newInstance();
+                obj = Class.forName(sClassname).getDeclaredConstructor().newInstance();
                 // Agregar la nueva instancia a la tabla hash.
                 instancias.put(objName, obj);
             }

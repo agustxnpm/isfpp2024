@@ -55,8 +55,8 @@ public class VentanaInicial extends JFrame {
 		btnSalir.addActionListener(e -> {
 			int confirmacion = JOptionPane.showConfirmDialog(this, "¿Seguro?/Sure?", "Exit", JOptionPane.YES_NO_OPTION);
 			if (confirmacion == JOptionPane.YES_OPTION) {
-				JOptionPane.showMessageDialog(this, "¡Adiós!", "Goodbye!", JOptionPane.PLAIN_MESSAGE);
 				dispose();
+				JOptionPane.showMessageDialog(this, "¡Adiós!", "Goodbye!", JOptionPane.PLAIN_MESSAGE);
 				System.exit(NORMAL);
 			}
 		});
@@ -69,10 +69,6 @@ public class VentanaInicial extends JFrame {
 	 * @param pais: País indicado por el usuario
 	 */
 	private void seleccion(String idioma, String pais) {
-		if (Configuracion.getConfiguracion() == null){
-			dispose();
-			System.exit(ERROR);
-		}
 		Configuracion.getConfiguracion().establecerIdiomaYPais(idioma, pais);
 		SwingUtilities.invokeLater(() -> {
             new VentanaPrincipal().setVisible(true);

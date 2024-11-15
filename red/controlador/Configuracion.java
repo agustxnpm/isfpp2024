@@ -10,7 +10,8 @@ import javax.swing.UIManager;
 
 /**
  * Clase que gestiona la configuración de la aplicación, incluyendo el idioma y 
- * el modo de funcionamiento. Aplica el patrón Singleton.
+ * el modo de funcionamiento. Aplica el patrón Singleton para simplificar y 
+ * centralizar la gestión del idioma de la aplicación.
  */
 public class Configuracion {
     
@@ -22,7 +23,7 @@ public class Configuracion {
 
     /**
      * Método de acceso para obtener la única instancia de la clase. 
-     * La instanciación de la clase ocurre sólo una vez. 
+     * La instanciación de la clase ocurre sólo una vez, como consecuencia
      *
      * @return La instancia única de la configuración, o null en caso de error.
      */
@@ -44,7 +45,7 @@ public class Configuracion {
      */
     private Configuracion() throws IOException {
         prop = new Properties();
-        prop.load(new FileInputStream("ISFPP2024\\config.properties"));
+        prop.load(new FileInputStream("config.properties"));
         modoInicial = Boolean.parseBoolean(prop.getProperty("simulacion"));
         rb = ResourceBundle.getBundle(prop.getProperty("labels"));
     }
@@ -73,9 +74,9 @@ public class Configuracion {
     }
     
     /**
-     * Verifica si la aplicación está en modo simulación.
+     * Verifica si la aplicación está, al inicio, en modo simulación.
      *
-     * @return true si está en modo simulación, false de lo contrario.
+     * @return true si al principio está en modo simulación, false de lo contrario.
      */
     public boolean isSimulacion() {
         return modoInicial;

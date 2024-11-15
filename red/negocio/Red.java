@@ -40,15 +40,22 @@ public class Red {
     private UbicacionService ubicacionService; // Servicio para gestionar las ubicaciones.
     private TipoEquipoService tipoEquipoService; // Servicio para TipoEquipo
 	private TipoPuertoService tipoPuertoService; // Servicio para TipoPuerto
-	private TipoCableService tipoCableService;
+	private TipoCableService tipoCableService; // Servicio para TipoCable
 
 	
+	// Método estático de acceso para acceder a la instancia única de la red
 	public static Red getRed() throws FileNotFoundException {
 		if (red == null)
 			red = new Red();
 		return red;
 	}
 	
+    /**
+     * Constructor privado para inicializar la red.
+     * Carga los equipos, conexiones y ubicaciones desde los servicios.
+     * 
+     * @throws FileNotFoundException Si no se encuentran los archivos de datos.
+     */
 	private Red() throws FileNotFoundException {
 		super();
 		equipos = new ArrayList<Equipo>();
@@ -64,13 +71,6 @@ public class Red {
 		tipoPuertoService = new TipoPuertoServiceImp();
 		tipoCableService = new TipoCableServiceImp();
 	}
-
-    /**
-     * Constructor privado para inicializar la red.
-     * Carga los equipos, conexiones y ubicaciones desde los servicios.
-     * 
-     * @throws FileNotFoundException Si no se encuentran los archivos de datos.
-     */
 
     // Métodos de acceso (getters y setters).
     public String getNombre() {
@@ -92,6 +92,30 @@ public class Red {
     public List<Ubicacion> getUbicaciones() {
         return ubicaciones;
     }
+
+	public EquipoService getEquipoService() {
+		return equipoService;
+	}
+
+	public ConexionService getConexionService() {
+		return conexionService;
+	}
+
+	public UbicacionService getUbicacionService() {
+		return ubicacionService;
+	}
+
+	public TipoEquipoService getTipoEquipoService() {
+		return tipoEquipoService;
+	}
+
+	public TipoPuertoService getTipoPuertoService() {
+		return tipoPuertoService;
+	}
+
+	public TipoCableService getTipoCableService() {
+		return tipoCableService;
+	}
 
     @Override
     public String toString() {
@@ -209,32 +233,5 @@ public class Red {
                 return conexion;
         // Si no encuentra ninguna conexión, devolver null.
         return null;
-    }
-    
-    
-	public EquipoService getEquipoService() {
-		return equipoService;
-	}
-
-	public ConexionService getConexionService() {
-		return conexionService;
-	}
-
-	public UbicacionService getUbicacionService() {
-		return ubicacionService;
-	}
-
-	public TipoEquipoService getTipoEquipoService() {
-		return tipoEquipoService;
-	}
-
-	public TipoPuertoService getTipoPuertoService() {
-		return tipoPuertoService;
-	}
-
-	public TipoCableService getTipoCableService() {
-		return tipoCableService;
-	}
-    
-    
+    }    
 }

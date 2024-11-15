@@ -212,9 +212,8 @@ public class ConexionPostgresqlDAO implements ConexionDAO {
         Map<String, Equipo> equipos = new HashMap<>();
         EquipoDAO equipoDAO = new EquipoPostgresqlDAO();
         List<Equipo> eq = equipoDAO.buscarTodos();
-        for (Equipo e : eq) {
+        for (Equipo e : eq)
             equipos.put(e.getCodigo(), e);
-        }
         return equipos;
     }
 
@@ -228,9 +227,8 @@ public class ConexionPostgresqlDAO implements ConexionDAO {
         Map<String, TipoCable> cables = new HashMap<>();
         TipoCableDAO cablesDAO = new TipoCablePostgresqlDAO();
         List<TipoCable> cbls = cablesDAO.buscarTodos();
-        for (TipoCable c : cbls) {
+        for (TipoCable c : cbls)
             cables.put(c.getCodigo(), c);
-        }
         return cables;
     }
 
@@ -244,9 +242,8 @@ public class ConexionPostgresqlDAO implements ConexionDAO {
         Map<String, TipoPuerto> puertos = new HashMap<>();
         TipoPuertoDAO puertosDAO = new TipoPuertoPostgresqlDAO();
         List<TipoPuerto> prts = puertosDAO.buscarTodos();
-        for (TipoPuerto p : prts) {
+        for (TipoPuerto p : prts)
             puertos.put(p.getCodigo(), p);
-        }
         return puertos;
     }
 }

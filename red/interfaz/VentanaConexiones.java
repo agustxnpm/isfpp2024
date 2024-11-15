@@ -207,7 +207,8 @@ public class VentanaConexiones extends JFrame {
             for (TipoPuerto p : puertos)
                 tipoPuertoComboBox.addItem(p.getCodigo());
         } catch (FileNotFoundException e) {
-            // Manejo de la excepción (sin bloque de impresión).
+            JOptionPane.showMessageDialog(this, e.getMessage(), Configuracion.getConfiguracion().getRb().getString("Interfaz_error"),
+        			JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -226,6 +227,8 @@ public class VentanaConexiones extends JFrame {
             return null;
         } catch (FileNotFoundException e) {
             // Manejo de la excepción (sin bloque de impresión).
+        	JOptionPane.showMessageDialog(this, e.getMessage(), Configuracion.getConfiguracion().getRb().getString("Interfaz_error"),
+        			JOptionPane.ERROR_MESSAGE);
             return null;
         }
     }

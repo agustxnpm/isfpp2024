@@ -1,8 +1,6 @@
 package red.servicio;
 
 import red.dao.ConexionDAO;
-import red.dao.EquipoDAO;
-import red.dao.postgresql.ConexionPostgresqlDAO;
 import red.factory.Factory;
 import red.modelo.Conexion;
 

@@ -10,14 +10,16 @@ import red.interfaz.VentanaInicial;
 public class AplicacionConsultas {
     
     /**
-     * Método principal para lanzar la ventana principal de la aplicación.
-     * Utiliza SwingUtilities para asegurar que la interfaz gráfica se ejecute
-     * en el hilo de despacho de eventos de Swing.
-     *
+     * Método principal para lanzar la ventana inicial de la aplicación, que pide al
+     * usuario el idioma de la misma. Utiliza SwingUtilities para asegurar que la
+     * interfaz gráfica se ejecute en el hilo de despacho de eventos de Swing. Si no
+     * se tiene éxito iniciando la configuración, se aborta la aplicación.
      * @param args Argumentos de la línea de comandos (no utilizados).
      */
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
+        if (Configuracion.getConfiguracion() == null)
+        	System.exit(-1);
+    	SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 new VentanaInicial().setVisible(true);
