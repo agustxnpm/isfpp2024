@@ -14,6 +14,8 @@ import red.excepciones.DireccionIpRepetidaException;
  * descripción, direcciones IP, ubicación, tipo de equipo, y puertos.
  */
 public class Equipo {
+	
+	private static List<String> totalIps = new ArrayList<>(); // Lista con todas las IPs almacenadas por todos los equipos del sistema
 
     private String codigo; // Identificador único del equipo.
     private String modelo; // Modelo del equipo.
@@ -138,14 +140,22 @@ public class Equipo {
     public List<String> getDireccionesIp() {
         return direccionesIp;
     }
+    
+    public static List<String> getTotalIps(){
+    	return totalIps;
+    }
 
 	/**
-     * Agrega una dirección IP al equipo, verificando que sea válida y que no esté repetida.
+     * Agrega una dirección IP al equipo, verificando primero que no esté repetida y que sea válida.
      * @param ip La dirección IP a agregar.
-     * @throws IllegalArgumentException si la IP no tiene el formato válido
      * @throws DireccionIpRepetidaException Si la IP ya está asignada al equipo.
+     * @throws IllegalArgumentException si la IP no tiene el formato válido
      */
     public void agregarIp(String ip) throws DireccionIpRepetidaException {
+    	// Verificar si la IP (válida o no) ya existe en el equipo o en algún equipo del sistema.
+        if (direccionesIp.contains(ip) || totalIps.contains(ip))
+            throw new DireccionIpRepetidaException(Configuracion.getConfiguracion().getRb().getString("Equipo_direccion_ip_ya_existe"));
+
         // Expresión regular para validar IPv4.
         String ipv4Regex = "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
         Pattern pattern = Pattern.compile(ipv4Regex);
@@ -155,11 +165,8 @@ public class Equipo {
         if (!matcher.matches())
             throw new IllegalArgumentException(Configuracion.getConfiguracion().getRb().getString("Equipo_direccion_ip_no_valida"));
 
-        // Verificar si la IP ya existe en el equipo.
-        if (direccionesIp.contains(ip))
-            throw new DireccionIpRepetidaException(Configuracion.getConfiguracion().getRb().getString("Equipo_direccion_ip_ya_existe"));
-
         direccionesIp.add(ip);
+        totalIps.add(ip);
     }
 
     /**

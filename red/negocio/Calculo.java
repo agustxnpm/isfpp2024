@@ -68,7 +68,7 @@ public class Calculo {
 	}
 
 	/**
-	 * Cargar los datos de equipos y conexiones en el grafo.
+	 * Cargar los datos de equipos y conexiones en el grafo. Complejidad O(n)
 	 * 
 	 * @param eq    Lista de equipos.
 	 * @param conex Lista de conexiones.
@@ -89,7 +89,7 @@ public class Calculo {
 	}
 
 	/**
-	 * Obtener equipos conectados transitivamente a partir de un equipo.
+	 * Obtener equipos conectados transitivamente a partir de un equipo. Complejidad O(n)
 	 * @param equipoInicial El equipo para el cual queremos calcular el conjunto de equipos conectados transitivamente al mismo
 	 * @return Set<Equipo> el conjunto de equipos conectados transitivamente a equipoInicial
 	 */
@@ -115,11 +115,12 @@ public class Calculo {
 		return equiposConectados;
 	}
 
+	/** Obtiene y devuelve la lista con todas las direcciones IP del sistema almacenada estáticamente por
+	 * la clase Equipo.
+	 * @return el total de las IPs del sistema, almacenado estáticamente por la clase Equipo
+	 */
 	public List<String> obtenerTodasLasIPs() {
-		List<String> ips = new ArrayList<>();
-		for (Vertex<Equipo> vertice : vertices.values())
-			ips.addAll(vertice.getElement().getDireccionesIp()); // Suponiendo que el método getDireccionesIp() devuelve una lista de IPs
-		return ips;
+		return Equipo.getTotalIps();
 	}
 
 	/**
@@ -252,7 +253,7 @@ public class Calculo {
 
     /**
      * Calcula la velocidad máxima de una ruta, limitada por la conexión más
-     * lenta.
+     * lenta. Tiene complejidad O(n).
      *
      * @param ruta Lista de equipos que forman la ruta.
      * @return La velocidad máxima en Mbps, limitada por el cable o puertos más
@@ -287,7 +288,7 @@ public class Calculo {
     }
 
     /**
-     * Busca la conexión entre dos equipos en la red.
+     * Busca la conexión entre dos equipos en la red. Tiene complejidad O(n)
      *
      * @param equipo1 Primer equipo.
      * @param equipo2 Segundo equipo.
@@ -366,7 +367,8 @@ public class Calculo {
     }
 
     /**
-     * Realiza un ping a un equipo específico por su dirección IP.
+     * Realiza un ping a un equipo específico por su dirección IP. Tiene complejidad O(n²), porque dentro del for,
+     * llama al método contains, que ya tiene complejidad lineal.
      *
      * @param direccionIp Dirección IP del equipo.
      * @return true si el ping fue exitoso, false en caso contrario.
@@ -384,7 +386,8 @@ public class Calculo {
 	
 	/**
 	 * Realiza ping a todos los equipos cuyas IPs estén dentro de un rango.
-	 * Funciona unicamente para el modo simulacion de la aplicacion
+	 * Funciona unicamente para el modo simulacion de la aplicacion. Tiene complejidad O(n²), por los dos
+	 * for anidados.
 	 * 
 	 * @param inicioIp IP inicial del rango.
 	 * @param finIp    IP final del rango.
@@ -394,10 +397,10 @@ public class Calculo {
 		List<String> resultados = new ArrayList<>();
 		boolean pingExitoso = false;
 	
-		for (Vertex<Equipo> equipo : vertices.values())
-			for (String ip : equipo.getElement().getDireccionesIp())
-				if (estaDentroDelRango(ip, inicioIp, finIp)) {
-					boolean respuesta = realizarPingAEquipo(ip);
+		for (Vertex<Equipo> equipo : vertices.values()) // Para cada equipo
+			for (String ip : equipo.getElement().getDireccionesIp()) // Para cada IP almacenado por el equipo...
+				if (estaDentroDelRango(ip, inicioIp, finIp)) { // Si el equipo
+					boolean respuesta = equipo.getElement().realizarPing();
 					String resultado = respuesta
 							? Configuracion.getConfiguracion().getRb().getString("Calculo_ping_exitoso")
 							: Configuracion.getConfiguracion().getRb().getString("Calculo_ping_fallido");

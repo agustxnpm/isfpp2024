@@ -16,6 +16,7 @@ public class Constantes {
 	public static final String ESTADOS_UNIDOS = "US";
 	
 	// Constantes referidas a los componentes de la ventana inicial
+	public static final String ERROR_CONFIG = "Error al inicializar la configuración.";
 	public static final String TITULO_INICIAL = "Select the language";
 	public static final String INICIAL_ESPANOL_ES = "Español (España)";
 	public static final String INICIAL_ESPANOL_AR = "Español (Argentina)";
@@ -25,4 +26,10 @@ public class Constantes {
 	// Constante con la ruta para las fotos de la ventana inicial
 	public static final String RUTA_REDES = "/red/interfaz/red.jpeg";
 	public static final String RUTA_UNPSJB = "/red/interfaz/unpsjb.png";
+	
+	/** Constantes referidas al tipo de acceso a los datos en la clase Factory, ya sea mediante una base de datos
+	 * o mediante archivos secuenciales de texto.
+	 */
+	public static final String FACTORY_BBDD = "factory";
+	public static final String FACTORY_SECUENCIAL = "secuencial";
 }

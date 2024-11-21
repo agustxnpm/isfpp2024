@@ -3,6 +3,8 @@ package red.factory;
 import java.util.Hashtable;
 import java.util.ResourceBundle;
 
+import red.controlador.Constantes;
+
 /**
  * Clase Factory que implementa el patrón de diseño Factory para instanciar objetos de forma dinámica
  * y mantener una única instancia de cada uno en una tabla hash.
@@ -10,6 +12,7 @@ import java.util.ResourceBundle;
 public class Factory {
     // Tabla hash para almacenar instancias únicas de los objetos creados.
     private static Hashtable<String, Object> instancias = new Hashtable<String, Object>();
+    private static boolean bbdd;
 
     /**
      * Obtiene una instancia de un objeto a partir de su nombre. Si el objeto ya existe
@@ -26,7 +29,7 @@ public class Factory {
             Object obj = instancias.get(objName);
             // Si no existe, se instancia y se agrega a la tabla.
             if (obj == null) {
-                ResourceBundle rb = ResourceBundle.getBundle("factory");
+                ResourceBundle rb = ResourceBundle.getBundle(bbdd ? Constantes.FACTORY_BBDD : Constantes.FACTORY_SECUENCIAL);
                 String sClassname = rb.getString(objName);
                 obj = Class.forName(sClassname).getDeclaredConstructor().newInstance();
                 // Agregar la nueva instancia a la tabla hash.
@@ -37,5 +40,9 @@ public class Factory {
             ex.printStackTrace();
             throw new RuntimeException(ex);
         }
+    }
+    
+    public static void setModo(boolean bd) {
+    	bbdd = bd;
     }
 }

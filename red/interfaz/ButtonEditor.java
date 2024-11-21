@@ -252,7 +252,7 @@ class ButtonEditor extends DefaultCellEditor {
 		try {
 			super.fireEditingStopped();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, e.getMessage());
+			//JOptionPane.showMessageDialog(null, e.getMessage());
 		}
 	}
 }

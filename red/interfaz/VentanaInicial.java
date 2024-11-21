@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 
 import red.controlador.Constantes;
+import red.factory.Factory;
 import red.controlador.Configuracion;
 
 // Clase para que el usuario seleccione el idioma inicialmente antes de abrir la aplicación
@@ -64,15 +65,22 @@ public class VentanaInicial extends JFrame {
 	
 	/** Verifica que la configuración pueda instanciarse correctamente, establece el idioma y país configurados, abre la ventana principal, y
 	 * cierra esta ventana. En caso de que se capture una excepción al crear la instancia de Configuración, la excepción queda indicada en la
-	 * consola, y la configuración permanece nula. Por lo tanto, el método, tras la comparación, cierra el programa
+	 * consola, y la configuración permanece nula. Por lo tanto, el método, tras la comparación, cierra el programa.
 	 * @param idioma: Idioma que asumirá el programa en principio
 	 * @param pais: País indicado por el usuario
 	 */
 	private void seleccion(String idioma, String pais) {
 		Configuracion.getConfiguracion().establecerIdiomaYPais(idioma, pais);
-		SwingUtilities.invokeLater(() -> {
-            new VentanaPrincipal().setVisible(true);
-			dispose();
-        });
+		dispose();
+		int decision = JOptionPane.showConfirmDialog(this, Configuracion.getConfiguracion().getRb().getString("VentanaInicial_opcion_bbdd_secuenciales"),
+				Configuracion.getConfiguracion().getRb().getString("VentanaInicial_tipo_acceso_datos"), JOptionPane.YES_NO_CANCEL_OPTION);
+		if (decision == JOptionPane.CANCEL_OPTION) {
+			JOptionPane.showMessageDialog(this, Configuracion.getConfiguracion().getRb().getString("VentanaInicial_gracias_todos_modos"),
+					Configuracion.getConfiguracion().getRb().getString("VentanaInicial_despedida"), JOptionPane.INFORMATION_MESSAGE);
+			System.exit(NORMAL);
+		} else {
+			Factory.setModo(decision == JOptionPane.YES_OPTION);
+			SwingUtilities.invokeLater(() -> new VentanaPrincipal().setVisible(true));
+		}
 	}
 }

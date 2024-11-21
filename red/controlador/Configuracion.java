@@ -9,8 +9,8 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 /**
- * Clase que gestiona la configuración de la aplicación, incluyendo el idioma y 
- * el modo de funcionamiento. Aplica el patrón Singleton para simplificar y 
+ * Clase que gestiona la configuración de la aplicación, incluyendo el idioma y
+ * el modo de funcionamiento. Aplica el patrón Singleton para simplificar y
  * centralizar la gestión del idioma de la aplicación.
  */
 public class Configuracion {
@@ -22,7 +22,7 @@ public class Configuracion {
     private final boolean modoInicial; // Indica si la aplicación inicialmente está en modo simulación o no.
 
     /**
-     * Método de acceso para obtener la única instancia de la clase. 
+     * Método de acceso para obtener la única instancia de la clase.
      * La instanciación de la clase ocurre sólo una vez, como consecuencia
      *
      * @return La instancia única de la configuración, o null en caso de error.
@@ -32,7 +32,7 @@ public class Configuracion {
             try {
                 configuracion = new Configuracion();
             } catch(IOException e) {
-                System.err.println("Error al inicializar la configuración.");
+                System.err.println(Constantes.ERROR_CONFIG);
                 e.printStackTrace();
             }
         return configuracion;

@@ -215,7 +215,7 @@ public class VentanaEquipos extends JFrame {
                         descripcionField.getText(), selectedUbicacion, new TipoEquipo(tipoEquipo, ""), cantPuertos,
                         selectedPuerto, true);
 
-                String ipAsignada = generarIPAleatoria(calculo);
+                String ipAsignada = generarIPAleatoria(calculo); // Genera una IP aleatoria
                 equipo.agregarIp(ipAsignada);
 
                 calculo.agregarEquipoAlGrafo(equipo);
